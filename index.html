@@ -1,0 +1,2908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTFOLIO — 张珺涵作品集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #111111;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #ff6b19;
+            --line: rgba(255, 255, 255, 0.08);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 28px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-fast);
+        }
+
+        .nav.scrolled {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 48px;
+        }
+
+        .nav-logo {
+            font-size: 29px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .nav-logo:hover {
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 400;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: var(--transition-fast);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            background: var(--accent);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .nav-toggle span {
+            width: 22px;
+            height: 1.5px;
+            background: var(--text);
+            transition: var(--transition-fast);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 48px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== HERO ROW: 标题下方左文字右概念图两栏 ===== */
+        .hero-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: clamp(32px, 4.5vw, 72px);
+            width: 100%;
+        }
+
+        /* 文字块：贴左，顶端比图片上缘再低约一行（参考图左侧文字的起始高度） */
+        .hero-row .hero-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            max-width: 880px;
+            margin-left: 0;
+            margin-top: clamp(40px, 8vh, 130px);
+        }
+
+        .hero-visual {
+            flex: 0 0 auto;
+            width: clamp(360px, 44vw, 1130px);
+            max-height: 50vh;
+            position: relative;
+            z-index: 1;
+            aspect-ratio: 16 / 9;
+            /* 参考图右下角图位：上缘与大标题底部基本齐平（极小重叠），右缘约在页宽 84% 处 */
+            margin-top: clamp(-40px, -1.5vw, -8px);
+            margin-right: clamp(0px, 15vw, 400px);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: #0c0c0c;
+            /* 动态效果1：缓慢上下悬浮 */
+            animation: heroFloat 7s ease-in-out infinite;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 源图为近方形封面，裁成 16:9 时聚焦垂直中段（标题/天际线/人物） */
+            object-position: 50% 50%;
+            display: block;
+        }
+
+        /* 动态效果2：光泽扫过 */
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            background: linear-gradient(115deg, transparent 42%, rgba(255, 107, 25, 0.16) 50%, transparent 58%);
+            transform: translateX(-100%);
+            animation: heroSheen 5.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* 动态效果3：外发光呼吸 */
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            z-index: 1;
+            border-radius: 18px;
+            box-shadow: 0 0 46px rgba(255, 107, 25, 0.16), inset 0 0 34px rgba(0, 0, 0, 0.5);
+            animation: heroGlow 4.5s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
+        }
+
+        @keyframes heroSheen {
+            0%, 58% { transform: translateX(-100%); }
+            82%, 100% { transform: translateX(100%); }
+        }
+
+        @keyframes heroGlow {
+            from { box-shadow: 0 0 30px rgba(255, 107, 25, 0.10), inset 0 0 34px rgba(0, 0, 0, 0.5); }
+            to { box-shadow: 0 0 60px rgba(255, 107, 25, 0.26), inset 0 0 34px rgba(0, 0, 0, 0.5); }
+        }
+
+        /* 窄屏降级：两栏改上下堆叠，概念图居中收窄并关闭悬浮动画避免跳动 */
+        @media (max-width: 1024px) {
+            .hero-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 40px;
+            }
+            .hero-row .hero-content {
+                margin-left: 0;
+                margin-top: 0;
+                max-width: none;
+            }
+            .hero-visual {
+                width: min(72vw, 380px);
+                margin-right: 0;
+                margin-top: 0;
+                align-self: center;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .hero-visual { width: 82vw; }
+            .hero-visual { animation: none; }
+        }
+
+        /* 矮屏压缩：超大标题与图片在低视口下收紧，避免首屏大幅溢出 */
+        @media (max-height: 940px) {
+            .hero { padding: 88px 48px 56px; }
+            .hero-portfolio { font-size: clamp(46px, 12vw, 300px); }
+            .hero-row .hero-content { margin-top: 12px; }
+            .hero-visual { max-height: 36vh; }
+        }
+
+        @media (max-height: 800px) {
+            .hero { padding: 72px 48px 40px; }
+            .hero-portfolio { font-size: clamp(40px, 10vw, 240px); }
+            .hero-row .hero-content { margin-top: 6px; }
+            .hero-title { font-size: clamp(30px, 3.2vw, 44px); }
+            .hero-desc { font-size: 15px; }
+        }
+
+        /* ===== HERO TILT: 鼠标联动 3D 倾斜与分层视差 ===== */
+        .hero {
+            perspective: 1400px;
+        }
+
+        .hero-content {
+            transform-style: preserve-3d;
+            transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+            will-change: transform;
+        }
+
+        /* 分层位移由 JS 写入行内 translate 属性。translate 与 fadeInUp
+           动画占用的 transform 是相互独立的属性，二者叠加合成而不会互相覆盖。
+           此处只设初始值，保证脚本未就绪时排版正常。 */
+        .hero-portfolio,
+        .hero-label,
+        .hero-title,
+        .hero-desc,
+        .hero-showcase,
+        .particles-canvas {
+            translate: 0 0 0;
+        }
+
+        /* 首屏超大白色主标题：横贯整幅、近乎占满页宽（参考矩阵站开头版式） */
+        .hero-portfolio {
+            position: relative;
+            z-index: 2;
+            font-size: clamp(46px, 16vw, 440px);
+            font-weight: 800;
+            color: #fff;
+            line-height: 0.86;
+            letter-spacing: -0.015em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeInUp 0.8s ease 0.1s forwards;
+        }
+
+        /* 标题末尾的橘色方点，呼应参考图的方形句点 */
+        .hero-portfolio::after {
+            content: "";
+            display: inline-block;
+            width: 0.12em;
+            height: 0.12em;
+            margin-left: 0.05em;
+            background: var(--accent);
+        }
+
+        .hero-label {
+            font-size: 31px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .hero-label .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, #a000d1 50%, var(--accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .hero-title {
+            font-size: clamp(47px, 7vw, 97px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -3px;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        .hero-title span {
+            color: var(--text-muted);
+        }
+
+        .hero-desc {
+            font-size: clamp(23px, 1.5vw, 27px);
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 700px;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 1.2s forwards;
+        }
+
+        .hero-scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--text-muted), transparent);
+            animation: scrollPulse 2s ease infinite;
+        }
+
+        #services {
+            max-width: none;
+            padding: 160px 0;
+        }
+
+        #services .section-header {
+            padding: 0 48px;
+            max-width: 1400px;
+            margin: 0 auto 48px;
+            text-align: center;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 160px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 100px;
+        }
+
+        .section-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        #services .section-label {
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: clamp(30px, 4vw, 50px);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+
+        .section-title span {
+            color: var(--text-muted);
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+            width: 100%;
+        }
+
+        .service-item {
+            background: var(--bg);
+            padding: 48px 32px;
+            transition: var(--transition-fast);
+        }
+
+        .service-item:hover {
+            background: var(--accent);
+        }
+
+        .service-item:hover .service-icon {
+            color: white;
+        }
+
+        .service-item:hover .service-title {
+            color: white;
+        }
+
+        .service-item:hover .service-desc {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 24px;
+            color: var(--accent);
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .service-desc {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Works — Garden Studio Style */
+        .works-section {
+            padding: 0;
+            max-width: none;
+        }
+
+        .work-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .work-item:first-child {
+            border-top: 1px solid var(--line);
+        }
+
+        .work-item:nth-child(even) {
+            direction: rtl;
+        }
+
+        .work-item:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .work-image {
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+            min-height: 600px;
+        }
+
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .work-item:hover .work-image img {
+            transform: scale(1.05);
+        }
+
+        .work-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .work-item:hover .work-image::after {
+            opacity: 1;
+        }
+
+        .work-content {
+            padding: 80px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .work-bg-icon {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .work-bg-icon svg {
+            fill: var(--accent);
+            height: 100%;
+            width: auto;
+        }
+
+        /* 每个图标独立控制：可自由调整位置、大小、透明度 */
+        .work-bg-icon-1 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-2 {
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-3 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-4 {
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-5 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-6 {
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-number {
+            font-size: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a000d1 50%, var(--accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .work-title {
+            font-size: clamp(30px, 3.5vw, 50px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+            transition: var(--transition-fast);
+        }
+
+        .work-item:hover .work-title {
+            color: var(--accent);
+        }
+
+        .work-desc {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .work-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .work-tag {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            transition: var(--transition-fast);
+        }
+
+        .work-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .work-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .work-link svg {
+            transition: var(--transition-fast);
+        }
+
+        .work-link:hover {
+            color: var(--accent);
+        }
+
+        .work-link:hover svg {
+            transform: translateX(6px);
+        }
+
+        /* About Section */
+        .about-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-image {
+            position: relative;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(30%);
+            transition: var(--transition);
+        }
+
+        .about-image:hover img {
+            filter: grayscale(0%);
+            transform: scale(1.02);
+        }
+
+        .about-content h3 {
+            font-size: clamp(26px, 3vw, 38px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .about-content p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .about-stats {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            align-items: center;
+            margin-top: clamp(20px, 2.4vw, 36px);
+            padding: clamp(26px, 3vw, 40px) clamp(24px, 2.8vw, 38px);
+            background: #161616;
+            border-radius: 16px;
+        }
+
+        .about-stats > div {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .about-stat-number {
+            font-size: 44px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -1px;
+        }
+
+        .about-stat-label {
+            font-size: 18.5px;
+            color: var(--text-muted);
+            margin-top: 0;
+        }
+
+        .about-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .about-skill {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            transition: var(--transition-fast);
+        }
+
+        .about-skill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Resume Section (personal resume layout, independent class names, do not reuse about-*) */
+        /* 通栏布局：仅人物介绍板块解除全站 1400px 居中限宽，其余区块不变 */
+        #about {
+            max-width: none;
+            width: 100%;
+        }
+
+        .resume {
+            max-width: none;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 56px 1fr;
+            gap: clamp(20px, 2.4vw, 40px);
+        }
+
+        .resume-rail {
+            position: relative;
+            border-radius: 999px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+        }
+
+        .resume-rail::before,
+        .resume-rail::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #0a0a0a;
+            background-image: radial-gradient(circle at 50% 50%, #fff 0 6px, transparent 7px);
+        }
+
+        .resume-rail::before { top: 14px; }
+        .resume-rail::after { bottom: 14px; }
+
+        .resume-rail span {
+            writing-mode: vertical-rl;
+            font-size: 16px;
+            letter-spacing: 5px;
+            color: #111;
+            font-weight: 700;
+        }
+
+        .resume-main { min-width: 0; }
+
+        /* Stretch only the resume section: the general-purpose .section rule is constrained to 1400px centered; here we lift that constraint to fill the entire row */
+        #about.section {
+            max-width: none;
+            width: 100%;
+            padding-left: clamp(24px, 3.2vw, 72px);
+            padding-right: clamp(24px, 3.2vw, 72px);
+        }
+
+        .resume-top {
+            display: grid;
+            grid-template-columns: minmax(340px, 5fr) minmax(280px, 4fr) minmax(340px, 5fr);
+            grid-template-areas:
+                "left mid portrait"
+                "left mid portrait"
+                "title title title";
+            gap: clamp(20px, 2.4vw, 38px);
+            align-items: start;
+        }
+
+        .resume-left {
+            grid-area: left;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 2.4vw, 38px);
+            min-width: 0;
+            align-self: stretch;
+        }
+
+        /* 简介展示框填满左列剩余高度 -> 底端与肖像底端齐平 */
+        .resume-left .resume-intro { flex: 1 1 auto; }
+
+        /* 中列：专业技能 + 创作方向 紧贴堆叠（方向随技能上移） */
+        .resume-mid {
+            grid-area: mid;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 2.4vw, 38px);
+            min-width: 0;
+        }
+        .resume-mid .resume-group { margin-top: 0; }
+
+        /* 肖像跨 r1-r2 拉伸，min-height 保底防塌陷；标题独立 r3 */
+        .resume-portrait {
+            grid-area: portrait;
+            align-self: stretch;
+            min-height: clamp(360px, 34vw, 640px);
+        }
+        .resume-title { grid-area: title; }
+
+        .resume-card {
+            display: flex;
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .resume-card-col {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .resume-card-col-langs {
+            border-left: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .resume-card-title {
+            margin: 0;
+            padding: 26px 22px 6px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text);
+        }
+
+        .resume-intro {
+            margin: 0;
+            position: relative;
+            border-radius: 18px;
+            background:
+                radial-gradient(120% 90% at 20% 10%, rgba(255, 107, 25, .10), transparent 55%),
+                linear-gradient(150deg, #191919, #0c0c0c);
+            border: 1px solid rgba(255, 255, 255, .10);
+            padding: clamp(22px, 2.6vw, 34px);
+            display: flex;
+            align-items: center;
+        }
+
+        .resume-intro p {
+            margin: 0;
+            font-size: clamp(19px, 1.55vw, 25px);
+            line-height: 2.0;
+            color: var(--text-muted);
+            text-align: justify;
+        }
+
+        .resume-card-meta {
+            list-style: none;
+            margin: 0;
+            padding: 10px 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .resume-card-meta li {
+            display: flex;
+            gap: 10px;
+            font-size: 18.5px;
+            line-height: 1.5;
+        }
+
+        .resume-card-meta span {
+            color: var(--text);
+            font-weight: 500;
+            flex: 0 0 auto;
+        }
+
+        .resume-card-meta b {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .resume-card-sub {
+            margin: 0;
+            padding: 26px 22px 6px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text);
+        }
+
+        .resume-card-langs {
+            padding: 10px 22px 24px;
+        }
+
+        .resume-card-langs .resume-lang:last-child { margin-bottom: 0; }
+
+        .resume-group { margin-top: 26px; }
+
+        .resume-group h4 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        .resume-skillrow {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 18px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .resume-tiles { display: flex; gap: 9px; }
+
+        .resume-tile {
+            width: 48px;
+            height: 48px;
+            border-radius: 11px;
+            background: #f5f5f5;
+            color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
+
+        .resume-skillrow p {
+            margin: 0;
+            font-size: 18.5px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .resume-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+
+        .resume-tag {
+            font-size: 17px;
+            letter-spacing: 1px;
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 999px;
+            padding: 10px 20px;
+            transition: var(--transition-fast);
+        }
+
+        .resume-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .resume-lang {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: baseline;
+            margin-bottom: 16px;
+            font-size: 18.5px;
+        }
+
+        .resume-lang b { font-weight: 500; color: var(--text); }
+
+        .resume-lang .val { color: var(--text-muted); letter-spacing: 2px; }
+
+        .resume-title {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(22px, 2.8vw, 46px);
+            flex-wrap: nowrap;
+            text-align: center;
+        }
+
+        .resume-title .cn {
+            font-size: clamp(24px, 3.2vw, 50px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        /* 星形图标随文字等比缩放；display:block 去除行内基线偏移，保证与文字几何居中 */
+        .resume-title .star {
+            width: clamp(22px, 2.2vw, 38px);
+            height: clamp(22px, 2.2vw, 38px);
+            fill: var(--text);
+            flex: 0 0 auto;
+            display: block;
+            align-self: center;
+        }
+
+        .resume-title .en {
+            font-size: clamp(24px, 3.2vw, 50px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        /* 窄屏回退：允许换行，避免单行过宽溢出容器 */
+        @media (max-width: 720px) {
+            .resume-title { flex-wrap: wrap; gap: clamp(14px, 4vw, 26px); }
+            .resume-title .cn,
+            .resume-title .en { white-space: normal; }
+        }
+
+        .resume-portrait {
+            position: relative;
+            margin: 0;
+            border-radius: 34px;
+            overflow: hidden;
+            background: #8f8f8f;
+        }
+
+        .resume-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 10% 18%;
+            filter: grayscale(100%) contrast(1.06);
+        }
+
+        .resume-notch {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 62px;
+            height: 62px;
+            background: var(--bg);
+            border-bottom-left-radius: 34px;
+        }
+
+        .resume-spark {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            fill: var(--text);
+            z-index: 2;
+        }
+
+        .resume-bottom {
+            display: grid;
+            grid-template-columns: minmax(340px, 7fr) minmax(320px, 6fr) minmax(280px, 5fr);
+            gap: clamp(20px, 2.4vw, 36px);
+            margin-top: clamp(30px, 3.4vw, 46px);
+            align-items: start;
+        }
+
+        .resume-services {
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            background: #161616;
+            border-radius: 16px;
+            padding: clamp(22px, 2.2vw, 30px);
+        }
+
+        .resume-services h5 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 0 18px;
+        }
+
+        .resume-services ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .resume-services li {
+            font-size: 18.5px;
+            line-height: 1.7;
+            color: var(--text-muted);
+            padding: 16px 0 16px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            position: relative;
+        }
+
+        .resume-services li::before {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 26px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .resume-services li:last-child { border-bottom: 0; }
+
+        .resume-narrative {
+            background: #161616;
+            border-radius: 16px;
+            padding: clamp(22px, 2.6vw, 34px);
+        }
+
+        .resume-narrative h5 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 0 12px;
+        }
+
+        .resume-narrative h5 + p { margin-top: 0; }
+
+        .resume-narrative p {
+            font-size: 18.5px;
+            line-height: 1.95;
+            color: var(--text-muted);
+            margin: 0 0 26px;
+        }
+
+        .resume-narrative p:last-child { margin-bottom: 0; }
+
+        .resume-timeline {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0 6px 4px;
+        }
+
+        .tl-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 132px;
+            gap: clamp(14px, 2vw, 26px);
+            padding: 0 0 44px 28px;
+        }
+
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 7px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text);
+        }
+
+        .tl-item::after {
+            content: '';
+            position: absolute;
+            left: 4.5px;
+            top: 25px;
+            bottom: -4px;
+            width: 1px;
+            background: rgba(255, 255, 255, .5);
+        }
+
+        .tl-item:last-child { padding-bottom: 6px; }
+        .tl-item:last-child::after { display: none; }
+
+        .tl-main h4 {
+            font-size: 21px;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .tl-main p {
+            font-size: 18.5px;
+            line-height: 1.85;
+            color: var(--text-muted);
+            margin: 0 0 7px;
+        }
+
+        .tl-main .role { color: var(--text); }
+
+        .tl-date {
+            border-left: 1px solid rgba(255, 255, 255, .22);
+            padding-left: clamp(12px, 1.6vw, 20px);
+            font-size: 18.5px;
+            color: var(--text-muted);
+            letter-spacing: .5px;
+            align-self: start;
+            padding-top: 2px;
+        }
+
+        @media (max-width: 1280px) {
+            .resume-top {
+                grid-template-columns: minmax(260px, 4.5fr) minmax(340px, 6.5fr);
+                grid-template-areas:
+                    "left portrait"
+                    "left portrait"
+                    "mid   mid"
+                    "title title";
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .resume { grid-template-columns: 1fr; }
+            .resume-rail {
+                min-height: 46px;
+                flex-direction: row;
+            }
+            .resume-rail span {
+                writing-mode: horizontal-tb;
+                letter-spacing: 3px;
+            }
+            .resume-rail::before { left: 12px; top: 50%; transform: translateY(-50%); }
+            .resume-rail::after { left: auto; right: 12px; top: 50%; transform: translateY(-50%); }
+            .resume-top {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "left"
+                    "portrait"
+                    "title"
+                    "mid";
+            }
+            .resume-portrait { aspect-ratio: 4/3; min-height: 0; align-self: start; }
+            .resume-bottom { grid-template-columns: 1fr 1fr; }
+            .resume-services { grid-column: 1 / -1; order: 3; }
+        }
+
+        @media (max-width: 768px) {
+            .resume-bottom { grid-template-columns: 1fr; }
+            .resume-services { order: 0; }
+            .resume-card { flex-direction: column; }
+            .resume-card-col-langs {
+                border-left: 0;
+                border-top: 1px solid rgba(255, 255, 255, .1);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .resume-title { flex-wrap: wrap; }
+            .resume-title .cn,
+            .resume-title .en { white-space: normal; }
+            .resume-lang { grid-template-columns: 108px 1fr; }
+            .tl-item { grid-template-columns: 1fr; }
+            .tl-date {
+                border-left: 0;
+                padding-left: 0;
+                padding-top: 8px;
+            }
+            .about-stats {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
+
+        /* Contact Section */
+        .contact-section {
+            text-align: center;
+            padding: 200px 48px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-size: clamp(34px, 5vw, 58px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+        }
+
+        .contact-desc {
+            font-size: 20px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 28px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            transition: var(--transition-fast);
+            cursor: pointer;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .contact-link:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 48px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            font-size: 17px;
+            color: var(--text-dim);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 15px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+        .footer-heart-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 107, 25, 0.15);
+            border: 1px solid rgba(255, 107, 25, 0.3);
+            border-radius: 10px;
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+            margin: 0 2px;
+        }
+
+        .footer-heart-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            transform: scale(1.15) translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255, 107, 25, 0.4);
+        }
+
+        .footer-heart-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--line);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scaleY(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleY(1.2);
+            }
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .work-item {
+                grid-template-columns: 1fr;
+            }
+            .work-item:nth-child(even) {
+                direction: ltr;
+            }
+            .work-image {
+                height: 50vh;
+                min-height: 400px;
+                order: -1;
+            }
+            .work-content {
+                padding: 48px 32px;
+            }
+            .about-section {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 20px 24px;
+            }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg);
+                flex-direction: column;
+                padding: 100px 40px 40px;
+                transition: right 0.4s ease;
+                gap: 32px;
+                border-left: 1px solid var(--line);
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .hero {
+                padding: 120px 24px 60px;
+            }
+            .section {
+                padding: 80px 24px;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .work-content {
+                padding: 40px 24px;
+            }
+            .about-stats {
+                gap: 16px;
+            }
+            .about-stat-number {
+                font-size: 30px;
+            }
+            .contact-section {
+                padding: 120px 24px;
+            }
+            .footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 32px 24px;
+                justify-content: center;
+            }
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 32px 24px;
+            }
+        }
+
+
+        /* Hero Showcase Icons */
+        .hero-showcase {
+            margin-top: 48px;
+            animation: fadeInUp 0.8s ease 1.0s forwards;
+            opacity: 0;
+        }
+
+        .showcase-skills {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .skill-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-group:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .skill-group:hover .skill-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .skill-group:hover .skill-name {
+            color: white;
+        }
+
+        .skill-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .skill-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .skill-name {
+            font-size: 21px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .showcase-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .showcase-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .showcase-item:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .showcase-item:hover .showcase-label {
+            color: white;
+        }
+
+        .showcase-label {
+            font-size: 22px;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Particles Canvas */
+        .particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: all;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Guide Section */
+        .guide-section {
+            text-align: center;
+            padding: 160px 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guide-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 107, 25, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .guide-label {
+            font-size: 16px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .guide-title {
+            font-size: clamp(38px, 6vw, 66px);
+            font-weight: 900;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .guide-desc {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
+        }
+
+        .guide-works {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin: 60px auto 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .guide-work-item {
+            position: relative;
+            aspect-ratio: 3/4;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.4s ease;
+            background: var(--bg-elevated);
+        }
+
+        .guide-work-item:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        .guide-work-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .guide-work-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .guide-work-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            z-index: 2;
+        }
+
+        .guide-work-arrow {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .guide-work-arrow svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+
+        .guide-work-item:hover .guide-work-arrow {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 1024px) {
+            .guide-works {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .guide-section {
+                padding: 100px 24px;
+            }
+            .guide-works {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .guide-work-title {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+
+        /* Social Links in Contact */
+        .social-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--bg-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .social-link:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(255, 107, 25, 0.3);
+        }
+
+        .social-link svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .social-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            background: rgba(255, 107, 25, 0.95);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+            margin-top: 8px;
+        }
+
+        .social-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: rgba(255, 107, 25, 0.95);
+        }
+
+        .social-link:hover .social-tooltip {
+            opacity: 1;
+            transform: translate(-50%, 12px);
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">PORTFOLIO</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#guide">作品</a></li>
+            <li><a href="#about">关于</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+        <div class="nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <canvas class="particles-canvas" id="particles-canvas"></canvas>
+        <div class="hero-portfolio">Portfolio</div>
+        <div class="hero-row">
+        <div class="hero-content">
+            <div class="hero-label"><span class="gradient-text">Zhang JH</span> · Portfolio</div>
+            <h1 class="hero-title">
+                数字艺术<br>
+                <span>与视觉设计</span>
+            </h1>
+            <div class="hero-showcase">
+                <div class="showcase-row">
+                    <div class="showcase-item">
+                        <div class="skill-icon"><img src="./images/反转/清华五道口.png" alt=""></div>
+                        <span class="showcase-label">清华五道口</span>
+                    </div>
+                    <div class="showcase-item">
+                        <div class="skill-icon"><img src="./images/反转/大唐集团.png" alt=""></div>
+                        <span class="showcase-label">大唐集团</span>
+                    </div>
+                    <div class="showcase-item">
+                        <div class="skill-icon"><img src="./images/反转/中证金融.png" alt=""></div>
+                        <span class="showcase-label">中证金融</span>
+                    </div>
+                    <div class="showcase-item">
+                        <div class="skill-icon"><img src="./images/反转/清华长庚.png" alt=""></div>
+                        <span class="showcase-label">清华长庚</span>
+                    </div>
+                    <div class="showcase-item">
+                        <div class="skill-icon"><img src="./images/反转/qy.png" alt=""></div>
+                        <span class="showcase-label">启元实验室</span>
+                    </div>
+                </div>
+                <div class="showcase-skills">
+                    <div class="skill-group">
+                        <div class="skill-icon">AI</div>
+                        <span class="skill-name">AIGC工作流</span>
+                    </div>
+                    <div class="skill-group">
+                        <div class="skill-icon"><img src="./images/反转/LORA.png" alt=""></div>
+                        <span class="skill-name">LORA训练</span>
+                    </div>
+                    <div class="skill-group">
+                        <div class="skill-icon"><img src="./images/反转/UI.png" alt=""></div>
+                        <span class="skill-name">ComfyUI</span>
+                    </div>
+                    <div class="skill-group">
+                        <div class="skill-icon">3D</div>
+                        <span class="skill-name">建模渲染 SU 3DMAX</span>
+                    </div>
+                    <div class="skill-group">
+                        <div class="skill-icon">PS</div>
+                        <span class="skill-name">Adobe家族 PS CAD PR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <img src="./images/鹦鹉封面.jpg" alt="鹦鹉封面视觉图" onerror="this.parentNode.style.display='none'">
+        </div>
+        </div>
+        <div class="hero-scroll">
+            <div class="hero-scroll-line"></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Services -->
+    <section class="guide-section" id="guide">
+        <div class="guide-label">Professional Skills</div>
+        <h2 class="guide-title">专业技能</h2>
+        <p class="guide-desc">AIGC视频、精装设计、施工图设计、美学、绘画、壁画、AI效果图、AI视频效果图等</p>
+        </div>
+        <div class="services-grid reveal">
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="service-title">AIGC 工作流</div>
+                <div class="service-desc">工业级 ComfyUI 深度定制，大模型本地化部署，从概念到成片的全流程创作。</div>
+            </div>
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                </div>
+                <div class="service-title">LoRA 训练</div>
+                <div class="service-desc">针对特定美学进行 LoRA 训练与画风微调，稳定输出商业级视觉内容。</div>
+            </div>
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                </div>
+                <div class="service-title">精装设计</div>
+                <div class="service-desc">建筑室内精装全流程设计，从方案构思到施工图落地，把控每一个细节。</div>
+            </div>
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div class="service-title">影视化创作</div>
+                <div class="service-desc">AI 短剧从 0 到 1 主导能力，视觉叙事与动态影像的专业创作。</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Guide Section -->
+    <section class="guide-section" id="guide">
+        <div class="guide-label">Portfolio</div>
+        <h2 class="guide-title">项目介绍</h2>
+        <p class="guide-desc">主要划分为AIGC效果展示、LORA定制效果展示、影视类效果展示</p>
+        <div class="guide-works">
+            <div class="guide-work-item" onclick="window.location.href='interior-design.html'">
+                <img src="./images/清华/宿舍学习交流空间（阅读区）.jpg" alt="室内设计完成项目展示">
+                <div class="guide-work-title">室内设计完成项目展示</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+            <div class="guide-work-item" onclick="window.location.href='parallax-portfolio.html'">
+                <img src="./images/影视/1.jpg" alt="AIGC效果展示展示">
+                <div class="guide-work-title">AIGC效果展示</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+            <div class="guide-work-item" onclick="document.getElementById('works').scrollIntoView({behavior:'smooth'})">
+                <img src="./images/影视/1024.jpg" alt="风格化LORA定制效果展示">
+                <div class="guide-work-title">风格化LORA定制效果展示</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+            <div class="guide-work-item" onclick="document.getElementById('works').scrollIntoView({behavior:'smooth'})">
+                <img src="./images/影视/3.jpg" alt="控制类LORA定制效果展示">
+                <div class="guide-work-title">控制类LORA定制效果展示</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+            <div class="guide-work-item" onclick="window.location.href='sketch-portfolio.html'">
+                <img src="./images/影视/2.jpg" alt="手绘、原画项目展示">
+                <div class="guide-work-title">手绘、原画项目展示</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+            <div class="guide-work-item" onclick="document.getElementById('works').scrollIntoView({behavior:'smooth'})">
+                <img src="./images/影视/4.png" alt="摄影、模型、舞台剧等">
+                <div class="guide-work-title">摄影、舞台剧等</div>
+                <div class="guide-work-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- About / 个人简历 -->
+    <section class="section" id="about">
+        <div class="resume">
+            <div class="resume-rail" aria-hidden="true"><span>张珺涵个人简历</span></div>
+
+            <div class="resume-main">
+                <div class="resume-top">
+                    <div class="resume-left">
+                    <div class="resume-card reveal">
+                        <div class="resume-card-col">
+                            <h4 class="resume-card-title">基本信息</h4>
+                            <ul class="resume-card-meta">
+                                <li><span>姓名</span><b>张珺涵</b></li>
+                                <li><span>年龄</span><b>待填写</b></li>
+                                <li><span>身份</span><b>AIGC 视觉创作者</b></li>
+                                <li><span>背景</span><b>环艺 / 室内设计</b></li>
+                                <li><span>方向</span><b>影视化创作</b></li>
+                            </ul>
+                        </div>
+                        <div class="resume-card-col resume-card-col-langs">
+                            <h4 class="resume-card-sub">语言能力</h4>
+                            <div class="resume-card-langs">
+                                <div class="resume-lang"><b>中文（普通话）</b><span class="val">待填写</span></div>
+                                <div class="resume-lang"><b>英语</b><span class="val">待填写</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resume-intro reveal">
+                        <p>环艺科班出身，3年一线建筑精装设计经验，现深耕 AIGC 视觉与影视化创作。精通工业级 ComfyUI 工作流定制、大模型本地化部署与 LoRA 训练，从 0 到 1 主导高品质 AI 效果与视频创作。擅长针对特定美学进行LoRA训练与画风微调，通过传统设计逻辑与AI工具的深度融合，稳定输出商业级的视觉内容。</p>
+                    </div>
+                    </div>
+
+                    <div class="resume-mid">
+                    <div class="resume-group resume-group-skills reveal">
+                        <h4>专业技能</h4>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">CF</span>
+                                <span class="resume-tile">AI</span>
+                                <span class="resume-tile">LoRA</span>
+                            </div>
+                            <p>ComfyUI · AIGC 工作流定制与 LoRA 模型训练</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">SU</span>
+                                <span class="resume-tile">3D</span>
+                            </div>
+                            <p>建模渲染 Sketch Up / 3DMAX</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">PS</span>
+                                <span class="resume-tile">PR</span>
+                            </div>
+                            <p>Adobe 家族 Photoshop / Premiere</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">CAD</span>
+                            </div>
+                            <p>AutoCAD 方案设计与施工图绘制</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">MJ</span>
+                                <span class="resume-tile">SD</span>
+                            </div>
+                            <p>Midjourney / Stable Diffusion 概念图产出</p>
+                        </div>
+                    </div>
+
+
+                    <div class="resume-group resume-group-tags reveal">
+                        <h4>创作方向</h4>
+                        <div class="resume-tags">
+                            <span class="resume-tag">AI 短剧</span>
+                            <span class="resume-tag">概念设计</span>
+                            <span class="resume-tag">风格化视觉</span>
+                            <span class="resume-tag">空间叙事</span>
+                            <span class="resume-tag">游戏美术</span>
+                            <span class="resume-tag">品牌视觉</span>
+                            <span class="resume-tag">室内空间设计</span>
+                            <span class="resume-tag">全流程设计</span>
+                            <span class="resume-tag">施工图设计</span>
+                        </div>
+                    </div>
+                    </div>
+
+                    <figure class="resume-portrait reveal">
+                            <img src="./images/zjh-gray.jpg" alt="张珺涵个人肖像" onerror="this.style.display='none'">
+                            <span class="resume-notch" aria-hidden="true"></span>
+                            <svg class="resume-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.8 9.2L24 12l-9.2 2.8L12 24l-2.8-9.2L0 12l9.2-2.8z"/></svg>
+                        </figure>
+
+                        <h3 class="resume-title reveal">
+                            <span class="cn">张珺涵个人简历</span>
+                            <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.8 9.2L24 12l-9.2 2.8L12 24l-2.8-9.2L0 12l9.2-2.8z"/></svg>
+                            <span class="en">用设计讲述空间的故事</span>
+                        </h3>
+                </div>
+
+                <div class="resume-bottom">
+                    <div class="resume-narrative reveal">
+                        <h5>AIGC 多领域技术实力</h5>
+                        <p>工业级 ComfyUI 工作流定制、大模型本地化部署与 LoRA 训练，从 0 到 1 独立主导高品质 AI 效果与视频创作。擅长针对特定美学进行 LoRA 训练与画风微调，稳定输出商业级视觉内容。</p>
+                        <h5>建筑精装全流程设计</h5>
+                        <p>建筑室内精装全流程设计，从方案构思到施工图落地，把控每一个细节。三年一线建筑精装设计经验，环艺科班出身的扎实空间功底。</p>
+                        <h5>用设计讲述空间的故事</h5>
+                        <p>我相信好的设计不仅仅是视觉上的愉悦，更是解决问题、传递价值的有效工具。从品牌需求到方案构思，我致力于在每个项目中寻找美学与功能的完美平衡点。</p>
+                        <h5>协作与交付方式</h5>
+                        <p>习惯以模块化工作流组织生产：需求拆解、风格对齐、批量产出、分级审核，保证跨项目风格统一与交付节奏可控。可承接从前期概念到成片交付的全链路委托，也支持按环节嵌入式协作。</p>
+                    </div>
+
+                    <ol class="resume-timeline reveal">
+                        <li class="tl-item">
+                            <div class="tl-main">
+                                <h4>工作经历待填写</h4>
+                                <p class="role">职位：待填写</p>
+                                <p>工作内容：待填写</p>
+                            </div>
+                            <div class="tl-date">时间段待填写</div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-main">
+                                <h4>工作经历待填写</h4>
+                                <p class="role">职位：待填写</p>
+                                <p>工作内容：待填写</p>
+                            </div>
+                            <div class="tl-date">时间段待填写</div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-main">
+                                <h4>教育经历待填写</h4>
+                                <p class="role">专业：待填写</p>
+                            </div>
+                            <div class="tl-date">时间段待填写</div>
+                        </li>
+                        <li class="tl-item">
+                            <div class="tl-main">
+                                <h4>项目经历待填写</h4>
+                                <p class="role">角色：待填写</p>
+                                <p>项目说明：待填写</p>
+                            </div>
+                            <div class="tl-date">时间段待填写</div>
+                        </li>
+                    </ol>
+
+                    <div class="resume-services reveal">
+                        <h5>服务范围</h5>
+                        <ul>
+                            <li>AIGC 效果图与商业视觉定制</li>
+                            <li>AI 短剧与影视化内容创作</li>
+                            <li>LoRA 模型训练与画风微调</li>
+                            <li>室内精装方案与施工图设计</li>
+                            <li>三维建模与渲染表现</li>
+                            <li>品牌视觉与多媒体物料输出</li>
+                            <li>工作流搭建与团队技术赋能</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-stats reveal">
+                        <div>
+                            <div class="about-stat-number">20+</div>
+                            <div class="about-stat-label">完成项目</div>
+                        </div>
+                        <div>
+                            <div class="about-stat-number">50+</div>
+                            <div class="about-stat-label">合作客户</div>
+                        </div>
+                        <div>
+                            <div class="about-stat-number">3</div>
+                            <div class="about-stat-label">年设计经验</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Contact -->
+    <section class="contact-section" id="contact">
+        <div class="reveal">
+            <div class="section-label">Contact</div>
+            <h2 class="contact-title">一起创造<br>精彩作品</h2>
+            <p class="contact-desc">有项目想法或合作意向？请随时与我联系，让我们一起把创意变成现实。</p>
+            <div class="social-links">
+                <a href="#" class="social-link" data-copy="HiQualityMut" onclick="copyToClipboard(event, this.dataset.copy)">
+                    <span class="social-tooltip">微信号: HiQualityMut</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.365 4.164 6.218 4.164.779 0 1.56-.123 2.326-.363a.72.72 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89a.506.506 0 0 0-.006-.026zM14.18 12.72c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" data-copy="13331028675" onclick="copyToClipboard(event, this.dataset.copy)">
+                    <span class="social-tooltip">点击复制电话: 133-3102-8675</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" data-copy="1352205906" onclick="copyToClipboard(event, this.dataset.copy)">
+                    <span class="social-tooltip">QQ号: 1352205906</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.003 2c-2.265 0-6.29 1.364-6.29 7.325v1.195S3.55 14.96 3.55 17.474c0 .665.17 1.025.281 1.025.114 0 .902-.484 1.748-2.072 0 0-.18 2.197 1.904 3.967 0 0-1.77.495-1.77 1.182 0 .686 4.078.43 6.29.43 2.212 0 6.29.257 6.29-.43 0-.687-1.768-1.182-1.768-1.182 2.085-1.77 1.904-3.967 1.904-3.967.845 1.588 1.634 2.072 1.746 2.072.111 0 .283-.36.283-1.025 0-2.514-2.164-6.954-2.164-6.954V9.325C18.29 3.364 14.268 2 12.003 2z"/>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" data-copy="1352205906@qq.com" onclick="copyToClipboard(event, this.dataset.copy)">
+                    <span class="social-tooltip">点击复制邮箱: 1352205906@qq.com</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="copy-toast" id="copyToast">已复制到剪贴板</div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-text"> 2026 Portfolio. 用 <a href="heart.html" class="footer-heart-btn" title="点击查看更多信息">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </a> 和 ☕ 制作</div>
+    </footer>
+
+    <script>
+        // Nav scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Scroll reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+
+
+        // Particle System + Draggable Icons
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let draggableIcons = [];
+        let animationId;
+        let draggedIcon = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+            updateHeroVisualRect();
+        }
+
+        /* ===== 首屏图片避让区 =====
+           画布层级在图片之后，圆形图标一旦漂到图片所在的矩形内，
+           视觉上就会「钻进图片后面」。这里按图片的实际渲染位置算出
+           避让矩形，图标进入即被推出到最近的一侧之外。
+           pad 需覆盖图片自身的上下悬浮动画位移。 */
+        const heroVisualEl = document.querySelector('.hero-visual');
+        let heroVisualRect = null;
+
+        function updateHeroVisualRect() {
+            if (!heroVisualEl) { heroVisualRect = null; return; }
+            const cRect = canvas.getBoundingClientRect();
+            const vRect = heroVisualEl.getBoundingClientRect();
+            if (!vRect.width || !vRect.height) { heroVisualRect = null; return; }
+            const pad = 28;
+            heroVisualRect = {
+                left:   vRect.left   - cRect.left - pad,
+                top:    vRect.top    - cRect.top  - pad,
+                right:  vRect.right  - cRect.left + pad,
+                bottom: vRect.bottom - cRect.top  + pad
+            };
+        }
+
+        function avoidHeroVisual(icon) {
+            if (!heroVisualRect) return;
+            const r = heroVisualRect;
+            const m = icon.size + 8;
+            const inside = icon.x + m > r.left && icon.x - m < r.right &&
+                           icon.y + m > r.top  && icon.y - m < r.bottom;
+            if (!inside) return;
+
+            // 图标自身活动区（与 update() 的边界一致）：x∈[zoneLeft+mx, W-mx], y∈[my, H-my]
+            const W = canvas.width, H = canvas.height;
+            const zoneLeft = W * 0.50;
+            const mx = icon.size + 20, my = icon.size + 20;
+            const sp = icon.baseSpeed || 0.15;
+
+            // 四条边的逃逸落点，及「落点仍在活动区内」的可行性判定
+            const esc = [
+                { d: (icon.x + m) - r.left,        dir: 'L', ok: (r.left - m) >= zoneLeft + mx, apply: () => { icon.x = r.left - m;   icon.floatSpeedX = -Math.abs(icon.floatSpeedX || sp); } },
+                { d: r.right - (icon.x - m),       dir: 'R', ok: (r.right + m) <= W - mx,       apply: () => { icon.x = r.right + m;  icon.floatSpeedX =  Math.abs(icon.floatSpeedX || sp); } },
+                { d: (icon.y + m) - r.top,         dir: 'T', ok: (r.top - m) >= my,             apply: () => { icon.y = r.top - m;    icon.floatSpeedY = -Math.abs(icon.floatSpeedY || sp); } },
+                { d: r.bottom - (icon.y - m),      dir: 'B', ok: (r.bottom + m) <= H - my,      apply: () => { icon.y = r.bottom + m; icon.floatSpeedY =  Math.abs(icon.floatSpeedY || sp); } }
+            ];
+            // 优先在「可行且最近」的方向逃逸；全不可行时退而求其次取最近方向
+            const feasible = esc.filter(e => e.ok);
+            const pool = feasible.length ? feasible : esc;
+            pool.sort((a, b) => a.d - b.d)[0].apply();
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        class DraggableIcon {
+            constructor(config, index) {
+                this.id = index;
+                this.size = config.size || 32;
+                this.color = config.color || 'rgb(255, 107, 25)';
+                this.glowColor = config.glowColor || 'rgba(255, 107, 25, 0.8)';
+                this.imgSrc = config.imgSrc || '';
+                this.title = config.title || '';
+                this.description = config.description || '';
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                this.isDragging = false;
+                this.hovered = false;
+                this.glowIntensity = 0;
+                this.imgLoaded = false;
+                this.imgElement = null;
+                this.floatSpeedX = 0;
+                this.floatSpeedY = 0;
+                this.baseSpeed = 0.15;
+
+                const zoneLeft = canvas.width * 0.50;
+                const zoneRight = canvas.width;
+                const margin = 60;
+                const presetPositions = [
+                    { zone: 'right-top',    xRange: [zoneLeft + margin, zoneRight - margin], yRange: [margin, canvas.height * 0.45] },
+                    { zone: 'right-mid',    xRange: [zoneLeft + margin, zoneRight - margin], yRange: [canvas.height * 0.25, canvas.height * 0.75] },
+                    { zone: 'right-bottom', xRange: [zoneLeft + margin, zoneRight - margin], yRange: [canvas.height * 0.55, canvas.height - 120] },
+                    { zone: 'right-top2',   xRange: [zoneLeft + margin, zoneRight - margin], yRange: [margin, canvas.height * 0.45] },
+                    { zone: 'right-mid2',   xRange: [zoneLeft + margin, zoneRight - margin], yRange: [canvas.height * 0.25, canvas.height * 0.75] },
+                ];
+                const pos = presetPositions[index % presetPositions.length];
+                this.x = pos.xRange[0] + Math.random() * (pos.xRange[1] - pos.xRange[0]);
+                this.y = pos.yRange[0] + Math.random() * (pos.yRange[1] - pos.yRange[0]);
+
+                const angle = Math.random() * Math.PI * 2;
+                this.floatSpeedX = Math.cos(angle) * this.baseSpeed;
+                this.floatSpeedY = Math.sin(angle) * this.baseSpeed;
+
+                if (this.imgSrc) {
+                    this.imgElement = new Image();
+                    this.imgElement.onload = () => { this.imgLoaded = true; };
+                    this.imgElement.src = this.imgSrc;
+                }
+            }
+
+            update() {
+                if (!this.isDragging && !this.hovered) {
+                    this.pulsePhase += 0.02;
+                    this.x += this.floatSpeedX;
+                    this.y += this.floatSpeedY;
+                    const marginY = this.size + 20;
+                    if (this.y < marginY || this.y > canvas.height - marginY) {
+                        this.floatSpeedY *= -1;
+                        this.y = Math.max(marginY, Math.min(canvas.height - marginY, this.y));
+                    }
+                    const zoneLeft = canvas.width * 0.50;
+                    const zoneRight = canvas.width;
+                    const marginX = this.size + 20;
+                    if (this.x < zoneLeft + marginX) {
+                        this.floatSpeedX = Math.abs(this.floatSpeedX) + 0.2;
+                        this.x = zoneLeft + marginX;
+                    } else if (this.x > zoneRight - marginX) {
+                        this.floatSpeedX = -Math.abs(this.floatSpeedX) - 0.2;
+                        this.x = zoneRight - marginX;
+                    }
+                    const currentSpeed = Math.sqrt(this.floatSpeedX * this.floatSpeedX + this.floatSpeedY * this.floatSpeedY);
+                    if (currentSpeed > 0) {
+                        this.floatSpeedX = (this.floatSpeedX / currentSpeed) * this.baseSpeed;
+                        this.floatSpeedY = (this.floatSpeedY / currentSpeed) * this.baseSpeed;
+                    }
+                    // Icon collision avoidance - prevent overlapping
+                    for (const other of draggableIcons) {
+                        if (other !== this && !other.isDragging && !other.hovered) {
+                            const dx = this.x - other.x;
+                            const dy = this.y - other.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            const minDist = this.size + other.size + 10; // 10px padding
+                            if (dist < minDist && dist > 0) {
+                                const pushX = dx / dist;
+                                const pushY = dy / dist;
+                                const force = (minDist - dist) * 0.05;
+                                this.floatSpeedX += pushX * force;
+                                this.floatSpeedY += pushY * force;
+                            }
+                        }
+                    }
+                    // 避让首屏图片：图标不得漂入图片矩形（画布在图后，进入即像「钻到图里」）
+                    avoidHeroVisual(this);
+                }
+            }
+
+            draw() {
+                const pulse = Math.sin(this.pulsePhase) * 0.08 + 1;
+                const currentSize = this.size * (this.isDragging ? 1.2 : this.hovered ? 1.15 : 1) * pulse;
+                const glowIntensity = this.isDragging ? 50 : this.hovered ? 40 : 18;
+                const glowColor = this.hovered ? this.glowColor.replace('0.8', '1.0') : this.glowColor;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                // Soft scattered glow when hovered - radial gradient
+                if (this.hovered || this.isDragging) {
+                    const glowRadius = currentSize * 4;
+                    const gradient = ctx.createRadialGradient(0, 0, currentSize, 0, 0, glowRadius);
+                    const glowBase = this.glowColor.replace(/[\d.]+\)$/, '');
+                    gradient.addColorStop(0, glowBase + '0.4)');
+                    gradient.addColorStop(0.3, glowBase + '0.15)');
+                    gradient.addColorStop(0.6, glowBase + '0.05)');
+                    gradient.addColorStop(1, glowBase + '0)');
+                    ctx.beginPath();
+                    ctx.arc(0, 0, glowRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                    // Soft center glow
+                    const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, currentSize * 2);
+                    centerGrad.addColorStop(0, glowBase + '0.6)');
+                    centerGrad.addColorStop(0.5, glowBase + '0.1)');
+                    centerGrad.addColorStop(1, glowBase + '0)');
+                    ctx.beginPath();
+                    ctx.arc(0, 0, currentSize * 2, 0, Math.PI * 2);
+                    ctx.fillStyle = centerGrad;
+                    ctx.fill();
+                }
+                ctx.shadowColor = this.glowColor;
+                ctx.shadowBlur = glowIntensity;
+                ctx.beginPath();
+                ctx.arc(0, 0, currentSize + 2, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(0, 0, currentSize, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(20, 20, 20, 0.6)';
+                ctx.fill();
+                if (this.imgLoaded && this.imgElement) {
+                    const imgSize = currentSize * 1.4;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(0, 0, currentSize, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(this.imgElement, -imgSize/2, -imgSize/2, imgSize, imgSize);
+                    ctx.restore();
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.font = `bold ${currentSize * 0.5 + 2}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.title.charAt(0), 0, 0);
+                }
+                ctx.restore();
+            }
+
+            contains(mx, my) {
+                const dx = mx - this.x;
+                const dy = my - this.y;
+                return Math.sqrt(dx * dx + dy * dy) <= this.size * 1.3;
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < 100; i++) {
+            particles.push(new Particle());
+        }
+
+        // Create draggable icons
+        const iconConfigs = [
+            { size: 36, color: 'rgb(255, 107, 25)', glowColor: 'rgba(255, 107, 25, 0.8)', imgSrc: './images/中证金融.png', title: '中证金融', description: '完整平面方案设计、AI效果方案设计、施工图设计、全流程设计' },
+            { size: 36, color: 'rgb(0, 200, 255)', glowColor: 'rgba(0, 200, 255, 0.8)', imgSrc: './images/qy.png', title: '启元实验室项目', description: '完整平面方案设计、AI效果方案设计' },
+            { size: 36, color: 'rgb(160, 0, 209)', glowColor: 'rgba(160, 0, 209, 0.8)', imgSrc: './images/大唐集团.png', title: '大唐集团', description: '完整平面方案设计、AI效果方案设计' },
+            { size: 36, color: 'rgb(255, 200, 50)', glowColor: 'rgba(255, 200, 50, 0.8)', imgSrc: './images/清华五道口.png', title: '清华五道口', description: '完整平面方案设计、AI效果方案设计、施工图设计、全流程设计' },
+            { size: 36, color: 'rgb(100, 255, 150)', glowColor: 'rgba(100, 255, 150, 0.8)', imgSrc: './images/清华长庚.png', title: '清华长庚', description: '完整平面方案设计、AI效果方案设计' },
+        ];
+
+        iconConfigs.forEach((config, i) => {
+            draggableIcons.push(new DraggableIcon(config, i));
+        });
+
+        // Tooltip
+        const tooltipEl = document.createElement('div');
+        tooltipEl.id = 'draggable-tooltip';
+        tooltipEl.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;background:rgba(255,107,25,0.95);color:white;padding:12px 20px;border-radius:12px;font-size:16px;font-weight:500;opacity:0;transition:opacity 0.3s ease;box-shadow:0 8px 32px rgba(0,0,0,0.3);backdrop-filter:blur(10px);white-space:nowrap;';
+        document.body.appendChild(tooltipEl);
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+            for (let i = draggableIcons.length - 1; i >= 0; i--) {
+                if (draggableIcons[i].contains(pos.x, pos.y)) {
+                    draggedIcon = draggableIcons[i];
+                    draggedIcon.isDragging = true;
+                    dragOffsetX = pos.x - draggedIcon.x;
+                    dragOffsetY = pos.y - draggedIcon.y;
+                    canvas.style.cursor = 'grabbing';
+                    break;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getMousePos(e);
+            let hovering = false;
+            for (let i = draggableIcons.length - 1; i >= 0; i--) {
+                if (draggableIcons[i].contains(pos.x, pos.y)) {
+                    draggableIcons[i].hovered = true;
+                    hovering = true;
+                    tooltipEl.style.opacity = '1';
+                    tooltipEl.innerHTML = `<strong>${draggableIcons[i].title}</strong><br><span style="font-size:14px;opacity:0.8">${draggableIcons[i].description}</span>`;
+                    tooltipEl.style.left = (e.clientX + 15) + 'px';
+                    tooltipEl.style.top = (e.clientY - 10) + 'px';
+                    canvas.style.cursor = 'grab';
+                } else {
+                    draggableIcons[i].hovered = false;
+                }
+            }
+            if (!hovering) {
+                tooltipEl.style.opacity = '0';
+                canvas.style.cursor = 'default';
+            }
+            if (draggedIcon) {
+                draggedIcon.x = pos.x - dragOffsetX;
+                draggedIcon.y = pos.y - dragOffsetY;
+                tooltipEl.style.opacity = '0';
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (draggedIcon) {
+                draggedIcon.isDragging = false;
+                draggedIcon = null;
+                canvas.style.cursor = 'default';
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            if (draggedIcon) {
+                draggedIcon.isDragging = false;
+                draggedIcon = null;
+            }
+            tooltipEl.style.opacity = '0';
+        });
+
+        let _hvTick = 0;
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 图片有上下悬浮动画会持续移动，定期（约每 10 帧）刷新避让矩形
+            if (_hvTick++ % 10 === 0) updateHeroVisualRect();
+            for (const p of particles) { p.update(); }
+            // Draw particles with icon glow effect
+            for (const p of particles) {
+                let maxGlow = 0;
+                for (const icon of draggableIcons) {
+                    const dx = p.x - icon.x;
+                    const dy = p.y - icon.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const glowRadius = icon.size * 5;
+                    if (dist < glowRadius) {
+                        const glow = (1 - dist / glowRadius) * 0.8;
+                        if (glow > maxGlow) maxGlow = glow;
+                    }
+                }
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * (1 + maxGlow * 2), 0, Math.PI * 2);
+                const alpha = Math.min(p.opacity + maxGlow, 1);
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                if (maxGlow > 0.3) {
+                    ctx.shadowColor = 'rgba(255, 200, 150, 0.6)';
+                    ctx.shadowBlur = 8 + maxGlow * 12;
+                }
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            for (const icon of draggableIcons) { icon.update(); icon.draw(); }
+            animationId = requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Update copyToClipboard to accept event
+        function copyToClipboard(event, text) {
+            if (event) event.preventDefault();
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        }
+
+        // ===== HERO TILT & PARALLAX =====
+        // 首屏跟随鼠标的 3D 倾斜 + 分层视差。
+        // 用 CSS 独立属性 translate 承载分层位移，避开 fadeInUp 动画占用的 transform。
+        (function () {
+            var hero = document.getElementById('home');
+            var content = document.querySelector('.hero-content');
+            if (!hero || !content) return;
+
+            // 触屏没有 hover，直接不初始化，避免空转动画循环耗电
+            if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            // 尊重系统「减少动态效果」偏好
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var MAX_TILT = 6;      // 最大倾斜角度（deg），保持克制不喧宾夺主
+            var EASE = 0.085;      // 插值系数，越小越顺滑
+            var STOP = 0.0008;     // 归位判定阈值，到位后停止循环
+
+            // 各层深度：x/y 为鼠标单位位移对应的像素量，z 为 translateZ 形成真实纵深
+            // 粒子画布反向位移（负值），制造背景在远处的错觉
+            var layers = [
+                { el: document.querySelector('.hero-portfolio'), x: 10,  y: 6,   z: 50 },
+                { el: document.querySelector('.hero-label'),    x: 6,   y: 4,   z: 30 },
+                { el: document.querySelector('.hero-title'),    x: 12,  y: 8,   z: 60 },
+                { el: document.querySelector('.hero-desc'),     x: 8,   y: 5,   z: 20 },
+                { el: document.querySelector('.hero-showcase'), x: 14,  y: 9,   z: 40 },
+                { el: document.getElementById('particles-canvas'), x: -18, y: -12, z: 0 },
+                { el: document.querySelector('.hero-visual'),   x: -12, y: -8,  z: 24 }
+            ].filter(function (l) { return !!l.el; });
+
+            var tx = 0, ty = 0;        // 目标位置（-1..1）
+            var cx = 0, cy = 0;        // 当前位置（插值后）
+            var running = false;
+            var inView = true;
+
+            function apply() {
+                content.style.setProperty('--tilt-x', (-cy * MAX_TILT).toFixed(3) + 'deg');
+                content.style.setProperty('--tilt-y', (cx * MAX_TILT).toFixed(3) + 'deg');
+                for (var i = 0; i < layers.length; i++) {
+                    var l = layers[i];
+                    l.el.style.translate =
+                        (cx * l.x).toFixed(2) + 'px ' +
+                        (cy * l.y).toFixed(2) + 'px ' + l.z + 'px';
+                }
+            }
+
+            function tick() {
+                cx += (tx - cx) * EASE;
+                cy += (ty - cy) * EASE;
+
+                // 已归位且无新目标：停掉循环，不空转
+                if (tx === 0 && ty === 0 && Math.abs(cx) < STOP && Math.abs(cy) < STOP) {
+                    cx = 0; cy = 0;
+                    if (inView) apply();
+                    running = false;
+                    return;
+                }
+                if (inView) apply();
+                requestAnimationFrame(tick);
+            }
+
+            function start() {
+                if (!running) { running = true; requestAnimationFrame(tick); }
+            }
+
+            hero.addEventListener('mousemove', function (e) {
+                var r = hero.getBoundingClientRect();
+                if (r.width < 1 || r.height < 1) return;
+                tx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+                ty = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
+                start();
+            });
+
+            // 移出首屏时平滑归位
+            hero.addEventListener('mouseleave', function () {
+                tx = 0; ty = 0;
+                start();
+            });
+
+            // 离开视口后暂停渲染，节省性能
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(function (entries) {
+                    inView = entries[0].isIntersecting;
+                    if (inView && running) apply();
+                }, { threshold: 0.01 }).observe(hero);
+            }
+
+            apply();
+        })();
+
+    </script>
+</body>
+</html>

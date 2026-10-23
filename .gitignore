@@ -1,0 +1,99 @@
+# ============================================================
+# 张珺涵作品集 — Git 忽略规则
+# 作用：确保只有「室内设计线 + AIGC 线」的可访问资源进入版本库
+# 注意：被忽略的文件仍完整保留在本地磁盘，只是不会上传到 GitHub
+# ============================================================
+
+# ---------- 1. 备份目录：绝对禁止提交 ----------
+# 用户明确要求 备份/ 为只读历史快照，任何情况下都不得进入版本库
+备份/
+
+# ---------- 2. 超过 GitHub 100MB 单文件硬限制 ----------
+# 原三个超限文件已随 2026-10-21 覆盖事故丢失，磁盘上不存在；
+# 规则保留以防后续同名素材再次放入时被误提交
+images/清华/清华展示视频.mp4
+images/中证金融/中证金融.mp4
+images/清华/20250312 继续教育学院室内空间方案设计.pptx
+
+# ---------- 3. 内部工具与日志，不属于站点内容 ----------
+# 每日备份脚本与运行日志（计划任务 PortfolioDailyBackup 每晚 20:00 调用）
+auto_backup.py
+backup_log.txt
+__pycache__/
+*.pyc
+# 旧条目 backup_script.py / 部署指南-GitHub-Pages.md 已随事故丢失，磁盘上不存在
+
+# ---------- 4. 未被任何页面引用的重复大图 ----------
+# 根目录的 archive-matter-v2.png 被 parallax-portfolio.html 引用，必须保留
+# 以下这些是无引用的副本
+archive-ember-v2.png
+voidframe-hero.png
+images/影视/archive-ember-v2.png
+images/影视/archive-matter-v2.png
+images/影视/voidframe-hero.png
+
+# ---------- 5. 未被任何页面引用的视频与音频素材 ----------
+images/清华/ComfyUI_*.mp4
+images/清华/MiniMax_*.mp4
+images/清华/ace_step*.mp3
+images/大唐/MiniMax_*.mp4
+images/中证金融/MiniMax_*.mp4
+images/中证金融/ace_step*.mp3
+
+# ---------- 6. 未被任何页面引用的素材目录 ----------
+# 2026-10-23 取消排除 images/手绘/ 与 images/原画/：
+#   二者被 sketch-portfolio.html 引用（板绘 24 张 + 手绘 9 张），
+#   且首页「手绘、原画项目展示」卡片有跳转入口，排除会导致线上满屏裂图
+images/清华/1/
+images/清华/8-14/
+
+# ---------- 7. 未被引用的设计汇报导出图（长文件名） ----------
+images/中证金融/20251107*.jpg
+images/清华/20250312*.jpg
+
+# ---------- 8. 未被引用的 PNG 副本 ----------
+# 页面统一引用 .jpg 版本，同名 .png 属于冗余
+images/中证金融/图片*.png
+
+# ---------- 9. 孤立页面：无任何入口链接指向 ----------
+# 暂不发布；若后续要启用，删除对应行即可
+# 2026-10-23 取消排除 sketch-portfolio.html：首页「手绘、原画项目展示」卡片
+#   已有 window.location.href 跳转入口，且该页已引用 原画/手绘/摄影 剧场 三个素材目录
+# 原 photography-stage.html、z.html、work-detail.html 已随 2026-10-21 覆盖事故丢失，
+#   磁盘上不存在，相应排除条目一并移除
+
+# ---------- 10. 系统与编辑器杂项 ----------
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+.vscode/
+.idea/
+
+# ---------- 11. 压缩时由 PNG 转 JPG 的原 PNG（本地保留，不进仓库） ----------
+archive-matter-v2.png
+images/zjh-gray.png
+images/影视/0.png
+images/影视/1.png
+images/摄影 剧场/人像1.png
+images/摄影 剧场/人像2.png
+images/鹦鹉封面.png
+
+# ---------- 12. 无任何页面引用的素材（2026-10-23 全站反查确认，磁盘保留不进仓库） ----------
+# 若日后有页面引用其中某项，删除对应行即可
+images/原作品集/
+images/LORA.png
+images/UI.png
+images/image_585351981127137.png
+images/俊涵张：创意影像作品集.png
+images/俊涵张：创意影像作品集 - 副本.png
+images/原画/25.jpg
+images/原画/26.jpg
+images/原画/27.jpg
+images/原画/28.jpg
+images/原画/29.jpg
+images/启元/图片7.jpg
+images/清华/20251107 锦什坊街叁拾伍号项目中证金融办公区装修工程 室内空间方案设计汇报（前有概念内容）_01.jpg
+images/清华长庚/图片3.jpg
+images/清华长庚/图片8.jpg
+images/清华长庚/图片14.jpg

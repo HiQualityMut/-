@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>室内设计完成项目展示 — 张珺涵作品集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #111111;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #ff6b19;
+            --line: rgba(255, 255, 255, 0.08);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 28px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-fast);
+        }
+
+        .nav.scrolled {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 48px;
+        }
+
+        .nav-logo {
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .nav-logo:hover {
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent);
+            transition: var(--transition-fast);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            background: var(--accent);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .nav-toggle span {
+            width: 22px;
+            height: 1.5px;
+            background: var(--text);
+            transition: var(--transition-fast);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 120px 48px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .hero-title {
+            font-size: clamp(32px, 5vw, 64px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        .hero-desc {
+            font-size: clamp(16px, 1.5vw, 20px);
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 600px;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+        }
+
+        /* Works — Garden Studio Style */
+        .works-section {
+            padding: 0;
+            max-width: none;
+        }
+
+        .work-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .work-item:first-child {
+            border-top: 1px solid var(--line);
+        }
+
+        .work-item:nth-child(even) {
+            direction: rtl;
+        }
+
+        .work-item:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .work-image {
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+            min-height: 600px;
+        }
+
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .work-item:hover .work-image img {
+            transform: scale(1.05);
+        }
+
+        .work-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .work-item:hover .work-image::after {
+            opacity: 1;
+        }
+
+        .work-content {
+            padding: 80px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .work-bg-icon {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .work-bg-icon svg {
+            fill: var(--accent);
+            height: 100%;
+            width: auto;
+        }
+
+        /* 每个图标独立控制：可自由调整位置、大小、透明度 */
+        .work-bg-icon-1 {
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-2 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-3 {
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-4 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-5 {
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-bg-icon-6 {
+            left: -500px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 200%;
+            width: auto;
+            opacity: 0.15;
+        }
+
+        .work-number {
+            font-size: 18px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a000d1 50%, var(--accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .work-title {
+            font-size: clamp(28px, 3.5vw, 48px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+            transition: var(--transition-fast);
+        }
+
+        .work-item:hover .work-title {
+            color: var(--accent);
+        }
+
+        .work-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .work-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .work-tag {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            transition: var(--transition-fast);
+        }
+
+        .work-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .work-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .work-link svg {
+            transition: var(--transition-fast);
+        }
+
+        .work-link:hover {
+            color: var(--accent);
+        }
+
+        .work-link:hover svg {
+            transform: translateX(6px);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 48px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .work-item {
+                grid-template-columns: 1fr;
+            }
+            .work-item:nth-child(even) {
+                direction: ltr;
+            }
+            .work-image {
+                height: 50vh;
+                min-height: 400px;
+                order: -1;
+            }
+            .work-content {
+                padding: 48px 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 20px 24px;
+            }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg);
+                flex-direction: column;
+                padding: 100px 40px 40px;
+                transition: right 0.4s ease;
+                gap: 32px;
+                border-left: 1px solid var(--line);
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .hero {
+                padding: 120px 24px 60px;
+                min-height: 50vh;
+            }
+            .work-content {
+                padding: 40px 24px;
+            }
+            .footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <a href="index.html" class="nav-logo">PORTFOLIO</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html">返回首页</a></li>
+        </ul>
+        <div class="nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-label">INTERIOR DESIGN</div>
+            <h1 class="hero-title">室内设计完成项目展示</h1>
+            <p class="hero-desc">完成项目主要有清华五道口学院通州校区、金融街E9大厦中证金融办公区改造、大唐集团雄安新区新总部、启元实验室项目、清华长庚医院项目，另有其余小项目穿插其中。</p>
+        </div>
+    </section>
+
+    <!-- Works -->
+    <section class="works-section">
+
+        <!-- Work 1 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/清华/清华1.jpg" alt="清华五道口学院">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-1">
+                    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.09L12 15.5l5-2.73v3.22z"/></svg>
+                </div>
+                <div class="work-number">01 / 建筑精装</div>
+                <h3 class="work-title">清华五道口学院<br>通州校区</h3>
+                <p class="work-desc">为清华五道口学院通州校区打造符合校方文化、风格的室内精装效果，包含视频效果、效果图、平面功能等完整方案。项目涵盖金融学院与继续教育学院两大板块。</p>
+                <div class="work-tags">
+                    <span class="work-tag">方案设计</span>
+                    <span class="work-tag">AI效果图</span>
+                    <span class="work-tag">施工图设计</span>
+                    <span class="work-tag">全流程设计</span>
+                </div>
+                <a href="work-1.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Work 2 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/中证金融/图片1.jpg" alt="中证金融">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-2">
+                    <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                </div>
+                <div class="work-number">02 / 建筑精装</div>
+                <h3 class="work-title">中证金融<br>室内改造</h3>
+                <p class="work-desc">金融街E9大厦中国证券金融股份有限公司室内改造。从用户调研到落地成型，针对金融企业的专业需求，打造高效、稳重且富有现代感的办公空间。</p>
+                <div class="work-tags">
+                    <span class="work-tag">方案设计</span>
+                    <span class="work-tag">AI效果图</span>
+                    <span class="work-tag">施工图设计</span>
+                    <span class="work-tag">全流程设计</span>
+                </div>
+                <a href="work-2.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Work 3 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/大唐/大唐1.jpg" alt="大唐集团">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-3">
+                    <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                </div>
+                <div class="work-number">03 / 建筑精装</div>
+                <h3 class="work-title">中国大唐集团<br>雄安新区总部</h3>
+                <p class="work-desc">中国大唐集团在雄安新区的新总部办公楼，平面布置设计、效果方案设计。为央企打造庄重而现代的企业形象空间。</p>
+                <div class="work-tags">
+                    <span class="work-tag">方案设计</span>
+                    <span class="work-tag">AI效果图</span>
+                    <span class="work-tag">平面方案设计</span>
+                </div>
+                <a href="work-3.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Work 4 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/清华长庚/图片4.jpg" alt="清华长庚">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-4">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>
+                </div>
+                <div class="work-number">04 / 建筑精装</div>
+                <h3 class="work-title">清华长庚<br>医院项目</h3>
+                <p class="work-desc">为清华旗下大型医院设计符合清华风格的方案，结合清华大学独特的标志颜色清华紫，打造兼具人文关怀与专业医疗功能的空间。</p>
+                <div class="work-tags">
+                    <span class="work-tag">施工图设计</span>
+                    <span class="work-tag">AI效果图</span>
+                </div>
+                <a href="work-4.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Work 5 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/启元/图片11.jpg" alt="启元实验室">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-5">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <div class="work-number">05 / 建筑精装</div>
+                <h3 class="work-title">启元<br>实验室</h3>
+                <p class="work-desc">打造一个功能完备、安全合规、高效智能、可持续扩展的现代化实验环境。实验室是科研活动的核心载体，空间品质直接影响实验效率与数据精度。</p>
+                <div class="work-tags">
+                    <span class="work-tag">AI效果图</span>
+                    <span class="work-tag">平面方案设计</span>
+                    <span class="work-tag">效果方案设计</span>
+                </div>
+                <a href="work-5.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Work 6 -->
+        <div class="work-item reveal">
+            <div class="work-image">
+                <img src="./images/其他/图片1.jpg" alt="其他项目">
+            </div>
+            <div class="work-content">
+                <div class="work-bg-icon work-bg-icon-6">
+                    <svg viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <div class="work-number">06 / 建筑精装</div>
+                <h3 class="work-title">其他<br>项目</h3>
+                <p class="work-desc">汇集多个建筑精装项目的综合设计经验，涵盖商业空间、办公环境、文化场馆等多种类型，展现多元化的设计能力与丰富的项目实践。</p>
+                <div class="work-tags">
+                    <span class="work-tag">方案设计</span>
+                    <span class="work-tag">AI效果图</span>
+                    <span class="work-tag">平面方案设计</span>
+                </div>
+                <a href="work-6.html" class="work-link">
+                    查看项目
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <script>
+        // Nav scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Scroll reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>星核矩阵 — LoRA 成果展示</title>
+<style>
+/* ============================================================
+   SECTION: tokens — 赛博霓虹设计令牌（完全独立于现有站点）
+   ============================================================ */
+:root{
+  --bg:#03000f; --bg2:#07031a; --panel:rgba(12,8,32,.72);
+  --cy:#00f0ff; --mg:#ff2bd6; --vi:#a855f7; --gr:#00ff9d; --am:#ffb700;
+  --tx:#dfe6ff; --dim:#8b90c4; --faint:#565b8a;
+  --line:rgba(0,240,255,.18);
+  --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--tx); font-family:var(--sans);
+  overflow-x:hidden; cursor:none; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--mg);color:#04010f}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:9px}
+::-webkit-scrollbar-track{background:#05010f}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cy),var(--mg));border-radius:9px}
+
+/* ============================================================
+   SECTION: bg-layers — 背景特效层（数字雨/粒子/扫描线/噪点/光晕）
+   ============================================================ */
+#rain,#particles{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#rain{opacity:.42}
+#particles{z-index:1}
+.fx-scan,.fx-noise,.fx-glow{position:fixed;inset:0;pointer-events:none}
+.fx-scan{z-index:60;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.22) 2px 4px);mix-blend-mode:multiply;opacity:.5}
+.fx-noise{z-index:61;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:noiseShift .12s steps(2) infinite}
+@keyframes noiseShift{0%{transform:translate(0,0)}50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-3%)}}
+.fx-glow{z-index:0;background:
+  radial-gradient(46% 40% at 18% 12%,rgba(168,85,247,.20),transparent 70%),
+  radial-gradient(40% 46% at 84% 26%,rgba(0,240,255,.16),transparent 70%),
+  radial-gradient(52% 40% at 50% 104%,rgba(255,43,214,.16),transparent 72%);
+  animation:glowPulse 9s ease-in-out infinite alternate}
+@keyframes glowPulse{to{filter:hue-rotate(28deg) saturate(1.25)}}
+
+/* ============================================================
+   SECTION: cursor — 自定义光标 + 拖尾
+   ============================================================ */
+.cur,.cur-dot{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+.cur{width:34px;height:34px;border:1.5px solid var(--cy);box-shadow:0 0 14px rgba(0,240,255,.6),inset 0 0 8px rgba(0,240,255,.25);transition:width .2s,height .2s,border-color .2s,background .2s}
+.cur-dot{width:5px;height:5px;background:var(--mg);box-shadow:0 0 10px var(--mg)}
+.cur.is-hot{width:54px;height:54px;border-color:var(--mg);background:rgba(255,43,214,.12)}
+.cur-trail{position:fixed;width:7px;height:7px;border-radius:50%;background:var(--cy);z-index:9998;pointer-events:none;transform:translate(-50%,-50%);opacity:.6;mix-blend-mode:screen}
+
+/* ============================================================
+   SECTION: boot — 开机自检序列
+   ============================================================ */
+#boot{position:fixed;inset:0;z-index:10000;background:#02000a;display:flex;flex-direction:column;justify-content:center;padding:8vw;font-family:var(--mono);transition:opacity .7s,visibility .7s}
+#boot.done{opacity:0;visibility:hidden}
+.boot-line{color:var(--gr);font-size:clamp(11px,1.5vw,15px);line-height:1.95;white-space:pre-wrap;text-shadow:0 0 8px rgba(0,255,157,.5);opacity:0}
+.boot-line.show{opacity:1}
+.boot-line .ok{color:var(--cy)}
+.boot-line .warn{color:var(--am)}
+.boot-bar{margin-top:26px;height:3px;background:rgba(0,255,157,.14);overflow:hidden;max-width:520px}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gr),var(--cy));box-shadow:0 0 12px var(--gr);transition:width .25s linear}
+.boot-logo{position:absolute;top:6vw;right:8vw;font-size:clamp(40px,9vw,120px);font-weight:800;color:rgba(0,240,255,.06);letter-spacing:.1em;font-family:var(--sans)}
+
+/* ============================================================
+   SECTION: nav
+   ============================================================ */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(18px,4vw,52px);backdrop-filter:blur(9px);background:linear-gradient(to bottom,rgba(3,0,15,.82),transparent);border-bottom:1px solid transparent;transition:border-color .4s,background .4s}
+nav.scrolled{border-bottom-color:var(--line);background:rgba(3,0,15,.9)}
+.nav-logo{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.16em;font-size:15px}
+.nav-logo .hex{width:26px;height:26px;display:grid;place-items:center;color:#03000f;font-size:14px;background:conic-gradient(from 0deg,var(--cy),var(--mg),var(--vi),var(--cy));clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);animation:hexSpin 6s linear infinite}
+@keyframes hexSpin{to{filter:hue-rotate(360deg)}}
+.nav-links{display:flex;gap:clamp(14px,2.4vw,34px);font-family:var(--mono);font-size:12.5px;letter-spacing:.1em}
+.nav-links a{position:relative;color:var(--dim);padding:5px 0;transition:color .25s}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--cy);box-shadow:0 0 8px var(--cy);transition:width .3s var(--ease)}
+.nav-links a:hover{color:var(--cy)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{font-family:var(--mono);font-size:12px;padding:8px 17px;border:1px solid var(--mg);color:var(--mg);border-radius:3px;letter-spacing:.08em;transition:.25s;text-shadow:0 0 8px rgba(255,43,214,.5)}
+.nav-cta:hover{background:var(--mg);color:#0a0118;box-shadow:0 0 24px rgba(255,43,214,.6)}
+
+/* ============================================================
+   SECTION: hero
+   ============================================================ */
+#hero{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px clamp(18px,6vw,90px) 70px;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(75% 65% at 50% 42%,#000,transparent 78%);opacity:.5;animation:gridDrift 22s linear infinite}
+@keyframes gridDrift{to{background-position:64px 64px,64px 64px}}
+.hero-eyebrow{font-family:var(--mono);color:var(--gr);letter-spacing:.42em;font-size:clamp(10px,1.3vw,13px);margin-bottom:20px;text-shadow:0 0 12px rgba(0,255,157,.5)}
+.hero-title{font-size:clamp(52px,13vw,168px);font-weight:900;line-height:.9;letter-spacing:-.02em;margin-bottom:8px;position:relative;color:#fff}
+.hero-title .l2{display:block;background:linear-gradient(92deg,var(--cy),var(--vi) 46%,var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 26px rgba(0,240,255,.32))}
+/* glitch */
+.glitch{position:relative}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;opacity:.85;pointer-events:none}
+.glitch::before{color:var(--mg);animation:gl1 3.4s infinite steps(2);clip-path:inset(0 0 55% 0)}
+.glitch::after{color:var(--cy);animation:gl2 2.7s infinite steps(2);clip-path:inset(52% 0 0 0)}
+@keyframes gl1{0%,88%,100%{transform:none;opacity:0}90%{transform:translate(-4px,-2px);opacity:.8}94%{transform:translate(3px,1px);opacity:.7}97%{transform:none;opacity:0}}
+@keyframes gl2{0%,84%,100%{transform:none;opacity:0}87%{transform:translate(4px,2px);opacity:.8}92%{transform:translate(-3px,-1px);opacity:.6}96%{transform:none;opacity:0}}
+.hero-sub{font-family:var(--mono);color:var(--dim);font-size:clamp(13px,1.7vw,18px);margin:18px 0 34px;min-height:1.7em;letter-spacing:.04em}
+.hero-sub .caret{display:inline-block;width:9px;height:1.1em;background:var(--cy);vertical-align:-2px;margin-left:3px;animation:blink .85s steps(1) infinite;box-shadow:0 0 10px var(--cy)}
+@keyframes blink{50%{opacity:0}}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:52px}
+.btn{position:relative;font-family:var(--mono);font-size:14px;letter-spacing:.1em;padding:15px 34px;border-radius:4px;overflow:hidden;transition:transform .18s var(--ease),box-shadow .3s;will-change:transform}
+.btn-primary{background:linear-gradient(100deg,var(--cy),var(--vi));color:#04010f;font-weight:700;border:none;box-shadow:0 0 26px rgba(0,240,255,.4)}
+.btn-primary:hover{box-shadow:0 0 44px rgba(255,43,214,.6)}
+.btn-primary::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg)}
+.btn-primary:hover::after{animation:sheen .7s}
+@keyframes sheen{to{left:130%}}
+.btn-ghost{border:1px solid var(--line);color:var(--cy);background:rgba(0,240,255,.04)}
+.btn-ghost:hover{border-color:var(--cy);background:rgba(0,240,255,.1);box-shadow:0 0 24px rgba(0,240,255,.28)}
+.hero-stats{display:flex;gap:clamp(24px,5vw,64px);flex-wrap:wrap;font-family:var(--mono)}
+.hero-stat .n{font-size:clamp(28px,4.4vw,48px);font-weight:800;background:linear-gradient(var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.hero-stat .t{font-size:11.5px;color:var(--faint);letter-spacing:.16em;margin-top:7px}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.24em;display:flex;flex-direction:column;align-items:center;gap:9px}
+.scroll-hint .bar{width:1px;height:42px;background:linear-gradient(var(--cy),transparent);animation:scrollPulse 1.9s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.25;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+
+/* ============================================================
+   SECTION: section-common
+   ============================================================ */
+main{position:relative;z-index:2}
+.sec{padding:clamp(64px,9vw,130px) clamp(18px,6vw,90px);position:relative}
+.sec-head{margin-bottom:clamp(34px,5vw,60px);max-width:760px}
+.sec-tag{font-family:var(--mono);color:var(--mg);letter-spacing:.34em;font-size:11.5px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.sec-tag::before{content:'';width:34px;height:1px;background:var(--mg);box-shadow:0 0 8px var(--mg)}
+.sec-title{font-size:clamp(30px,5.4vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.01em}
+.sec-title .hl{background:linear-gradient(92deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-desc{color:var(--dim);margin-top:16px;font-size:clamp(13.5px,1.5vw,16px);line-height:1.75;max-width:620px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(44px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============================================================
+   SECTION: models — LoRA 模型矩阵
+   ============================================================ */
+.m-vis{position:relative;overflow:hidden;background:#080418}
+.m-vis img,.m-vis .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.m-vis .ph{display:grid;place-items:center}
+.m-badge{position:absolute;top:11px;left:11px;z-index:4;font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 9px;border-radius:3px;background:rgba(3,0,15,.7);border:1px solid var(--line);color:var(--cy);backdrop-filter:blur(4px)}
+.m-scan{position:absolute;left:0;right:0;height:34%;z-index:2;background:linear-gradient(to bottom,transparent,rgba(0,240,255,.14),transparent);opacity:0;transition:opacity .3s}
+.m-row:hover .m-scan{opacity:1;animation:mScan 1.5s linear infinite}
+@keyframes mScan{0%{top:-34%}100%{top:100%}}
+.m-body{padding:19px 20px 21px;position:relative;z-index:4}
+.m-name{font-size:19px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:9px}
+.m-name .dot{width:7px;height:7px;border-radius:50%;background:var(--gr);box-shadow:0 0 9px var(--gr);flex:none;animation:dotPulse 2s infinite}
+@keyframes dotPulse{50%{opacity:.3}}
+.m-trig{font-family:var(--mono);font-size:11.5px;color:var(--mg);margin-bottom:13px;word-break:break-all}
+.m-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.m-chip{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--dim);background:rgba(0,240,255,.04)}
+.m-tags{display:flex;gap:7px;flex-wrap:wrap}
+.m-tag{font-size:11px;color:var(--faint);border-left:2px solid var(--vi);padding-left:8px}
+.m-bar{height:3px;background:rgba(255,255,255,.07);border-radius:3px;margin-top:15px;overflow:hidden}
+.m-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 8px var(--cy);transition:width 1.3s var(--ease)}
+
+/* ============================================================
+   SECTION: model-rows — 训练成果（每项独占一行）
+   左：介绍 + 成果图     右：底模 vs LoRA 加持 滑动对比
+   ============================================================ */
+.model-rows{display:flex;flex-direction:column;gap:clamp(22px,3vw,40px)}
+.m-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(18px,2.4vw,34px);padding:clamp(15px,1.8vw,24px);background:var(--panel);border:1px solid var(--line);border-radius:14px;transition:border-color .35s,box-shadow .35s}
+.m-row:hover{border-color:var(--cy);box-shadow:0 22px 54px rgba(0,0,0,.55),0 0 30px rgba(0,240,255,.16)}
+.mr-left{min-width:0;display:flex;flex-direction:column}
+.m-vis-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.mr-left .m-vis{border-radius:10px;border:1px solid rgba(255,255,255,.07);transform-style:preserve-3d;transition:transform .38s var(--ease),box-shadow .35s,border-color .35s;will-change:transform}
+.mr-left .m-vis.big{grid-column:1/-1;aspect-ratio:16/9}
+.mr-left .m-vis.small{aspect-ratio:4/3}
+.mr-left .m-vis:hover{border-color:var(--cy);box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 22px rgba(0,240,255,.22)}
+.m-vis::after{content:'';position:absolute;inset:0;z-index:3;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(0,240,255,.2),transparent 48%);opacity:0;transition:opacity .35s;pointer-events:none}
+.m-vis:hover::after{opacity:1}
+.mr-left .m-body{padding:17px 2px 0}
+.m-no{position:absolute;top:11px;right:11px;z-index:4;font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 9px;border-radius:3px;background:rgba(3,0,15,.7);border:1px solid var(--line);color:var(--mg)}
+.m-desc{color:var(--dim);font-size:13.5px;line-height:1.85;margin-bottom:14px}
+.mr-right{min-width:0;display:flex;flex-direction:column;gap:11px}
+.m-cmp{position:relative;width:100%;aspect-ratio:4/3;border-radius:11px;overflow:hidden;border:1px solid var(--line);background:#080418;user-select:none;touch-action:none;cursor:ew-resize}
+.m-cmp .layer{position:absolute;inset:0}
+.m-cmp .layer img,.m-cmp .layer .ph{width:100%;height:100%;object-fit:cover}
+.m-cmp .layer .ph{display:grid;place-items:center}
+.m-cmp .after{clip-path:inset(0 0 0 var(--pos,50%))}
+.m-cmp .handle{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;background:var(--cy);box-shadow:0 0 14px var(--cy);z-index:5;transform:translateX(-1px)}
+.m-cmp .handle::after{content:'◄ ►';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(3,0,15,.86);border:1.5px solid var(--cy);color:var(--cy);font-size:10px;display:grid;place-items:center;letter-spacing:-1px;box-shadow:0 0 18px rgba(0,240,255,.45)}
+.m-cmp .lbl{position:absolute;top:12px;z-index:4;font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 10px;border-radius:3px;background:rgba(3,0,15,.72);backdrop-filter:blur(4px)}
+.m-cmp .lbl.b{left:12px;color:var(--dim);border:1px solid rgba(255,255,255,.14)}
+.m-cmp .lbl.a{right:12px;color:var(--cy);border:1px solid var(--line)}
+.m-cmp-hint{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.1em;text-align:center;margin:0}
+@media(max-width:900px){
+  .m-row{grid-template-columns:minmax(0,1fr)}
+  .mr-left .m-vis.small{aspect-ratio:1/1}
+}
+@media(max-width:600px){
+  .m-vis-grid{gap:7px}
+  .m-cmp{aspect-ratio:1/1}
+  .m-cmp .handle::after{width:36px;height:36px;font-size:9px}
+}
+
+/* ============================================================
+   SECTION: footer
+   ============================================================ */
+footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,90px) 40px;border-top:1px solid var(--line);text-align:center;overflow:hidden}
+.foot-title{font-size:clamp(28px,6vw,64px);font-weight:900;line-height:1.05;margin-bottom:20px}
+.foot-title .hl{background:linear-gradient(92deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.foot-sub{color:var(--dim);font-family:var(--mono);font-size:13px;margin-bottom:32px;letter-spacing:.05em}
+.foot-links{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-bottom:34px}
+.foot-links a{transition:color .25s,text-shadow .25s}
+.foot-links a:hover{color:var(--cy);text-shadow:0 0 12px var(--cy)}
+.foot-copy{color:var(--faint);font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+
+/* ============================================================
+   SECTION: placeholder-vis — 程序化占位视觉
+   ============================================================ */
+.ph{background:
+  radial-gradient(circle at 30% 28%,var(--c1,#0af),transparent 58%),
+  radial-gradient(circle at 74% 72%,var(--c2,#f0e),transparent 56%),
+  repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px),
+  linear-gradient(135deg,#0a0520,#12082e)}
+.ph .ph-in{position:relative;z-index:2;text-align:center;font-family:var(--mono);padding:12px}
+.ph .ph-glyph{font-size:clamp(28px,5vw,46px);font-weight:800;color:rgba(255,255,255,.9);text-shadow:0 0 20px var(--c1,#0af);letter-spacing:.04em}
+.ph .ph-lb{font-size:9.5px;letter-spacing:.3em;color:rgba(255,255,255,.55);margin-top:9px}
+.ph .ph-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px;mask-image:radial-gradient(70% 70% at 50% 50%,#000,transparent)}
+
+/* ============================================================
+   SECTION: responsive
+   ============================================================ */
+@media(max-width:900px){
+  .nav-links{display:none}
+  body{cursor:auto}
+  .cur,.cur-dot,.cur-trail{display:none}
+}
+@media(max-width:600px){
+  #boot{padding:9vw 7vw}
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .btn{text-align:center}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- SECTION: boot -->
+<div id="boot">
+  <div class="boot-logo">LoRA</div>
+  <div id="bootLines"></div>
+  <div class="boot-bar"><i id="bootBar"></i></div>
+</div>
+
+<!-- SECTION: cursor -->
+<div class="cur" id="cur"></div>
+<div class="cur-dot" id="curDot"></div>
+
+<!-- SECTION: bg-layers -->
+<canvas id="rain"></canvas>
+<canvas id="particles"></canvas>
+<div class="fx-glow"></div>
+<div class="fx-scan"></div>
+<div class="fx-noise"></div>
+
+<!-- SECTION: nav -->
+<nav id="nav">
+  <div class="nav-logo"><span class="hex">◈</span><span>星核矩阵</span></div>
+  <div class="nav-links">
+    <a href="#models">模型矩阵</a>
+  </div>
+  <a href="#models" class="nav-cta">ENTER ▸</a>
+</nav>
+
+<!-- SECTION: hero -->
+<header id="hero">
+  <div class="hero-grid-bg"></div>
+  <p class="hero-eyebrow" id="eyebrow">LoRA TRAINING FACILITY · 低秩微调模型矩阵</p>
+  <h1 class="hero-title">
+    <span class="glitch l1" data-text="星核矩阵">星核矩阵</span>
+    <span class="l2 glitch" data-text="LoRA GALLERY">LoRA GALLERY</span>
+  </h1>
+  <p class="hero-sub"><span id="typewriter"></span><span class="caret"></span></p>
+  <div class="hero-cta">
+    <button class="btn btn-primary magnetic" data-primary-action id="exploreBtn">探索模型矩阵 ▸</button>
+  </div>
+  <div class="hero-stats" id="heroStats"></div>
+  <div class="scroll-hint"><span>SCROLL</span><span class="bar"></span></div>
+</header>
+
+<main>
+  <!-- SECTION: models -->
+  <section class="sec" id="models">
+    <div class="sec-head reveal">
+      <p class="sec-tag">MODEL MATRIX / 模型矩阵</p>
+      <h2 class="sec-title">训练成果 <span class="hl">模型矩阵</span></h2>
+      <p class="sec-desc">6 个定向蒸馏的 LoRA 模型，每项独占一行：左侧为模型介绍与成果图，右侧为「底模 vs LoRA 加持」滑动对比，拖动滑块即可逐区域查看差异。文案与图像均为占位示例，填入 LORA_DATA 中各模型的 image / cmpBefore / cmpAfter 字段即接入真实素材。</p>
+    </div>
+    <div class="model-rows" id="modelGrid"></div>
+  </section>
+
+</main>
+
+<!-- SECTION: footer -->
+<footer>
+  <h2 class="foot-title reveal">需要定制专属 <span class="hl">LoRA 模型</span>？</h2>
+  <p class="foot-sub reveal">// 角色 · 画风 · 概念 · 产品 —— 从数据集到收敛，全流程定制</p>
+  <div class="foot-links reveal">
+    <a href="#models">模型矩阵</a>
+  </div>
+  <p class="foot-copy reveal">© 2026 星核矩阵 LoRA GALLERY · 本页为占位示例，成果图待替换</p>
+</footer>
+
+<script>
+/* ============================================================
+   SECTION: works-data — LoRA 星核矩阵 · 展示数据
+   ------------------------------------------------------------
+   替换真实成果图的方法：
+   把每个条目里的 image: "" 填上图片地址即可，页面会自动
+   用真实图替换程序化占位视觉。支持两种写法：
+     1) 网络图：image 填图片的 https 网址
+     2) 本地图：先把图放进本项目的 assets 目录，
+        image 再填 "assets/" 加上该图文件名
+   留空（image: ""）则继续显示风格化占位图。
+   颜色 c1/c2 控制占位图的两团霓虹色，可自定义。
+   ============================================================ */
+window.LORA_DATA = {
+  brand: {
+    name: "星核矩阵",
+    en: "LoRA GALLERY",
+    tagline: [
+      "低秩微调 · 定向蒸馏每一个画风与角色",
+      "6 个训练模型 · 从数据集到收敛的全流程",
+      "赛博 / 机甲 / 国风 / 哥特 / 像素 / 废土 …"
+    ]
+  },
+
+  heroStats: [
+    { n: 6, suffix: "", label: "训练模型" },
+    { n: 6, suffix: "", label: "成果展示" },
+    { n: 96, suffix: "%", label: "平均收敛度" },
+    { n: 2400, suffix: "+", label: "训练步数/模型" }
+  ],
+
+  /* 6 个 LoRA 模型 —— 每项独占一行，右侧带底模 vs LoRA 滑动对比
+     接入真实素材：image=左侧大图，thumbs=[3 张小图]，cmpBefore=对比左(底模)，cmpAfter=对比右(LoRA)
+     三者留空则显示风格化占位视觉；支持网络图 URL 或 assets/ 下的本地相对路径 */
+  models: [
+    { name:"赛博都市", trig:"cyber_city, neon_street", base:"SDXL 1.0", rank:64, steps:2400, conv:97,
+      tags:["城市","霓虹","雨夜"], c1:"#00f0ff", c2:"#ff2bd6", glyph:"CYBER",
+      desc:"针对霓虹街景与雨夜反光的定向蒸馏，强化湿滑路面高光、体积雾层次与广告牌自发光。底模在此类场景常出现光源混乱与色彩断层，加载后可稳定复现统一的青紫冷暖对撞。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"机甲战士", trig:"mecha_warrior, armored", base:"SDXL 1.0", rank:128, steps:3000, conv:95,
+      tags:["机甲","硬核","金属"], c1:"#a855f7", c2:"#00f0ff", glyph:"MECHA",
+      desc:"以装甲分件、机械结构与金属磨损为核心的硬表面训练，数据集覆盖多角度设定稿。改善底模对机械关节的糊化倾向，锐化边缘倒角并保留合理的做旧噪点。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"国风仙侠", trig:"xianxia, ink_wash", base:"SD 1.5", rank:32, steps:1800, conv:98,
+      tags:["水墨","仙侠","飘逸"], c1:"#00ff9d", c2:"#a855f7", glyph:"仙侠",
+      desc:"低秩轻量方案，专注水墨晕染与衣袂飘逸的笔意表达。修正底模在水墨题材上易出现的塑料质感，使浓淡过渡与留白呼吸更接近传统纸本。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"暗黑哥特", trig:"dark_gothic, cathedral", base:"SDXL 1.0", rank:64, steps:2600, conv:93,
+      tags:["哥特","暗黑","宗教"], c1:"#ff2bd6", c2:"#3a0ca3", glyph:"GOTHIC",
+      desc:"围绕教堂建筑、宗教符号与低照度氛围训练，压暗整体调性并强化彩色玻璃的透光表现。解决底模在暗部细节丢失、画面发闷灰的问题。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"像素艺术", trig:"pixel_art, 16bit", base:"SD 1.5", rank:16, steps:1200, conv:99,
+      tags:["像素","复古","游戏"], c1:"#ffb700", c2:"#00ff9d", glyph:"PIXEL",
+      desc:"极低秩配置，学习 16bit 时代的调色板约束与网格对齐规则。消除底模生成像素图时的半像素抖动与杂色，输出干净的色阶分层。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"生物机械", trig:"biomech, organic_machine", base:"SDXL 1.0", rank:96, steps:2800, conv:91,
+      tags:["生物","机械","异化"], c1:"#00ff9d", c2:"#ff2bd6", glyph:"BIOMECH",
+      desc:"有机体与机械结构融合的异化美学训练，强调组织过渡的自然性与材质对比。改善底模在此类混合题材下结构逻辑混乱、材质边界不清的缺陷。",
+      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" }
+  ],
+
+};
+
+</script>
+<script>
+/* ============================================================
+   SECTION: app-js — 全部特效与渲染逻辑
+   ============================================================ */
+(function(){
+'use strict';
+var D = window.LORA_DATA || {models:[],heroStats:[],brand:{tagline:[]}};
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var isTouch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+var $  = function(s,c){return (c||document).querySelector(s);};
+var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function fmt(n){return n>=1000?Math.round(n).toLocaleString('en-US'):String(Math.round(n));}
+
+/* ---------- 占位视觉 / 真实图切换 ---------- */
+function phHTML(item,label){
+  return '<div class="ph" style="--c1:'+((item&&item.c1)||'#0af')+';--c2:'+((item&&item.c2)||'#f0e')+'">'+
+    '<div class="ph-grid"></div><div class="ph-in"><div class="ph-glyph">'+esc((item&&item.glyph)||'')+
+    '</div><div class="ph-lb">'+esc(label||'PLACEHOLDER')+'</div></div></div>';
+}
+function fillVisual(box,item,label){
+  if(!box) return;
+  if(item && item.image){
+    var img=document.createElement('img');
+    img.dataset.image=item.image; img.alt=esc(item.name||item.t||label||''); img.loading='lazy';
+    img.onerror=function(){img.remove();box.insertAdjacentHTML('beforeend',phHTML(item,label));};
+    box.appendChild(img); img.src=img.dataset.image;   /* 运行时赋值，不在源码写死远程 URL */
+  } else {
+    box.insertAdjacentHTML('beforeend',phHTML(item,label));
+  }
+}
+
+/* ---------- 渲染：hero 统计 ---------- */
+$('#heroStats').innerHTML = (D.heroStats||[]).map(function(s){
+  return '<div class="hero-stat"><div class="n" data-to="'+s.n+'" data-suffix="'+esc(s.suffix||'')+'">0'+esc(s.suffix||'')+'</div><div class="t">'+esc(s.label)+'</div></div>';
+}).join('');
+
+/* ---------- 成果图取色：k=0 大图，k=1..3 小图（小图主副色对调以便区分） ---------- */
+function cellCfg(m,k){
+  if(k===0) return {c1:m.c1, c2:m.c2, glyph:m.glyph||'LoRA', image:(m.image||'')};
+  return {c1:m.c2, c2:m.c1, glyph:('0'+k).slice(-2), image:((m.thumbs&&m.thumbs[k-1])||'')};
+}
+
+/* ---------- 渲染：训练成果（每项一行 · 左介绍与 1大3小成果图 · 右底模 vs LoRA 滑动对比）---------- */
+$('#modelGrid').innerHTML = (D.models||[]).map(function(m,i){
+  var big = '<div class="m-vis big tilt-cell" data-mi="'+i+'" data-vk="0">'+
+      '<span class="m-badge">'+esc(m.base)+'</span><span class="m-no">'+('0'+(i+1)).slice(-2)+'</span><div class="m-scan"></div></div>';
+  var smalls = [1,2,3].map(function(k){
+    return '<div class="m-vis small tilt-cell" data-mi="'+i+'" data-vk="'+k+'"></div>';
+  }).join('');
+  return '<article class="m-row reveal" style="transition-delay:'+((i%3)*80)+'ms">'+
+    '<div class="mr-left">'+
+      '<div class="m-vis-grid">'+big+smalls+'</div>'+
+      '<div class="m-body">'+
+        '<h3 class="m-name"><span class="dot"></span>'+esc(m.name)+'</h3>'+
+        '<p class="m-trig">'+esc(m.trig)+'</p>'+
+        '<p class="m-desc">'+esc(m.desc||'')+'</p>'+
+        '<div class="m-meta"><span class="m-chip">RANK '+esc(m.rank)+'</span><span class="m-chip">'+esc(m.steps)+' STEPS</span><span class="m-chip">'+esc(m.conv)+'% 收敛</span></div>'+
+        '<div class="m-tags">'+(m.tags||[]).map(function(t){return '<span class="m-tag">'+esc(t)+'</span>';}).join('')+'</div>'+
+        '<div class="m-bar"><i data-pct="'+esc(m.conv)+'"></i></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="mr-right">'+
+      '<div class="m-cmp" style="--pos:50%">'+
+        '<div class="layer before"></div>'+
+        '<div class="layer after"></div>'+
+        '<span class="lbl b">BEFORE 底模</span>'+
+        '<span class="lbl a">AFTER +LoRA</span>'+
+        '<div class="handle"></div>'+
+      '</div>'+
+      '<p class="m-cmp-hint">◄ 拖拽滑块对比底模与 LoRA 加持 ►</p>'+
+    '</div>'+
+  '</article>';
+}).join('');
+$$('#modelGrid .m-vis').forEach(function(box){
+  var m = D.models[+box.dataset.mi] || {};
+  var k = +box.dataset.vk;
+  fillVisual(box, cellCfg(m,k), k===0 ? 'LoRA 成果' : '成果 '+('0'+k).slice(-2));
+});
+/* 每行对比框：左=底模直出(灰调)，右=LoRA 加持(模型主色)；填了真实图则自动用图 */
+$$('#modelGrid .m-cmp').forEach(function(c,i){
+  var m = D.models[i] || {};
+  fillVisual($('.before',c), {c1:'#2f2f42', c2:'#191926', glyph:'BASE',       image:m.cmpBefore||''}, '底模直出');
+  fillVisual($('.after', c), {c1:m.c1,      c2:m.c2,      glyph:m.glyph||'LoRA', image:m.cmpAfter ||''}, 'LoRA 加持');
+});
+
+/* ---------- 成果图 3D 倾斜（随鼠标晃动，作用于每行 1大3小共 4 张图） ----------
+   大图面积大、边缘位移更明显，故用更克制的档位：
+   角度约为小图一半，透视距离拉远使画面更平，Z 轴位移也更小。 */
+if(!isTouch && !reduce){
+  $$('.m-vis.tilt-cell').forEach(function(cell){
+    var isBig = cell.classList.contains('big');
+    var RX   = isBig ? 5    : 11;    // 上下倾斜最大角度(deg)
+    var RY   = isBig ? 6    : 13;    // 左右倾斜最大角度(deg)
+    var PERS = isBig ? 1400 : 820;   // 透视距离(px)，越大越平、畸变越弱
+    var TZ   = isBig ? 3    : 6;     // 抬升距离(px)
+    cell.addEventListener('mousemove',function(e){
+      var r = cell.getBoundingClientRect();
+      if(!r.width || !r.height) return;
+      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      cell.style.transform='perspective('+PERS+'px) rotateX('+((0.5-py)*RX).toFixed(2)+'deg) rotateY('+((px-0.5)*RY).toFixed(2)+'deg) translateZ('+TZ+'px)';
+      cell.style.setProperty('--mx',(px*100).toFixed(1)+'%');
+      cell.style.setProperty('--my',(py*100).toFixed(1)+'%');
+    });
+    cell.addEventListener('mouseleave',function(){ cell.style.transform=''; });
+  });
+}
+
+/* ---------- 数字滚动 ---------- */
+function countUp(el){
+  var to=parseFloat(el.dataset.to||'0'), sfx=el.dataset.suffix||'';
+  if(reduce){el.textContent=fmt(to)+sfx;return;}
+  var t0=null,dur=1400;
+  function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1); var e=1-Math.pow(1-p,3);
+    el.textContent=fmt(to*e)+sfx; if(p<1)requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+
+/* ---------- 滚动揭示 ---------- */
+function activate(root){
+  $$('.m-bar i',root).forEach(function(b){b.style.width=(b.dataset.pct||0)+'%';});
+  $$('[data-to]',root).forEach(countUp);
+}
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');activate(en.target);io.unobserve(en.target);}});},{threshold:.16});
+  $$('.reveal').forEach(function(el){io.observe(el);});
+}else{ $$('.reveal').forEach(function(el){el.classList.add('in');activate(el);}); }
+
+/* ---------- 磁吸按钮 ---------- */
+if(!isTouch && !reduce){
+  $$('.magnetic').forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      el.style.transform='translate('+((e.clientX-r.left-r.width/2)*0.28).toFixed(1)+'px,'+((e.clientY-r.top-r.height/2)*0.4).toFixed(1)+'px)';
+    });
+    el.addEventListener('mouseleave',function(){el.style.transform='';});
+  });
+}
+
+/* ---------- 自定义光标 + 拖尾 ---------- */
+var cur=$('#cur'), dot=$('#curDot'), TRAILN=isTouch?0:7, trail=[], tEls=[];
+var mxp=innerWidth/2, myp=innerHeight/2, ccx=mxp, ccy=myp;
+if(isTouch){ document.body.style.cursor='auto'; cur.style.display='none'; dot.style.display='none'; }
+else{
+  for(var i=0;i<TRAILN;i++){ var d=document.createElement('div'); d.className='cur-trail'; d.style.opacity=(0.5*(1-i/TRAILN)).toFixed(2); document.body.appendChild(d); trail.push({el:d,x:mxp,y:myp}); tEls.push(d); }
+  document.addEventListener('mousemove',function(e){
+    mxp=e.clientX; myp=e.clientY; dot.style.transform='translate('+mxp+'px,'+myp+'px) translate(-50%,-50%)';
+    var hot=e.target.closest && e.target.closest('a,button,.m-row,.m-cmp');
+    cur.classList.toggle('is-hot',!!hot);
+  });
+}
+
+/* ---------- 数字雨 ---------- */
+var rainC=$('#rain'), rx=rainC.getContext('2d'), drops=[], RF=15, rChars='アカサタナハマヤラワ0123456789<>/*#';
+function sizeRain(){ rainC.width=innerWidth; rainC.height=innerHeight; var c=Math.floor(rainC.width/RF); drops=new Array(c).fill(0).map(function(){return Math.random()*-60;}); }
+function drawRain(){
+  rx.fillStyle='rgba(3,0,15,.09)'; rx.fillRect(0,0,rainC.width,rainC.height);
+  rx.font=RF+'px monospace';
+  for(var i=0;i<drops.length;i++){
+    var ch=rChars[Math.floor(Math.random()*rChars.length)], x=i*RF, y=drops[i]*RF;
+    rx.fillStyle= Math.random()<0.03 ? '#ff2bd6' : (Math.random()<0.12?'#00f0ff':'rgba(0,255,157,.82)');
+    rx.fillText(ch,x,y);
+    if(y>rainC.height && Math.random()>0.975) drops[i]=0;
+    drops[i]+= 0.5 + (i%3)*0.16;
+  }
+}
+
+/* ---------- 3D 粒子场 + 鼠标视差 + 点击爆裂 ---------- */
+var pC=$('#particles'), px2=pC.getContext('2d'), parts=[], bursts=[], W,H,CX,CY, fov=340, PN=isTouch?55:150;
+var parX=0, parY=0, tparX=0, tparY=0;
+function sizeP(){ W=pC.width=innerWidth; H=pC.height=innerHeight; CX=W/2; CY=H/2; }
+function mkP(spread){ return {x:(Math.random()-.5)*W*1.6, y:(Math.random()-.5)*H*1.6, z:spread?Math.random()*fov*3+40:fov*3+40, c:Math.random()<.5?'0,240,255':'255,43,214'}; }
+function initP(){ parts=[]; for(var i=0;i<PN;i++) parts.push(mkP(true)); }
+function drawP(){
+  px2.clearRect(0,0,W,H);
+  parX+=(tparX-parX)*0.05; parY+=(tparY-parY)*0.05;
+  for(var i=0;i<parts.length;i++){
+    var p=parts[i]; p.z-=1.5;
+    if(p.z<24){ parts[i]=mkP(false); continue; }
+    var sc=fov/p.z, sx=CX+p.x*sc+parX*(1-sc)*2.4, sy=CY+p.y*sc+parY*(1-sc)*2.4, r=Math.max(0.4,2.6*sc);
+    if(sx<-40||sx>W+40||sy<-40||sy>H+40) continue;
+    px2.beginPath(); px2.arc(sx,sy,r,0,6.283); px2.fillStyle='rgba('+p.c+','+(0.28+sc*0.5).toFixed(2)+')'; px2.fill();
+  }
+  for(var j=bursts.length-1;j>=0;j--){
+    var b=bursts[j]; b.x+=b.vx; b.y+=b.vy; b.vy+=0.06; b.vx*=0.985; b.vy*=0.985; b.life-=0.018;
+    if(b.life<=0){ bursts.splice(j,1); continue; }
+    px2.beginPath(); px2.arc(b.x,b.y,b.r*b.life+0.4,0,6.283); px2.fillStyle='rgba('+b.c+','+b.life.toFixed(2)+')'; px2.fill();
+  }
+}
+function burstAt(x,y){
+  if(reduce||isTouch) return;
+  var n=26;
+  for(var i=0;i<n;i++){ var a=Math.random()*6.283, sp=1+Math.random()*5.5;
+    bursts.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:1+Math.random()*2.6,life:1,c:Math.random()<.5?'0,240,255':'255,43,214'}); }
+}
+window.addEventListener('click',function(e){ burstAt(e.clientX,e.clientY); });
+
+/* ---------- 主循环 ---------- */
+function loop(){
+  if(!document.hidden){
+    drawRain(); drawP();
+    if(!isTouch){
+      ccx+=(mxp-ccx)*0.18; ccy+=(myp-ccy)*0.18;
+      cur.style.transform='translate('+ccx.toFixed(1)+'px,'+ccy.toFixed(1)+'px) translate(-50%,-50%)';
+      var pxv=ccx, pyv=ccy;
+      for(var i=0;i<trail.length;i++){ var t=trail[i]; t.x+=(pxv-t.x)*0.34; t.y+=(pyv-t.y)*0.34;
+        t.el.style.transform='translate('+t.x.toFixed(1)+'px,'+t.y.toFixed(1)+'px) translate(-50%,-50%)'; pxv=t.x; pyv=t.y; }
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 视差驱动（鼠标→粒子层偏移） ---------- */
+if(!isTouch && !reduce){
+  window.addEventListener('mousemove',function(e){
+    tparX=(e.clientX/innerWidth-0.5)*70; tparY=(e.clientY/innerHeight-0.5)*70;
+  });
+}
+
+/* ---------- 打字机 ---------- */
+var twEl=$('#typewriter'), lines=(D.brand&&D.brand.tagline)||[], li=0, ci=0, del=false;
+function type(){
+  if(reduce){ twEl.textContent=lines[0]||''; return; }
+  var full=lines[li]||'';
+  if(!del){ ci++; twEl.textContent=full.slice(0,ci); if(ci>=full.length){del=true;setTimeout(type,1900);return;} }
+  else { ci--; twEl.textContent=full.slice(0,ci); if(ci<=0){del=false;li=(li+1)%lines.length;} }
+  setTimeout(type, del?30:64);
+}
+
+/* ---------- 对比滑块（通用绑定：独立的 #cmp 与每行的 .m-cmp 共用一套逻辑）---------- */
+function bindCmp(el){
+  if(!el || el.dataset.cmpBound) return;
+  el.dataset.cmpBound = '1';
+  var dragging = false;
+  function set(v){ el.style.setProperty('--pos', Math.max(0, Math.min(100, v)).toFixed(2)+'%'); }
+  function move(e){
+    var r = el.getBoundingClientRect();
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX);
+    if(!r.width) return;
+    set((cx - r.left) / r.width * 100);
+  }
+  el.addEventListener('pointerdown', function(e){
+    dragging = true; move(e);
+    if(el.setPointerCapture) el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', function(e){ if(dragging) move(e); });
+  window.addEventListener('pointerup', function(){ dragging = false; });
+  el.addEventListener('click', move);
+  set(parseFloat(el.dataset.pos || 50));
+}
+$$('.m-cmp').forEach(bindCmp);
+
+/* ---------- 导航滚动态 ---------- */
+window.addEventListener('scroll',function(){ $('#nav').classList.toggle('scrolled', scrollY>40); },{passive:true});
+$('#exploreBtn').addEventListener('click',function(){ $('#models').scrollIntoView({behavior:reduce?'auto':'smooth'}); });
+
+/* ---------- 尺寸 ---------- */
+function onResize(){ sizeRain(); sizeP(); }
+window.addEventListener('resize',onResize);
+
+/* ---------- 开机自检序列 ---------- */
+var bootLines=['> 初始化星核矩阵渲染引擎 .........','> 挂载 LoRA 权重矩阵 [6 models] ..','> 校准潜空间维度 rank=64 ........','> 载入成果画廊纹理资源 .........','> 建立神经网络推理链路 ... [OK]','> 系统就绪 — 欢迎进入 LoRA GALLERY'];
+var bl=$('#bootLines'), bar=$('#bootBar');
+function afterBoot(){ $$('#heroStats .n').forEach(countUp); type(); }
+function start(){
+  sizeRain(); sizeP(); initP();
+  if(reduce){ $('#boot').classList.add('done'); afterBoot(); return; }
+  requestAnimationFrame(loop);
+  bootLines.forEach(function(txt,i){
+    setTimeout(function(){
+      var d=document.createElement('div'); d.className='boot-line show';
+      d.innerHTML=txt.replace('[OK]','<span class="ok">[OK]</span>'); bl.appendChild(d);
+      bar.style.width=Math.round((i+1)/bootLines.length*100)+'%';
+    },240*i);
+  });
+  setTimeout(function(){ $('#boot').classList.add('done'); afterBoot(); }, 240*bootLines.length+620);
+}
+start();
+})();
+</script>
+</body>
+</html>

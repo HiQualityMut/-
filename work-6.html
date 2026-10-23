@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>其他项目 — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #111111;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #ff6b19;
+            --line: rgba(255, 255, 255, 0.08);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; background: var(--bg); }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection { background: var(--accent); color: white; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 28px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        .nav-logo:hover { color: var(--accent); }
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: var(--transition-fast);
+        }
+        .nav-back:hover { color: var(--text); }
+        .nav-back svg { transition: var(--transition-fast); }
+        .nav-back:hover svg { transform: translateX(-4px); }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero:hover .hero-bg img { transform: scale(1.05); }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0.2) 100%);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 80px 48px;
+            max-width: 900px;
+        }
+        .hero-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+        .hero-title {
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 600px;
+        }
+        .hero-tags {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+        .hero-tag {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-tag:hover {
+            border-color: var(--accent);
+            background: rgba(255, 107, 25, 0.12);
+            color: var(--text);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(255, 107, 25, 0.15);
+        }
+
+
+        .info-section {
+            padding: 80px 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--line);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+        }
+        .info-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .info-item:hover {
+            border-color: var(--accent);
+            background: rgba(255, 107, 25, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(255, 107, 25, 0.18);
+        }
+        .info-item:hover h4 {
+            color: var(--accent);
+        }
+        .info-item:hover p {
+            color: var(--text);
+        }
+        .info-item h4 {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .info-item p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gallery-section {
+            padding: 120px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .gallery-header {
+            margin-bottom: 64px;
+        }
+        .gallery-header h2 {
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+        .gallery-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            cursor: pointer;
+            background: var(--bg-elevated);
+        }
+        .gallery-item:first-child {
+            grid-column: span 2;
+        }
+        .gallery-item::before {
+            content: '';
+            display: block;
+            padding-top: 66%;
+        }
+        .gallery-item img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.96);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            cursor: zoom-out;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--line);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-size: 20px;
+            z-index: 10;
+        }
+        .lightbox-close:hover { background: var(--accent); border-color: var(--accent); }
+
+        .video-section {
+            padding: 0 48px 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--bg-elevated);
+            aspect-ratio: 16/9;
+        }
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .video-overlay:hover { background: rgba(0,0,0,0.2); }
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        .play-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .play-btn svg { width: 28px; height: 28px; color: white; margin-left: 4px; }
+
+        .next-project {
+            padding: 160px 48px;
+            text-align: center;
+            border-top: 1px solid var(--line);
+        }
+        .next-project-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+        .next-project-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 32px;
+            transition: var(--transition-fast);
+        }
+        .next-project:hover .next-project-title { color: var(--accent); }
+        .next-project a {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .next-project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition-fast);
+        }
+        .next-project:hover .next-project-link { color: var(--accent); }
+        .next-project-link svg { transition: var(--transition-fast); }
+        .next-project:hover .next-project-link svg { transform: translateX(6px); }
+
+        .footer {
+            padding: 40px 48px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-text { font-size: 13px; color: var(--text-dim); }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        @media (max-width: 768px) {
+            .nav { padding: 20px 24px; }
+            .hero-content { padding: 60px 24px; }
+            .hero-tags { grid-template-columns: repeat(2, 1fr); }
+            .info-section { padding: 60px 24px; }
+            .info-grid { grid-template-columns: 1fr; gap: 32px; }
+            .gallery-section { padding: 80px 24px; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .gallery-item:first-child { grid-column: auto; }
+            .video-section { padding: 0 24px 80px; }
+            .next-project { padding: 100px 24px; }
+            .footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">Portfolio</a>
+        <a href="index.html#works" class="nav-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            返回作品
+        </a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="./images/其他/1.jpg" alt="其他项目">
+        </div>
+        <div class="hero-content">
+            <div class="hero-label">06 / 其他项目</div>
+            <h1 class="hero-title">其他<br>精选项目</h1>
+            <p class="hero-desc">穿插在前面介绍的项目中间完成，包含AI效果图、平面布置、施工图等多种类型的设计工作。</p>
+            <div class="hero-tags">
+                <span class="hero-tag">AI效果图</span>
+                <span class="hero-tag">平面布置</span>
+                <span class="hero-tag">施工图</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <h4>项目类型</h4>
+                <p>多种类型设计项目</p>
+            </div>
+            <div class="info-item">
+                <h4>服务范围</h4>
+                <p>穿插于主要项目期间完成</p>
+            </div>
+            <div class="info-item">
+                <h4>服务内容</h4>
+                <p>AI效果图、平面布置、施工图等</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <div class="gallery-header">
+            <h2>项目照片</h2>
+            <p>点击照片可查看大图</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/1.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片2.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片3.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片4.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片5.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片6.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片7.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片8.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片9.jpg" alt=""></div>
+        </div>
+    </section>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</div>
+        <img id="lightbox-img" src="" alt="大图">
+    </div>
+
+    <section class="next-project">
+        <a href="index.html#works">
+            <div class="next-project-label">回到作品列表</div>
+            <h2 class="next-project-title">浏览更多<br>项目</h2>
+            <div class="next-project-link">
+                查看全部
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </div>
+        </a>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-text"> 2026 Portfolio. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="index.html">首页</a>
+            <a href="heart.html">感谢</a>
+        </div>
+    </footer>
+
+    <script>
+        function openLightbox(element) {
+            const img = element.querySelector('img');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+</html>

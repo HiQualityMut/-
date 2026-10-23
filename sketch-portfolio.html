@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原画作品集 - Concept Art Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #0A0A0F;
+            --void-light: #12121A;
+            --void-lighter: #1A1A25;
+            --surface: #222230;
+            --surface-light: #2A2A3A;
+            --text-primary: #E8E8F0;
+            --text-secondary: #A0A0B0;
+            --text-muted: #606070;
+            --accent: #00D4AA;
+            --accent-dim: #00A884;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --accent-glow-strong: rgba(0, 212, 170, 0.6);
+            --danger: #FF3366;
+            --warning: #FFB800;
+            --info: #0088FF;
+            --grid-line: rgba(0, 212, 170, 0.06);
+            --scan-line: rgba(0, 212, 170, 0.03);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
+            background-color: var(--void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            cursor: crosshair;
+            overflow-x: hidden;
+        }
+
+        /* ===== SKETCH / HAND-DRAWN BACKGROUND ELEMENTS ===== */
+        .sketch-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .sketch-line {
+            position: absolute;
+            stroke: var(--accent);
+            stroke-width: 0.8;
+            fill: none;
+            opacity: 0.04;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .sketch-scribble {
+            position: absolute;
+            stroke: var(--text-muted);
+            stroke-width: 0.6;
+            fill: none;
+            opacity: 0.05;
+            stroke-linecap: round;
+        }
+        .sketch-hatch {
+            position: absolute;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        .sketch-hatch line {
+            stroke: var(--accent);
+            stroke-width: 0.5;
+            stroke-linecap: round;
+        }
+        .sketch-blot {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,212,170,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .sketch-arrow {
+            position: absolute;
+            opacity: 0.06;
+            pointer-events: none;
+        }
+        .sketch-arrow path {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .sketch-note {
+            position: absolute;
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            color: var(--accent);
+            opacity: 0.04;
+            transform: rotate(-8deg);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .sketch-circle {
+            position: absolute;
+            border: 1.5px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+        .sketch-rect {
+            position: absolute;
+            border: 1px dashed var(--text-muted);
+            opacity: 0.05;
+            pointer-events: none;
+            border-radius: 2px;
+        }
+        /* ===== CUSTOM CURSOR ===== */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px var(--accent-glow-strong), 0 0 16px var(--accent-glow);
+        }
+
+        .cursor-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid var(--accent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        .custom-cursor.hovering .cursor-ring {
+            width: 40px;
+            height: 40px;
+            border-color: var(--danger);
+            box-shadow: 0 0 12px rgba(255, 51, 102, 0.4);
+        }
+
+        .custom-cursor.hovering .cursor-dot {
+            background: var(--danger);
+            box-shadow: 0 0 8px rgba(255, 51, 102, 0.6), 0 0 16px rgba(255, 51, 102, 0.3);
+        }
+
+        .custom-cursor.clicking .cursor-ring {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+
+        /* Crosshair lines */
+        .cursor-cross-h,
+        .cursor-cross-v {
+            position: absolute;
+            background: var(--accent);
+            opacity: 0.3;
+            transition: opacity 0.2s, background 0.2s;
+        }
+
+        .custom-cursor.hovering .cursor-cross-h,
+        .custom-cursor.hovering .cursor-cross-v {
+            background: var(--danger);
+            opacity: 0.5;
+        }
+
+        .cursor-cross-h {
+            top: 50%;
+            left: -16px;
+            width: 52px;
+            height: 1px;
+            transform: translateY(-50%);
+        }
+
+        .cursor-cross-v {
+            left: 50%;
+            top: -16px;
+            width: 1px;
+            height: 52px;
+            transform: translateX(-50%);
+        }
+
+        /* Hide default cursor on interactive elements */
+        a, button, .work-card, .category-card, .hero-cta {
+            cursor: none;
+        }
+
+
+        /* ===== FULL SCREEN SECTIONS ===== */
+        .section-full {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 100px 40px;
+        }
+
+        /* ===== DIAGONAL TEXT BACKGROUND ===== */
+        .diag-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .diag-line {
+            position: absolute;
+            white-space: nowrap;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.012;
+            transform-origin: left center;
+        }
+
+        .diag-line:nth-child(1) {
+            top: 8%;
+            left: -15%;
+            color: var(--text-muted);
+            transform: rotate(-35deg);
+            animation: diagMove1 120s linear infinite;
+        }
+
+        .diag-line:nth-child(2) {
+            top: 28%;
+            left: -20%;
+            color: var(--text-muted);
+            transform: rotate(-35deg);
+            animation: diagMove2 100s linear infinite;
+        }
+
+        .diag-line:nth-child(3) {
+            top: 48%;
+            left: -12%;
+            color: var(--text-muted);
+            transform: rotate(-35deg);
+            animation: diagMove1 140s linear infinite;
+            animation-delay: -10s;
+        }
+
+        .diag-line:nth-child(4) {
+            top: 68%;
+            left: -18%;
+            color: var(--text-muted);
+            transform: rotate(-35deg);
+            animation: diagMove2 112s linear infinite;
+            animation-delay: -5s;
+        }
+
+        .diag-line:nth-child(5) {
+            top: 88%;
+            left: -8%;
+            color: var(--text-muted);
+            transform: rotate(-35deg);
+            animation: diagMove1 128s linear infinite;
+            animation-delay: -15s;
+        }
+
+        @keyframes diagMove1 {
+            0% { transform: rotate(-35deg) translateX(0); }
+            100% { transform: rotate(-35deg) translateX(50%); }
+        }
+
+        @keyframes diagMove2 {
+            0% { transform: rotate(-35deg) translateX(-30%); }
+            100% { transform: rotate(-35deg) translateX(20%); }
+        }
+
+        /* Reverse diagonal lines */
+        .diag-line-reverse {
+            position: absolute;
+            white-space: nowrap;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.008;
+            transform-origin: right center;
+        }
+
+        .diag-line-reverse:nth-child(6) {
+            top: 18%;
+            right: -15%;
+            color: var(--text-muted);
+            transform: rotate(35deg);
+            animation: diagMoveRev1 110s linear infinite;
+        }
+
+        .diag-line-reverse:nth-child(7) {
+            top: 42%;
+            right: -20%;
+            color: var(--text-muted);
+            transform: rotate(35deg);
+            animation: diagMoveRev2 140s linear infinite;
+        }
+
+        .diag-line-reverse:nth-child(8) {
+            top: 75%;
+            right: -12%;
+            color: var(--text-muted);
+            transform: rotate(35deg);
+            animation: diagMoveRev1 130s linear infinite;
+            animation-delay: -8s;
+        }
+
+        @keyframes diagMoveRev1 {
+            0% { transform: rotate(35deg) translateX(0); }
+            100% { transform: rotate(35deg) translateX(-50%); }
+        }
+
+        @keyframes diagMoveRev2 {
+            0% { transform: rotate(35deg) translateX(30%); }
+            100% { transform: rotate(35deg) translateX(-20%); }
+        }
+
+        /* ===== DIGITAL RAIN ===== */
+        #digital-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.15;
+        }
+
+        /* ===== MOUSE PULSE RING ===== */
+        .mouse-pulse {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9997;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, opacity 0.3s;
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px var(--accent-glow);
+            animation: pulseRing 1.5s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        /* ===== NEON FLICKER BORDER ===== */
+        .neon-flicker {
+            position: relative;
+        }
+
+        .neon-flicker::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent), var(--danger), var(--warning), var(--accent));
+            background-size: 400% 400%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            animation: neonGradient 3s ease infinite;
+        }
+
+        .work-card:hover.neon-flicker::before,
+        .category-card:hover.neon-flicker::before {
+            opacity: 1;
+        }
+
+        @keyframes neonGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== TEXT DECODE ANIMATION ===== */
+        .decode-text {
+            display: inline-block;
+        }
+
+        /* ===== PARALLAX LAYERS ===== */
+        .parallax-slow {
+            will-change: transform;
+        }
+
+        /* ===== TYPING CURSOR ===== */
+        .typing-cursor::after {
+            content: '|';
+            animation: typingBlink 0.8s step-end infinite;
+            color: var(--accent);
+        }
+
+        @keyframes typingBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* ===== FLOATING PARTICLES ===== */
+        .float-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatUp 8s linear infinite;
+            opacity: 0.6;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+
+        /* ===== GLITCH SCAN LINE ===== */
+        .glitch-scan {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0;
+            pointer-events: none;
+            animation: glitchScan 10s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--accent-glow-strong);
+        }
+
+        @keyframes glitchScan {
+            0%, 100% { top: 0; opacity: 0; }
+            0.5% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            50% { top: 100%; }
+        }
+
+        /* ===== ENERGY WAVE ===== */
+        .energy-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to top, rgba(0, 212, 170, 0.1), transparent);
+            pointer-events: none;
+            animation: energyWave 4s ease-in-out infinite;
+        }
+
+        @keyframes energyWave {
+            0%, 100% { transform: scaleY(1); opacity: 0.3; }
+            50% { transform: scaleY(1.5); opacity: 0.6; }
+        }
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ===== SCANLINES & GRID ===== */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                var(--scan-line) 2px,
+                var(--scan-line) 4px
+            );
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 9998;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ===== GLITCH TEXT ===== */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            color: var(--danger);
+            animation: glitch-1 2s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .glitch::after {
+            color: var(--accent);
+            animation: glitch-2 1.5s infinite linear alternate-reverse;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-5px, 3px); }
+            40% { transform: translate(5px, -3px); }
+            60% { transform: translate(-3px, 0); }
+            80% { transform: translate(3px, 5px); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(5px, -3px); }
+            40% { transform: translate(-5px, 3px); }
+            60% { transform: translate(3px, 0); }
+            80% { transform: translate(-3px, -5px); }
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--surface);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: 0.15em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--accent);
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 5px var(--accent-glow); }
+            50% { box-shadow: 0 0 20px var(--accent-glow-strong); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            position: relative;
+            padding: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 返回主页入口：青绿霓虹，区别于页内锚点 */
+        .nav-links a.back-home {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-links a.back-home::after {
+            background: linear-gradient(90deg, var(--accent), transparent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-links a.back-home:hover {
+            color: #fff;
+            text-shadow: 0 0 14px var(--accent-glow-strong);
+        }
+
+        /* 导航窄屏适配：项数增多后收紧内边距与间距，避免溢出 */
+        @media (max-width: 900px) {
+            nav { padding: 16px 20px; }
+            .nav-links { gap: 22px; }
+            .nav-links a { font-size: 0.8rem; letter-spacing: 0.06em; }
+        }
+
+        @media (max-width: 620px) {
+            nav { padding: 14px 16px; gap: 12px; }
+            .logo { font-size: 0.9rem; letter-spacing: 0.08em; gap: 8px; }
+            .logo span.logo-text { display: none; }
+            .nav-links { gap: 14px; }
+            .nav-links a { font-size: 0.72rem; letter-spacing: 0.04em; }
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 16px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+            pointer-events: none;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: stretch;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-visual {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .hero-visual > div:first-child {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border: 1px solid var(--accent);
+            padding: 8px;
+        }
+
+        .hero-visual img {
+            max-width: 85%;
+            max-height: 85%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+
+
+        .hero-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+
+        .hero-categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 968px) {
+            .hero-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .hero-categories .category-card {
+            background: rgba(18, 18, 26, 0.8);
+            border: 1px solid var(--surface);
+            padding: 24px 16px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-categories .category-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-4px);
+        }
+
+        .hero-categories .category-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .hero-categories .category-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .hero-categories .category-card p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 480px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 36px;
+            background: transparent;
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 1px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .hero-cta:hover {
+            color: var(--void);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .hero-cta:hover::before {
+            left: 0;
+        }
+
+                /* ===== WORKS SECTION ===== */
+        .works-section {
+            position: relative;
+            background: var(--void);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+        }
+
+        .section-line {
+            width: 60px;
+            height: 2px;
+            background: var(--accent);
+            margin: 24px auto;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .works-grid {
+            width: 100%;
+            margin: 0 auto;
+            columns: 3;
+            column-gap: 16px;
+            position: relative;
+            z-index: 10;
+            padding: 0 8px;
+        }
+
+        .work-card {
+            position: relative;
+            background: var(--void);
+            border: 1px solid var(--surface);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-radius: 8px;
+            break-inside: avoid;
+            margin-bottom: 20px;
+        }
+
+        .work-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px var(--accent-glow);
+            border-color: var(--accent);
+        }
+
+        .work-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(10, 10, 15, 0.9) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .work-img {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .work-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.8s ease, filter 0.5s ease;
+            filter: contrast(1.05) saturate(0.95);
+        }
+
+        .work-card:hover .work-img img {
+            transform: scale(1.05);
+            filter: contrast(1.15) saturate(1.05);
+        }
+
+        .work-content {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            z-index: 3;
+        }
+
+        .work-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .work-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        .work-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+        }
+
+        .work-number {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            opacity: 0.15;
+            z-index: 1;
+            line-height: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .works-grid {
+                columns: 2;
+                padding: 0 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .works-grid {
+                columns: 1;
+                padding: 0 8px;
+            }
+        }
+
+/* ===== CATEGORIES SECTION ===== */
+        .categories-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 40px;
+            position: relative;
+            background: var(--void);
+        }
+
+        .categories-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .category-card {
+            background: var(--void-light);
+            border: 1px solid var(--surface);
+            padding: 48px 32px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px var(--accent-glow);
+            transform: translateY(-8px);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .category-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== ABOUT SECTION ===== */
+        .about-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 40px;
+            position: relative;
+            background: var(--void-light);
+        }
+
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .terminal-window {
+            background: var(--void);
+            border: 1px solid var(--surface);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            background: var(--surface);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: var(--danger); }
+        .terminal-dot.yellow { background: var(--warning); }
+        .terminal-dot.green { background: var(--accent); }
+
+        .terminal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            font-family: 'Rajdhani', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .terminal-line .prompt {
+            color: var(--accent);
+        }
+
+        .terminal-line .command {
+            color: var(--text-primary);
+        }
+
+        .terminal-line .output {
+            color: var(--text-muted);
+            padding-left: 20px;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--accent);
+            animation: blink 0.8s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .about-text h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .about-text h2 span {
+            color: var(--accent);
+        }
+
+        .about-text p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .skill-bars {
+            margin-top: 32px;
+        }
+
+        .skill-bar {
+            margin-bottom: 16px;
+        }
+
+        .skill-bar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .skill-bar-header span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .skill-bar-track {
+            height: 4px;
+            background: var(--surface);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 60px 40px 40px;
+            background: var(--void);
+            border-top: 1px solid var(--surface);
+            position: relative;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .footer-col h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col a {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom p {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* ===== REVEAL ANIMATIONS ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 968px) {
+            .hero-content,
+            .about-container {
+                grid-template-columns: 1fr;
+            }
+
+            .works-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .works-grid { columns: 1; }
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sketch Background Elements -->
+    <div class="sketch-bg">
+        <!-- Scribble lines top-left -->
+        <svg class="sketch-scribble" style="top:5%;left:2%;width:200px;height:200px;" viewBox="0 0 200 200">
+            <path d="M20,30 Q50,10 80,40 T140,30 T180,60" />
+            <path d="M30,80 Q70,60 100,90 T160,70" />
+            <path d="M10,130 Q60,110 90,140 T170,120" />
+            <path d="M40,170 Q80,150 120,180 T190,160" />
+        </svg>
+
+        <!-- Crosshatch top-right -->
+        <svg class="sketch-hatch" style="top:2%;right:5%;width:180px;height:180px;" viewBox="0 0 180 180">
+            <line x1="0" y1="0" x2="180" y2="180" />
+            <line x1="30" y1="0" x2="180" y2="150" />
+            <line x1="60" y1="0" x2="180" y2="120" />
+            <line x1="90" y1="0" x2="180" y2="90" />
+            <line x1="120" y1="0" x2="180" y2="60" />
+            <line x1="150" y1="0" x2="180" y2="30" />
+            <line x1="0" y1="30" x2="150" y2="180" />
+            <line x1="0" y1="60" x2="120" y2="180" />
+            <line x1="0" y1="90" x2="90" y2="180" />
+            <line x1="0" y1="120" x2="60" y2="180" />
+        </svg>
+
+        <!-- Ink blotches -->
+        <div class="sketch-blot" style="top:15%;left:45%;width:120px;height:120px;"></div>
+        <div class="sketch-blot" style="top:60%;right:8%;width:80px;height:80px;"></div>
+        <div class="sketch-blot" style="bottom:20%;left:10%;width:100px;height:100px;"></div>
+
+        <!-- Arrows -->
+        <svg class="sketch-arrow" style="top:25%;right:15%;width:80px;height:60px;" viewBox="0 0 80 60">
+            <path d="M10,50 Q30,10 60,20 L70,15 M60,20 L65,30" />
+        </svg>
+        <svg class="sketch-arrow" style="bottom:35%;left:25%;width:60px;height:50px;" viewBox="0 0 60 50">
+            <path d="M50,10 Q20,15 15,40 L10,35 M15,40 L22,38" />
+        </svg>
+
+        <!-- Sketch circles -->
+        <div class="sketch-circle" style="top:40%;left:5%;width:60px;height:60px;"></div>
+        <div class="sketch-circle" style="top:70%;right:20%;width:40px;height:40px;"></div>
+        <div class="sketch-circle" style="bottom:10%;left:50%;width:50px;height:50px;"></div>
+
+        <!-- Dashed rects -->
+        <div class="sketch-rect" style="top:8%;left:35%;width:100px;height:60px;transform:rotate(5deg);"></div>
+        <div class="sketch-rect" style="bottom:30%;right:5%;width:80px;height:80px;transform:rotate(-3deg);"></div>
+
+        <!-- Wavy accent lines -->
+        <svg class="sketch-line" style="top:50%;left:0;width:100%;height:100px;" viewBox="0 0 1200 100" preserveAspectRatio="none">
+            <path d="M0,50 Q150,20 300,50 T600,50 T900,50 T1200,50" />
+            <path d="M0,70 Q150,40 300,70 T600,70 T900,70 T1200,70" />
+        </svg>
+
+        <!-- Hand-written notes -->
+        <div class="sketch-note" style="top:10%;left:55%;">sketch #01</div>
+        <div class="sketch-note" style="top:45%;right:10%;transform:rotate(12deg);">concept</div>
+        <div class="sketch-note" style="bottom:15%;left:15%;transform:rotate(-5deg);">wip</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="custom-cursor">
+        <div class="cursor-cross-h"></div>
+        <div class="cursor-cross-v"></div>
+        <div class="cursor-ring"></div>
+        <div class="cursor-dot"></div>
+    </div>
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="digital-rain"></canvas>
+    <div class="mouse-pulse" id="mouse-pulse"></div>
+    <div class="scanlines"></div>
+    <div class="grid-overlay"></div>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <span class="logo-icon">◈</span>
+            <span class="logo-text">CONCEPT ART</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#works">作品</a></li>
+            <li><a href="#handdrawn">手绘</a></li>
+            <li><a href="#others">其他</a></li>
+            <li><a href="index.html" class="back-home">← 返回主页</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero section-full" id="home">
+        <div class="diag-bg">
+            <div class="diag-line">CONCEPT ART // ENVIRONMENT DESIGN // CHARACTER DESIGN // PROP DESIGN // VFX CONCEPT //</div>
+            <div class="diag-line">GAME ART // FILM DESIGN // VISUAL DEVELOPMENT // WORLD BUILDING //</div>
+            <div class="diag-line">DIGITAL PAINTING // 3D RENDERING // MATTE PAINTING // ILLUSTRATION //</div>
+            <div class="diag-line">CYBERPUNK // SCI-FI // FANTASY // POST-APOCALYPTIC //</div>
+            <div class="diag-line">PHOTOSHOP // BLENDER // ZBRUSH // UNREAL ENGINE //</div>
+            <div class="diag-line-reverse">VISUAL WORLD BUILDING ★ IMAGINATION ★ CREATIVITY ★</div>
+            <div class="diag-line-reverse">CONCEPT ART ★ DIGITAL PAINTING ★ 3D DESIGN ★</div>
+            <div class="diag-line-reverse">GAME DESIGN ★ FILM PRODUCTION ★ ART DIRECTION ★</div>
+        </div>
+        <div class="hero-bg-glow"></div>
+        <div class="hero-content">
+            <div class="hero-text reveal">
+                <div class="hero-tag" style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.3em; margin-bottom: 24px;">Concept Artist & Illustrator</div>
+                <h1>
+                    构建<br>
+                    <span class="glitch" data-text="视觉世界">视觉世界</span>
+                </h1>
+                <p>
+                    专注于视觉概念设计，用画笔构建沉浸式视觉体验。从角色设计到场景氛围，每一幅作品都是对想象力的探索。
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-value">20+</div>
+                        <div class="stat-label">项目经验</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">25+</div>
+                        <div class="stat-label">合作伙伴</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">120+</div>
+                        <div class="stat-label">原画作品</div>
+                    </div>
+                </div>
+                <a href="#works" class="hero-cta">查看作品 →</a>
+                <div class="hero-categories">
+                    <div class="category-card reveal">
+                        <div class="category-icon">🏙</div>
+                        <h3>场景设计</h3>
+                        <p>Environment Concept</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <div class="category-icon">👤</div>
+                        <h3>角色设计</h3>
+                        <p>Character Design</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <div class="category-icon">🎨</div>
+                        <h3>道具设计</h3>
+                        <p>Prop Design</p>
+                    </div>
+                    <div class="category-card reveal">
+                        <div class="category-icon">✨</div>
+                        <h3>特效概念</h3>
+                        <p>VFX Concept</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual reveal">
+                <div style="position: relative; border: 1px solid var(--accent); padding: 8px;">
+                    <img src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&h=600&fit=crop" alt="概念设计" style="width: 100%; display: block;">
+                    <div style="position: absolute; bottom: -30px; left: 0; right: 0; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 0.6rem; color: var(--text-muted);">
+                        <span>RES: 4K</span>
+                        <span>FORMAT: PSD</span>
+                        <span>STATUS: COMPLETE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Works Section -->
+    <section class="works-section" id="works">
+        <div class="section-header reveal">
+            <h2>板绘作品展示</h2>
+            <div class="section-line"></div>
+            <p style="color: var(--text-secondary);">Concept Art Portfolio</p>
+        </div>
+        <div class="works-grid">
+            <div class="work-card reveal">
+                <div class="work-number">01</div>
+                <div class="work-img">
+                    <img src="./images/原画/1.jpg" alt="原画作品 01">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《路》</h3>
+                    <p class="work-desc">1620×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">02</div>
+                <div class="work-img">
+                    <img src="./images/原画/21.jpg" alt="原画作品 04">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《黑白练习》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">03</div>
+                <div class="work-img">
+                    <img src="./images/原画/3.jpg" alt="原画作品 07">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《大菩萨》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">04</div>
+                <div class="work-img">
+                    <img src="./images/原画/8.jpg" alt="原画作品 08">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《剧场》</h3>
+                    <p class="work-desc">1080×1474 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">05</div>
+                <div class="work-img">
+                    <img src="./images/原画/11.jpg" alt="原画作品 13">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《泪》</h3>
+                    <p class="work-desc">1322×898 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">06</div>
+                <div class="work-img">
+                    <img src="./images/原画/18.jpg" alt="原画作品 16">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《线条练习》</h3>
+                    <p class="work-desc">1080×1436 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">07</div>
+                <div class="work-img">
+                    <img src="./images/原画/17.jpg" alt="原画作品 19">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《DOC》</h3>
+                    <p class="work-desc">992×1159 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">08</div>
+                <div class="work-img">
+                    <img src="./images/原画/20.jpg" alt="原画作品 23">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《海报练习》</h3>
+                    <p class="work-desc">1080×1502 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">08</div>
+                <div class="work-img">
+                    <img src="./images/原画/4.jpg" alt="原画作品 02">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《她》</h3>
+                    <p class="work-desc">1080×1502 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">10</div>
+                <div class="work-img">
+                    <img src="./images/原画/10.jpg" alt="原画作品 05">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《OK邦》</h3>
+                    <p class="work-desc">1080×1256 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">11</div>
+                <div class="work-img">
+                    <img src="./images/原画/12.jpg" alt="原画作品 09">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《水下》</h3>
+                    <p class="work-desc">1440×1079 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">12</div>
+                <div class="work-img">
+                    <img src="./images/原画/14.jpg" alt="原画作品 10">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《小丑》</h3>
+                    <p class="work-desc">1676×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">13</div>
+                <div class="work-img">
+                    <img src="./images/原画/13.jpg" alt="原画作品 14">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《猫猫》</h3>
+                    <p class="work-desc">322×338 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">14</div>
+                <div class="work-img">
+                    <img src="./images/原画/19.jpg" alt="原画作品 17">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《他》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">15</div>
+                <div class="work-img">
+                    <img src="./images/原画/15.jpg" alt="原画作品 20">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>原画作品 20</h3>
+                    <p class="work-desc">1322×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">16</div>
+                <div class="work-img">
+                    <img src="./images/原画/16.jpg" alt="原画作品 21">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《动漫练习》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">17</div>
+                <div class="work-img">
+                    <img src="./images/原画/6.jpg" alt="原画作品 03">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《珠宝》</h3>
+                    <p class="work-desc">1080×1277 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">18</div>
+                <div class="work-img">
+                    <img src="./images/原画/2.jpg" alt="原画作品 06">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《佛》</h3>
+                    <p class="work-desc">1080×1528 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">19</div>
+                <div class="work-img">
+                    <img src="./images/原画/7.jpg" alt="原画作品 11">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《水》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">20</div>
+                <div class="work-img">
+                    <img src="./images/原画/5.jpg" alt="原画作品 12">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《小丑女》</h3>
+                    <p class="work-desc">2732×1775 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">21</div>
+                <div class="work-img">
+                    <img src="./images/原画/9.jpg" alt="原画作品 15">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《橘》</h3>
+                    <p class="work-desc">1080×1526 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">22</div>
+                <div class="work-img">
+                    <img src="./images/原画/22.jpg" alt="原画作品 18">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《代号 穿山甲》</h3>
+                    <p class="work-desc">2732×1725 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">23</div>
+                <div class="work-img">
+                    <img src="./images/原画/23.jpg" alt="原画作品 22">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《背影》</h3>
+                    <p class="work-desc">1186×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">24</div>
+                <div class="work-img">
+                    <img src="./images/原画/24.jpg" alt="原画作品 24">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Concept Art</span>
+                    <h3>《风格转换练习》</h3>
+                    <p class="work-desc">657×1080 portrait</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hand-drawn Works Section -->
+    <section class="works-section" id="handdrawn">
+        <div class="section-header reveal">
+            <h2>手绘作品展示</h2>
+            <div class="section-line"></div>
+            <p style="color: var(--text-secondary);">Hand-drawn Artworks</p>
+        </div>
+        <div class="works-grid">
+            <div class="work-card reveal">
+                <div class="work-number">01</div>
+                <div class="work-img">
+                    <img src="./images/手绘/1.jpg" alt="手绘作品 01">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《护身符》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">02</div>
+                <div class="work-img">
+                    <img src="./images/手绘/2.jpg" alt="手绘作品 02">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《小巷》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">03</div>
+                <div class="work-img">
+                    <img src="./images/手绘/3.jpg" alt="手绘作品 03">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《岛屿》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">04</div>
+                <div class="work-img">
+                    <img src="./images/手绘/4.jpg" alt="手绘作品 04">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《夜》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">05</div>
+                <div class="work-img">
+                    <img src="./images/手绘/5.jpg" alt="手绘作品 05">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《写生1》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">06</div>
+                <div class="work-img">
+                    <img src="./images/手绘/6.jpg" alt="手绘作品 06">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《墙绘》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">07</div>
+                <div class="work-img">
+                    <img src="./images/手绘/7.jpg" alt="手绘作品 07">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《写生2》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">08</div>
+                <div class="work-img">
+                    <img src="./images/手绘/8.jpg" alt="手绘作品 08">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《写生3》</h3>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">09</div>
+                <div class="work-img">
+                    <img src="./images/手绘/9.jpg" alt="手绘作品 09">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Hand-drawn</span>
+                    <h3>《咖啡撒了》</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Other Works Section -->
+    <section class="works-section" id="others">
+        <div class="section-header reveal">
+            <h2>其他作品展示</h2>
+            <div class="section-line"></div>
+            <p style="color: var(--text-secondary);">Other Works</p>
+        </div>
+        <div class="works-grid">
+            <div class="work-card reveal">
+                <div class="work-number">01</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/二维猫.jpg" alt="二维猫">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《二维猫》</h3>
+                    <p class="work-desc">1920×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">02</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/人像1.jpg" alt="人像1">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《人像 1》</h3>
+                    <p class="work-desc">1920×1440 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">03</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/人像2.jpg" alt="人像2" loading="lazy">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《人像 2》</h3>
+                    <p class="work-desc">3840×4096 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">04</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/健身房3Dmax渲染.jpg" alt="健身房3Dmax渲染">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《健身房 3Dmax 渲染》</h3>
+                    <p class="work-desc">2538×1080 ultra-wide</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">05</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/剧场1.jpg" alt="剧场1">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《剧场 1》</h3>
+                    <p class="work-desc">1440×1080 landscape</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">06</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/剧场2.jpg" alt="剧场2">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《剧场 2》</h3>
+                    <p class="work-desc">1080×1193 portrait</p>
+                </div>
+            </div>
+            <div class="work-card reveal">
+                <div class="work-number">07</div>
+                <div class="work-img">
+                    <img src="./images/摄影 剧场/展览馆.jpg" alt="展览馆">
+                </div>
+                <div class="work-content">
+                    <span class="work-tag">Other Works</span>
+                    <h3>《展览馆》</h3>
+                    <p class="work-desc">1920×1080 landscape</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ===== PARTICLES SYSTEM =====
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = 0, mouseY = 0;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.life = Math.random() * 100 + 50;
+                this.maxLife = this.life;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life--;
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 100) {
+                    this.x -= dx * 0.02;
+                    this.y -= dy * 0.02;
+                }
+                if (this.life <= 0 || this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                const lifeRatio = this.life / this.maxLife;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 212, 170, ${this.opacity * lifeRatio})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 212, 170, ${0.1 * (1 - dist / 100)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawConnections();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Reveal on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ===== DIGITAL RAIN EFFECT =====
+        const rainCanvas = document.getElementById('digital-rain');
+        const rainCtx = rainCanvas.getContext('2d');
+        let rainDrops = [];
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+        
+        function resizeRainCanvas() {
+            rainCanvas.width = window.innerWidth;
+            rainCanvas.height = window.innerHeight;
+        }
+        resizeRainCanvas();
+        window.addEventListener('resize', resizeRainCanvas);
+        
+        class RainDrop {
+            constructor() {
+                this.x = Math.random() * rainCanvas.width;
+                this.y = Math.random() * rainCanvas.height;
+                this.speed = Math.random() * 3 + 2;
+                this.char = chars[Math.floor(Math.random() * chars.length)];
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.fontSize = Math.random() * 14 + 10;
+            }
+            update() {
+                this.y += this.speed;
+                if (this.y > rainCanvas.height) {
+                    this.y = -20;
+                    this.x = Math.random() * rainCanvas.width;
+                    this.char = chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+            draw() {
+                rainCtx.font = this.fontSize + 'px monospace';
+                rainCtx.fillStyle = `rgba(0, 212, 170, ${this.opacity})`;
+                rainCtx.fillText(this.char, this.x, this.y);
+            }
+        }
+        
+        for (let i = 0; i < 50; i++) rainDrops.push(new RainDrop());
+        
+        function animateRain() {
+            rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+            rainDrops.forEach(drop => { drop.update(); drop.draw(); });
+            requestAnimationFrame(animateRain);
+        }
+        animateRain();
+
+        // ===== MOUSE PULSE FOLLOW =====
+        const mousePulse = document.getElementById('mouse-pulse');
+        let pulseX = 0, pulseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            pulseX = e.clientX;
+            pulseY = e.clientY;
+            mousePulse.style.left = pulseX + 'px';
+            mousePulse.style.top = pulseY + 'px';
+        });
+
+        // ===== TEXT DECODE EFFECT =====
+        const decodeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+        function decodeText(element, finalText, speed = 50) {
+            let iteration = 0;
+            const interval = setInterval(() => {
+                element.textContent = finalText.split('').map((char, index) => {
+                    if (index < iteration) return finalText[index];
+                    return decodeChars[Math.floor(Math.random() * decodeChars.length)];
+                }).join('');
+                if (iteration >= finalText.length) clearInterval(interval);
+                iteration += 1 / 3;
+            }, speed);
+        }
+        
+        // Apply decode effect to section headers when they become visible
+        const headerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.decoded) {
+                    entry.target.dataset.decoded = 'true';
+                    const originalText = entry.target.textContent;
+                    decodeText(entry.target, originalText, 30);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        document.querySelectorAll('.section-header h2').forEach(h2 => headerObserver.observe(h2));
+
+        // ===== PARALLAX SCROLL EFFECT =====
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.parallax-slow').forEach(el => {
+                el.style.transform = `translateY(${scrolled * 0.3}px)`;
+            });
+            document.querySelectorAll('.diag-bg').forEach(el => {
+                el.style.transform = `translateY(${scrolled * 0.1}px)`;
+            });
+        });
+
+        // ===== FLOATING PARTICLES GENERATOR =====
+        function createFloatingParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'float-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 6 + 4) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 10000);
+        }
+        setInterval(createFloatingParticle, 2000);
+
+        // ===== GLITCH SCAN LINE ON SECTIONS =====
+        document.querySelectorAll('section').forEach(section => {
+            const scanLine = document.createElement('div');
+            scanLine.className = 'glitch-scan';
+            section.appendChild(scanLine);
+        });
+
+        // ===== ENERGY WAVE ON HERO =====
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            const energyWave = document.createElement('div');
+            energyWave.className = 'energy-wave';
+            heroSection.appendChild(energyWave);
+        }
+
+        // ===== NEON FLICKER ON CARDS =====
+        document.querySelectorAll('.work-card, .category-card').forEach(card => {
+            card.classList.add('neon-flicker');
+        });
+
+        // ===== TYPING EFFECT FOR TERMINAL =====
+        const terminalLines = document.querySelectorAll('.terminal-line');
+        terminalLines.forEach((line, index) => {
+            line.style.opacity = '0';
+            setTimeout(() => {
+                line.style.opacity = '1';
+                line.classList.add('typing-cursor');
+                setTimeout(() => line.classList.remove('typing-cursor'), 1000);
+            }, index * 800);
+        });
+
+        // ===== CUSTOM CURSOR CONTROL =====
+        const customCursor = document.getElementById('custom-cursor');
+        let cursorX = 0, cursorY = 0;
+        let targetX = 0, targetY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (targetX - cursorX) * 0.15;
+            cursorY += (targetY - cursorY) * 0.15;
+            customCursor.style.left = cursorX + 'px';
+            customCursor.style.top = cursorY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effects
+        const hoverElements = document.querySelectorAll('a, button, .work-card, .category-card, .hero-cta');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => customCursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => customCursor.classList.remove('hovering'));
+        });
+
+        // Click effects
+        document.addEventListener('mousedown', () => customCursor.classList.add('clicking'));
+        document.addEventListener('mouseup', () => customCursor.classList.remove('clicking'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>启元实验室项目 — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #111111;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #ff6b19;
+            --line: rgba(255, 255, 255, 0.08);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; background: var(--bg); }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection { background: var(--accent); color: white; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* ===== VIDEO PLAYER ===== */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            background: var(--bg-elevated);
+        }
+        .video-wrapper video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px 12px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 10;
+        }
+        .video-wrapper:hover .video-controls,
+        .video-wrapper.paused .video-controls,
+        .video-wrapper.seeking .video-controls {
+            opacity: 1;
+        }
+        .progress-bar {
+            position: relative;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: height 0.2s ease;
+        }
+        .progress-bar:hover { height: 6px; }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 0%;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+        .progress-handle {
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,107,25,0.5);
+            transition: transform 0.2s ease;
+        }
+        .progress-bar:hover .progress-handle,
+        .video-wrapper.seeking .progress-handle {
+            transform: translateY(-50%) scale(1);
+        }
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .controls-left, .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ctrl-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .ctrl-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--accent);
+        }
+        .ctrl-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .time-display {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            font-family: 'Inter', monospace;
+            letter-spacing: 0.5px;
+            min-width: 90px;
+            text-align: center;
+        }
+        .volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .volume-slider {
+            width: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            appearance: none;
+            cursor: pointer;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+        .volume-wrap:hover .volume-slider {
+            width: 80px;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .volume-slider::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        .center-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+        .center-play.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .center-play .play-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .center-play .play-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .center-play .play-btn svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+            margin-left: 3px;
+        }
+        .video-wrapper:fullscreen {
+            border-radius: 0;
+        }
+        .video-wrapper:fullscreen .video-controls {
+            opacity: 1;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 28px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        .nav-logo:hover { color: var(--accent); }
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: var(--transition-fast);
+        }
+        .nav-back:hover { color: var(--text); }
+        .nav-back svg { transition: var(--transition-fast); }
+        .nav-back:hover svg { transform: translateX(-4px); }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero:hover .hero-bg img { transform: scale(1.05); }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.4) 50%, rgba(10,10,10,0.2) 100%);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 80px 48px;
+            max-width: 900px;
+        }
+        .hero-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+        .hero-title {
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 600px;
+        }
+        .hero-tags {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+        .hero-tag {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-tag:hover {
+            border-color: var(--accent);
+            background: rgba(255, 107, 25, 0.12);
+            color: var(--text);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(255, 107, 25, 0.15);
+        }
+
+
+        .info-section {
+            padding: 80px 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--line);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 48px;
+        }
+        .info-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .info-item:hover {
+            border-color: var(--accent);
+            background: rgba(255, 107, 25, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(255, 107, 25, 0.18);
+        }
+        .info-item:hover h4 {
+            color: var(--accent);
+        }
+        .info-item:hover p {
+            color: var(--text);
+        }
+        .info-item h4 {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .info-item p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gallery-section {
+            padding: 120px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .gallery-header {
+            margin-bottom: 64px;
+        }
+        .gallery-header h2 {
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+        .gallery-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            cursor: pointer;
+            background: var(--bg-elevated);
+        }
+        .gallery-item:first-child {
+            grid-column: span 2;
+        }
+        .gallery-item::before {
+            content: '';
+            display: block;
+            padding-top: 66%;
+        }
+        .gallery-item img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.96);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            cursor: zoom-out;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--line);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-size: 20px;
+            z-index: 10;
+        }
+        .lightbox-close:hover { background: var(--accent); border-color: var(--accent); }
+
+        .video-section {
+            padding: 0 48px 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--bg-elevated);
+            aspect-ratio: 16/9;
+        }
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .video-overlay:hover { background: rgba(0,0,0,0.2); }
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        .play-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        .play-btn svg { width: 28px; height: 28px; color: white; margin-left: 4px; }
+
+        .next-project {
+            padding: 160px 48px;
+            text-align: center;
+            border-top: 1px solid var(--line);
+        }
+        .next-project-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+        .next-project-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 32px;
+            transition: var(--transition-fast);
+        }
+        .next-project:hover .next-project-title { color: var(--accent); }
+        .next-project a {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .next-project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition-fast);
+        }
+        .next-project:hover .next-project-link { color: var(--accent); }
+        .next-project-link svg { transition: var(--transition-fast); }
+        .next-project:hover .next-project-link svg { transform: translateX(6px); }
+
+        .footer {
+            padding: 40px 48px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-text { font-size: 13px; color: var(--text-dim); }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        @media (max-width: 768px) {
+            .nav { padding: 20px 24px; }
+            .hero-content { padding: 60px 24px; }
+            .hero-tags { grid-template-columns: repeat(2, 1fr); }
+            .info-section { padding: 60px 24px; }
+            .info-grid { grid-template-columns: 1fr; gap: 32px; }
+            .gallery-section { padding: 80px 24px; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .gallery-item:first-child { grid-column: auto; }
+            .video-section { padding: 0 24px 80px; }
+            .next-project { padding: 100px 24px; }
+            .footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">Portfolio</a>
+        <a href="index.html#works" class="nav-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            返回作品
+        </a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="./images/启元/图片11.jpg" alt="启元实验室">
+        </div>
+        <div class="hero-content">
+            <div class="hero-label">05 / 建筑精装</div>
+            <h1 class="hero-title">启元<br>实验室</h1>
+            <p class="hero-desc">打造一个功能完备、安全合规、高效智能、可持续扩展的现代化实验环境。实验室是科研活动的核心载体，空间品质直接影响实验效率与数据精度。</p>
+            <div class="hero-tags">
+                <span class="hero-tag">AI效果图</span>
+                <span class="hero-tag">平面方案设计</span>
+                <span class="hero-tag">效果方案设计</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <h4>项目类型</h4>
+                <p>实验室空间设计</p>
+            </div>
+            <div class="info-item">
+                <h4>项目周期</h4>
+                <p>2024年项目</p>
+            </div>
+            <div class="info-item">
+                <h4>服务内容</h4>
+                <p>AI效果图、平面方案设计、效果方案设计</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <div class="gallery-header">
+            <h2>项目照片</h2>
+            <p>点击照片可查看大图</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片1.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片2.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片3.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片4.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片5.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片6.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片9.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片8.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片10.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片16.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片11.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片12.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片18.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片14.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片13.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片15.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/启元/图片17.jpg" alt=""></div>
+        </div>
+    </section>
+
+    <section class="video-section">
+        <div class="gallery-header">
+            <h2>项目视频</h2>
+            <p>点击播放按钮查看视频内容</p>
+        </div>
+        <div class="video-grid">
+            <div class="video-item">
+                <div class="video-wrapper" id="mainVideoWrap">
+                    <video id="mainVideo" poster="./images/启元/图片11.jpg" preload="metadata">
+                        <source src="./videos/work-5-video-1.mp4" type="video/mp4">
+                    </video>
+                    <div class="center-play" id="centerPlay" onclick="togglePlay()">
+                        <div class="play-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="video-controls">
+                        <div class="progress-bar" id="progressBar" onclick="seek(event)">
+                            <div class="progress-fill" id="progressFill">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="controls-row">
+                            <div class="controls-left">
+                                <button class="ctrl-btn" id="playBtn" onclick="togglePlay()" title="播放/暂停">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <button class="ctrl-btn" onclick="skip(-10)" title="后退10秒">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
+                                </button>
+                                <button class="ctrl-btn" onclick="skip(10)" title="前进10秒">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5"/><path d="M6 17l5-5-5-5"/></svg>
+                                </button>
+                                <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+                            </div>
+                            <div class="controls-right">
+                                <div class="volume-wrap">
+                                    <button class="ctrl-btn" id="muteBtn" onclick="toggleMute()" title="静音">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                    </button>
+                                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)">
+                                </div>
+                                <button class="ctrl-btn" onclick="toggleFullscreen()" title="全屏">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</div>
+        <img id="lightbox-img" src="" alt="大图">
+    </div>
+
+    <section class="next-project">
+        <a href="index.html#works">
+            <div class="next-project-label">回到作品列表</div>
+            <h2 class="next-project-title">浏览更多<br>项目</h2>
+            <div class="next-project-link">
+                查看全部
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </div>
+        </a>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-text"> 2026 Portfolio. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="index.html">首页</a>
+            <a href="heart.html">感谢</a>
+        </div>
+    </footer>
+
+    <script>
+        function openLightbox(element) {
+            const img = element.querySelector('img');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    
+        // ===== VIDEO PLAYER =====
+        const video = document.getElementById('mainVideo');
+        const wrap = document.getElementById('mainVideoWrap');
+        const playBtn = document.getElementById('playBtn');
+        const centerPlay = document.getElementById('centerPlay');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const muteBtn = document.getElementById('muteBtn');
+        const volSlider = document.getElementById('volumeSlider');
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        function updatePlayIcon() {
+            const isPaused = video.paused;
+            const icon = isPaused
+                ? '<path d="M8 5v14l11-7z"/>'
+                : '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>';
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor">' + icon + '</svg>';
+            centerPlay.classList.toggle('hidden', !isPaused);
+            wrap.classList.toggle('paused', isPaused);
+        }
+
+        function togglePlay() {
+            if (video.paused) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        }
+
+        function skip(sec) {
+            video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + sec));
+        }
+
+        function seek(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            video.currentTime = ratio * (video.duration || 0);
+        }
+
+        function setVolume(v) {
+            video.volume = v;
+            video.muted = false;
+            updateMuteIcon();
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            updateMuteIcon();
+        }
+
+        function updateMuteIcon() {
+            const icons = {
+                muted: '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>',
+                low: '<path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>',
+                high: '<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'
+            };
+            let icon;
+            if (video.muted || video.volume === 0) icon = icons.muted;
+            else if (video.volume < 0.5) icon = icons.low;
+            else icon = icons.high;
+            muteBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor">' + icon + '</svg>';
+            volSlider.value = video.muted ? 0 : video.volume;
+        }
+
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                wrap.requestFullscreen?.() || video.requestFullscreen?.();
+            }
+        }
+
+        // Events
+        video.addEventListener('play', updatePlayIcon);
+        video.addEventListener('pause', updatePlayIcon);
+        video.addEventListener('timeupdate', () => {
+            const pct = video.duration ? (video.currentTime / video.duration) * 100 : 0;
+            progressFill.style.width = pct + '%';
+            timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration || 0);
+        });
+        video.addEventListener('loadedmetadata', () => {
+            timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+        });
+        video.addEventListener('ended', () => {
+            updatePlayIcon();
+            centerPlay.classList.remove('hidden');
+        });
+        video.addEventListener('volumechange', updateMuteIcon);
+
+        // Progress bar drag
+        let isDragging = false;
+        progressBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            wrap.classList.add('seeking');
+            seek(e);
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) seek(e);
+        });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            wrap.classList.remove('seeking');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+            if (e.code === 'ArrowLeft') skip(-5);
+            if (e.code === 'ArrowRight') skip(5);
+            if (e.code === 'ArrowUp') { e.preventDefault(); setVolume(Math.min(1, video.volume + 0.1)); }
+            if (e.code === 'ArrowDown') { e.preventDefault(); setVolume(Math.max(0, video.volume - 0.1)); }
+            if (e.code === 'KeyF') toggleFullscreen();
+            if (e.code === 'KeyM') toggleMute();
+        });
+
+        // Double click for fullscreen
+        wrap.addEventListener('dblclick', toggleFullscreen);
+    </script>
+</body>
+</html>
