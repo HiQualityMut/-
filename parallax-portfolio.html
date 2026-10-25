@@ -1767,6 +1767,44 @@
         .works-grid .reveal-card:nth-child(5) { transition-delay: 0.2s; }
         .works-grid .reveal-card:nth-child(6) { transition-delay: 0.16s; }
 
+
+        /* ===== 热带雨林 · 项目一 ===== */
+        .rf-visual { position: absolute; inset: 0; overflow: hidden; }
+        .rf-visual video { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) contrast(1.08) brightness(0.92); }
+        .rf-badge { position: absolute; z-index: 3; left: 48px; top: 110px; font-size: .72rem; letter-spacing: .3em; color: var(--acid); border: 1px solid var(--acid-dim); background: rgba(9,11,9,.7); padding: 8px 14px; backdrop-filter: blur(6px); }
+        .rf-switch { position: absolute; z-index: 3; right: 48px; bottom: 80px; display: flex; gap: 10px; }
+        .rf-switch button { width: 62px; height: 34px; font-size: .72rem; letter-spacing: .12em; color: var(--text-secondary); background: rgba(9,11,9,.72); border: 1px solid var(--border); cursor: pointer; transition: all .35s; }
+        .rf-switch button:hover { color: var(--text-primary); border-color: var(--acid-dim); }
+        .rf-switch button.on { color: #0d100d; background: var(--acid); border-color: var(--acid); box-shadow: 0 0 18px var(--acid-glow); }
+        .project-01 .project-content { max-width: 560px; }
+
+        /* ===== 热带雨林展示区（页面底部） ===== */
+        .rf-showcase { position: relative; padding: 110px 6vw 90px; background: var(--bg-elevated); }
+        .rf-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 34px; }
+        .rf-head h2 { font-size: clamp(1.8rem, 3.4vw, 3rem); letter-spacing: .08em; color: var(--text-primary); }
+        .rf-head .rf-sub { color: var(--text-secondary); font-size: .86rem; letter-spacing: .14em; }
+        .rf-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border: 1px solid var(--border); overflow: hidden; }
+        .rf-player video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+        .rf-meta { margin-top: 14px; display: flex; gap: 18px; flex-wrap: wrap; color: var(--text-secondary); font-size: .78rem; letter-spacing: .1em; }
+        .rf-meta b { color: var(--acid); font-weight: 600; }
+        .rf-clips { margin-top: 44px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .rf-clips h3 { grid-column: 1 / -1; font-size: 1.02rem; letter-spacing: .24em; color: var(--text-secondary); margin-bottom: 2px; }
+        .rf-clip { position: relative; aspect-ratio: 16/9; overflow: hidden; border: 1px solid var(--border); background: #000; cursor: pointer; transition: all .4s cubic-bezier(.16,1,.3,1); }
+        .rf-clip video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .rf-clip .rf-clip-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 12px 8px; font-size: .72rem; letter-spacing: .14em; color: var(--text-primary); background: linear-gradient(0deg, rgba(6,8,6,.85), transparent); opacity: 0; transition: opacity .35s; }
+        .rf-clip:hover { border-color: var(--acid-dim); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+        .rf-clip:hover .rf-clip-cap { opacity: 1; }
+        .rf-playdot { position: absolute; inset: 0; margin: auto; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--acid-dim); background: rgba(9,11,9,.55); color: var(--acid); display: flex; align-items: center; justify-content: center; font-size: .9rem; transition: all .35s; }
+        .rf-clip:hover .rf-playdot { background: var(--acid); color: #0d100d; box-shadow: 0 0 22px var(--acid-glow); }
+        @media (max-width: 900px) {
+            .rf-clips { grid-template-columns: repeat(2, 1fr); }
+            .rf-switch { right: 20px; bottom: 20px; }
+            .rf-badge { left: 20px; top: 90px; }
+        }
+        @media (max-width: 560px) {
+            .rf-clips { grid-template-columns: 1fr; }
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1280px) {
             html { font-size: 14px; }
@@ -1837,24 +1875,31 @@
     </section>
 
     <!-- Project 01 - Full Bleed with bottom-left content -->
-    <section class="project-section project-01" id="project01">
-        <div class="project-num">01</div>
-        <div class="project-visual reveal-left">
-            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&h=800&fit=crop" alt="赛博朋克城市">
-        </div>
-        <div class="project-content">
-            <div class="project-category reveal-text">Film / Concept</div>
-            <a href="project-01-detail.html" class="project-title-link"><h2 class="project-title glitch reveal-scale" data-text="赛博朋克城市">赛博朋克城市</h2></a>
-            <p class="project-desc reveal">为未来科幻电影打造沉浸式城市场景，融合霓虹美学与东方元素。从概念草图到最终Matte Painting，构建了一个充满层次感的未来都市。</p>
-            <div class="project-tags reveal">
-                <span class="project-tag">场景概念</span>
-                <span class="project-tag">Matte Painting</span>
-                <span class="project-tag">3D</span>
-                <span class="project-tag">Blender</span>
-            </div>
-        </div>
-        <div class="project-glitch-bar"></div>
-    </section>
+<section class="project-section project-01" id="project01">
+<div class="project-num">01</div>
+<div class="rf-visual">
+<video id="rfMain" autoplay muted loop playsinline preload="metadata" poster="./images/rainforest/cuise-lichang-main-poster.jpg">
+<source src="./videos/rainforest/clip-01.mp4" type="video/mp4">
+</video>
+</div>
+<div class="rf-badge">热带雨林 · 翠色猎场</div>
+<div class="project-content">
+<div class="project-category reveal-text">Film / AIGC</div>
+<h2 class="project-title glitch reveal-scale" data-text="翠色猎场">翠色猎场</h2>
+<p class="project-desc reveal">热带雨林自然纪录向作品。以 ComfyUI + Krea2 + MiniMax H3 + SeeDance 2.0 搭建从分镜到成片的完整管线，呈现猛禽掠飞、金刚鹦鹉与溪流生态。完整成片见页面底部展示区。</p>
+<div class="project-tags reveal">
+<span class="project-tag">热带雨林</span>
+<span class="project-tag">AIGC 管线</span>
+<span class="project-tag">自然纪录</span>
+<span class="project-tag">分镜设计</span>
+</div>
+</div>
+<div class="rf-switch">
+<button type="button" data-rf="clip" class="on">片段</button>
+<button type="button" data-rf="main">成片</button>
+</div>
+<div class="project-glitch-bar"></div>
+</section>
 
     <!-- Project 02 - Full Bleed with top-right content -->
     <section class="project-section project-02" id="project02">
@@ -1954,8 +1999,35 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
+<!-- 热带雨林展示 -->
+<section class="rf-showcase" id="rainforest">
+<div class="rf-head">
+<h2 class="reveal-text">翠色猎场 · 成片展示</h2>
+<div class="rf-sub">TROPICAL RAINFOREST / FULL FILM 02:13</div>
+</div>
+<div class="rf-player reveal">
+<video id="rfShowcase" controls preload="metadata" poster="./images/rainforest/cuise-lichang-main-poster.jpg">
+<source src="./videos/cuise-lichang-main.mp4" type="video/mp4">
+</video>
+</div>
+<div class="rf-meta">
+<span>时长 <b>02:13</b></span>
+<span>规格 <b>1080P</b></span>
+<span>管线 <b>ComfyUI + Krea2 + MiniMax H3 + SeeDance 2.0</b></span>
+</div>
+<div class="rf-clips">
+<h3>故事片段 / 悬停预览 · 点击播放暂停</h3>
+<div class="rf-clip"><video src="./videos/rainforest/clip-01.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-01-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">01 猛禽掠飞俯瞰</span></div>
+<div class="rf-clip"><video src="./videos/rainforest/clip-02.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-02-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">02 猛禽栖枝凝视</span></div>
+<div class="rf-clip"><video src="./videos/rainforest/clip-03.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-03-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">03 林下光斑</span></div>
+<div class="rf-clip"><video src="./videos/rainforest/clip-04.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-04-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">04 溪流俯瞰</span></div>
+<div class="rf-clip"><video src="./videos/rainforest/clip-05.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-05-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">05 金刚鹦鹉特写</span></div>
+<div class="rf-clip"><video src="./videos/rainforest/clip-06.mp4" muted loop playsinline preload="metadata" poster="./images/rainforest/clip-06-poster.jpg"></video><span class="rf-playdot">▶</span><span class="rf-clip-cap">06 林冠仰望</span></div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
         <div class="footer-text">© 2026 VOID//FRAME. All rights reserved.</div>
         <div class="footer-links">
             <a href="#project01">项目01</a>
@@ -1964,6 +2036,7 @@
             <a href="#project04">项目04</a>
             <a href="#project05">项目05</a>
             <a href="#project06">项目06</a>
+            <a href="#rainforest">雨林展示</a>
         </div>
     </footer>
 
@@ -2024,7 +2097,40 @@
                 randomTitle.offsetHeight;
                 randomTitle.style.animation = '';
             }
-        }, 4000);
-    </script>
+}, 4000);
+
+// ===== 热带雨林：项目一背景视频切换（片段 / 成片） =====
+(function () {
+    var rfMain = document.getElementById('rfMain');
+    var CLIPS = {
+        1: './videos/rainforest/clip-01.mp4', 2: './videos/rainforest/clip-02.mp4',
+        3: './videos/rainforest/clip-03.mp4', 4: './videos/rainforest/clip-04.mp4',
+        5: './videos/rainforest/clip-05.mp4', 6: './videos/rainforest/clip-06.mp4'
+    };
+    var MAIN = './videos/cuise-lichang-main.mp4';
+    document.querySelectorAll('.rf-switch button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.rf-switch button').forEach(function (b) { b.classList.remove('on'); });
+            btn.classList.add('on');
+            var src = btn.dataset.rf === 'main' ? MAIN : CLIPS[1];
+            var so = rfMain && rfMain.querySelector('source');
+            if (so && so.getAttribute('src') !== src) {
+                so.setAttribute('src', src);
+                rfMain.load();
+                var p = rfMain.play(); if (p && p.catch) p.catch(function () {});
+            }
+        });
+    });
+    // 故事片段网格：悬停预览，点击播放/暂停
+    document.querySelectorAll('.rf-clip').forEach(function (card) {
+        var v = card.querySelector('video');
+        card.addEventListener('mouseenter', function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); });
+        card.addEventListener('mouseleave', function () { v.pause(); });
+        card.addEventListener('click', function () {
+            if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else { v.pause(); }
+        });
+    });
+})();
+</script>
 </body>
 </html>
