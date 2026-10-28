@@ -1783,7 +1783,7 @@
 <div class="project-num">01</div>
 <div class="rf-visual">
 <video id="rfMain" autoplay muted loop playsinline preload="metadata" poster="./images/rainforest/project01-hero-poster.jpg">
-<source src="./videos/rainforest/project01-hero.mp4" type="video/mp4">
+<source src="./videos/rainforest/project01-hero-720.mp4" type="video/mp4">
 </video>
 </div>
 <div class="rf-badge">热带雨林 · 翠色猎场</div>
@@ -1806,7 +1806,7 @@
         <div class="project-num">02</div>
         <div class="rf-visual">
             <video id="tjMain" autoplay muted loop playsinline preload="metadata" poster="./images/tianju/t-02-poster.jpg">
-                <source src="./videos/tianju/t-02.mp4" type="video/mp4">
+                <source src="./videos/tianju/t-02-720.mp4" type="video/mp4">
             </video>
         </div>
         <div class="rf-badge">AI 史诗短片 · 天局</div>
@@ -1912,6 +1912,22 @@
                 randomTitle.style.animation = '';
             }
 }, 4000);
+
+// ===== 背景视频视口门控：滚出视口暂停，滚回继续（省带宽/省解码） =====
+(function () {
+    var vids = [document.getElementById('rfMain'), document.getElementById('tjMain')].filter(Boolean);
+    if (!vids.length) return;
+    if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+                var v = en.target;
+                if (en.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+                else { v.pause(); }
+            });
+        }, { threshold: 0.05 });
+        vids.forEach(function (v) { io.observe(v); });
+    }
+})();
 
 </script>
 </body>
