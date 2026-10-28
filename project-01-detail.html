@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>赛博朋克城市 — VOID//FRAME</title>
+    <title>翠色猎场 — VOID//FRAME</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -166,7 +166,7 @@
         .detail-hero-bg {
             position: absolute; inset: 0; z-index: 0; overflow: hidden;
         }
-        .detail-hero-bg img {
+        .detail-hero-bg video {
             width: 100%; height: 100%; object-fit: cover; opacity: 0.85;
             filter: saturate(0.7) contrast(1.15) brightness(0.75);
             transform: scale(1.05);
@@ -251,7 +251,7 @@
         .tech-name { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-primary); }
 
         /* ===== GALLERY ===== */
-        .gallery-section { padding: 100px 48px; max-width: 1700px; margin: 0 auto; }
+        .gallery-section { padding: 100px clamp(20px, 3vw, 48px); }
         .gallery-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
         }
@@ -275,7 +275,7 @@
         .gallery-card:hover .gallery-card-overlay { opacity: 1; }
 
         /* ===== VIDEO ===== */
-        .video-section { padding: 100px 48px; max-width: 1400px; margin: 0 auto; }
+        .video-section { padding: 100px clamp(20px, 3vw, 48px); }
         .video-container {
             position: relative; border: 1px solid var(--border); overflow: hidden;
             background: var(--bg-card); aspect-ratio: 16/9;
@@ -344,6 +344,12 @@
         .reveal-right { opacity: 0; transform: translateX(60px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal-right.active { opacity: 1; transform: translateX(0); }
     
+        /* ===== 雨林故事片段网格 ===== */
+        .dv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 28px); }
+        .dv-card { position: relative; border: 1px solid var(--border); overflow: hidden; background: var(--bg-card); cursor: pointer; aspect-ratio: 16/10; transition: border-color .4s, transform .4s; }
+        .dv-card video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .dv-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(16px, 1.8vw, 30px) clamp(10px, 1.1vw, 18px) clamp(8px, .9vw, 14px); font-size: clamp(.72rem, .78vw, 1rem); letter-spacing: .14em; color: var(--text-primary); background: linear-gradient(0deg, rgba(8,10,8,.88), transparent); }
+        .dv-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
     </style>
 </head>
 <body>
@@ -364,14 +370,14 @@
     <!-- Hero -->
     <section class="detail-hero">
         <div class="detail-hero-bg">
-            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600&h=900&fit=crop" alt="赛博朋克城市">
+            <video src="./videos/rainforest/project01-hero.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/project01-hero-poster.jpg" aria-label="翠色猎场"></video>
         </div>
         <div class="detail-hero-content">
             <div class="detail-hero-num">01</div>
-            <div class="detail-hero-category reveal-text">Film / Concept</div>
-            <h1 class="detail-hero-title glitch reveal-scale" data-text="赛博朋克城市">赛博朋克城市</h1>
-            <p class="detail-hero-desc reveal">为未来科幻电影打造沉浸式城市场景，融合霓虹美学与东方元素。从概念草图到最终Matte Painting，构建了一个充满层次感的未来都市。</p>
-            <div class="detail-hero-tags reveal"><span class="detail-hero-tag">场景概念</span><span class="detail-hero-tag">Matte Painting</span><span class="detail-hero-tag">3D</span><span class="detail-hero-tag">Blender</span></div>
+            <div class="detail-hero-category reveal-text">Film / AIGC</div>
+            <h1 class="detail-hero-title glitch reveal-scale" data-text="翠色猎场">翠色猎场</h1>
+            <p class="detail-hero-desc reveal">热带雨林生态叙事作品。以 ComfyUI + Krea2 + MiniMax H3 + SeeDance 2.0 搭建从分镜到成片的完整管线，记录刺豚鼠觅食、凯门鳄游水与猛禽掠飞的雨林瞬间。</p>
+            <div class="detail-hero-tags reveal"><span class="detail-hero-tag">热带雨林</span><span class="detail-hero-tag">AIGC 管线</span><span class="detail-hero-tag">自然纪录</span><span class="detail-hero-tag">分镜设计</span></div>
         </div>
     </section>
 
@@ -381,7 +387,7 @@
             <div class="section-label">Project Info</div>
             <h2 class="section-title">项目信息</h2>
         </div>
-        <div class="info-grid"><div class="info-card reveal"><div class="info-label">项目类型</div><div class="info-value">影视概念设计 / Matte Painting / 3D场景</div></div><div class="info-card reveal"><div class="info-label">项目周期</div><div class="info-value">2024年3月 - 2024年8月</div></div><div class="info-card reveal"><div class="info-label">使用软件</div><div class="info-value">Blender, Photoshop, After Effects</div></div><div class="info-card reveal"><div class="info-label">交付内容</div><div class="info-value">概念草图、3D模型、Matte Painting、最终合成</div></div></div>
+        <div class="info-grid"><div class="info-card reveal"><div class="info-label">项目类型</div><div class="info-value">AIGC 影视短片 / 雨林生态叙事</div></div><div class="info-card reveal"><div class="info-label">项目周期</div><div class="info-value">2026</div></div><div class="info-card reveal"><div class="info-label">制作管线</div><div class="info-value">ComfyUI, Krea2, MiniMax H3, SeeDance 2.0</div></div><div class="info-card reveal"><div class="info-label">交付内容</div><div class="info-value">分镜设计、6 个故事片段、成片（02:13）</div></div></div>
     </section>
 
     <!-- Gallery -->
@@ -390,20 +396,26 @@
             <div class="section-label">Gallery</div>
             <h2 class="section-title">作品展示</h2>
         </div>
-        <div class="gallery-grid"><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1515630278258-407f66498911?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div></div>
+        <div class="dv-grid">
+<div class="dv-card reveal"><video src="./videos/rainforest/d-00226.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/d-00226-poster.jpg"></video><span class="dv-cap">01 刺豚鼠觅食</span></div>
+<div class="dv-card reveal"><video src="./videos/rainforest/project01-hero.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/project01-hero-poster.jpg"></video><span class="dv-cap">02 角雕头部特写</span></div>
+<div class="dv-card reveal"><video src="./videos/rainforest/d-00198.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/d-00198-poster.jpg"></video><span class="dv-cap">03 凯门鳄游水</span></div>
+<div class="dv-card reveal"><video src="./videos/rainforest/d-00131.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/d-00131-poster.jpg"></video><span class="dv-cap">04 林下叶影光斑</span></div>
+<div class="dv-card reveal"><video src="./videos/rainforest/d-00005.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/d-00005-poster.jpg"></video><span class="dv-cap">05 棕榈林冠仰望</span></div>
+<div class="dv-card reveal"><video src="./videos/rainforest/clip-05.mp4" autoplay muted loop playsinline preload="auto" poster="./images/rainforest/clip-05-poster.jpg"></video><span class="dv-cap">06 金刚鹦鹉特写</span></div>
+        </div>
     </section>
 
 
         <section class="video-section">
             <div class="section-header reveal">
                 <div class="section-label">Video / Preview</div>
-                <h2 class="section-title">动态展示</h2>
+                <h2 class="section-title">最终作品展示</h2>
             </div>
             <div class="video-container reveal">
-                <div class="video-placeholder">
-                    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1600&h=900&fit=crop" alt="视频封面">
-                    <div class="video-play-btn"></div>
-                </div>
+                <video id="dMainVideo" controls preload="metadata" poster="./images/rainforest/cuise-lichang-main-poster.jpg" style="width:100%; aspect-ratio:16/9; object-fit:contain; background:#000; display:block;">
+                    <source src="./videos/cuise-lichang-main.mp4" type="video/mp4">
+                </video>
             </div>
         </section>
         
@@ -411,7 +423,7 @@
 
         <section class="next-section">
             <div class="next-label reveal-text">下一个项目</div>
-            <h2 class="next-title glitch reveal-scale" data-text="遗迹探索">遗迹探索</h2>
+            <h2 class="next-title glitch reveal-scale" data-text="天局">天局</h2>
             <div class="next-arrow reveal">→</div>
             <br>
             <a href="project-02-detail.html" class="next-project reveal">查看项目 →</a>
@@ -483,6 +495,15 @@
         });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
     
+        // ===== 雨林故事片段：自动循环播放，点击暂停/继续 =====
+        document.querySelectorAll('.dv-card').forEach(function (card) {
+            var v = card.querySelector('video');
+            if (!v) return;
+            var p = v.play(); if (p && p.catch) p.catch(function () {});
+            card.addEventListener('click', function () {
+                if (v.paused) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } else { v.pause(); }
+            });
+        });
     </script>
 </body>
 </html>

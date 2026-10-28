@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遗迹探索 — VOID//FRAME</title>
+    <title>天局 — VOID//FRAME</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -166,7 +166,7 @@
         .detail-hero-bg {
             position: absolute; inset: 0; z-index: 0; overflow: hidden;
         }
-        .detail-hero-bg img {
+        .detail-hero-bg video {
             width: 100%; height: 100%; object-fit: cover; opacity: 0.85;
             filter: saturate(0.7) contrast(1.15) brightness(0.75);
             transform: scale(1.05);
@@ -251,7 +251,7 @@
         .tech-name { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-primary); }
 
         /* ===== GALLERY ===== */
-        .gallery-section { padding: 100px 48px; max-width: 1700px; margin: 0 auto; }
+        .gallery-section { padding: 100px clamp(20px, 3vw, 48px); }
         .gallery-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
         }
@@ -275,7 +275,7 @@
         .gallery-card:hover .gallery-card-overlay { opacity: 1; }
 
         /* ===== VIDEO ===== */
-        .video-section { padding: 100px 48px; max-width: 1400px; margin: 0 auto; }
+        .video-section { padding: 100px clamp(20px, 3vw, 48px); }
         .video-container {
             position: relative; border: 1px solid var(--border); overflow: hidden;
             background: var(--bg-card); aspect-ratio: 16/9;
@@ -344,6 +344,12 @@
         .reveal-right { opacity: 0; transform: translateX(60px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal-right.active { opacity: 1; transform: translateX(0); }
     
+        /* ===== 天局故事片段网格 ===== */
+        .dv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 28px); }
+        .dv-card { position: relative; border: 1px solid var(--border); overflow: hidden; background: var(--bg-card); cursor: pointer; aspect-ratio: 16/10; transition: border-color .4s, transform .4s; }
+        .dv-card video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .dv-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(16px, 1.8vw, 30px) clamp(10px, 1.1vw, 18px) clamp(8px, .9vw, 14px); font-size: clamp(.72rem, .78vw, 1rem); letter-spacing: .14em; color: var(--text-primary); background: linear-gradient(0deg, rgba(8,10,8,.88), transparent); }
+        .dv-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
     </style>
 </head>
 <body>
@@ -357,21 +363,21 @@
         <a href="parallax-portfolio.html" class="nav-logo glitch-hover">VOID//FRAME</a>
         <ul class="nav-links">
             <li><a href="parallax-portfolio.html">首页</a></li>
-            <li><a href="parallax-portfolio.html#project01">作品</a></li>
+            <li><a href="parallax-portfolio.html#project02">作品</a></li>
         </ul>
     </nav>
 
     <!-- Hero -->
     <section class="detail-hero">
         <div class="detail-hero-bg">
-            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&h=900&fit=crop" alt="遗迹探索">
+            <video src="./videos/tianju/t-02.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-02-poster.jpg" aria-label="天局"></video>
         </div>
         <div class="detail-hero-content">
             <div class="detail-hero-num">02</div>
-            <div class="detail-hero-category reveal-text">Game / Environment</div>
-            <h1 class="detail-hero-title glitch reveal-scale" data-text="遗迹探索">遗迹探索</h1>
-            <p class="detail-hero-desc reveal">开放世界游戏古老遗迹场景，营造神秘而充满探索欲的空间。使用Unreal Engine 5的Lumen光照系统实现实时全局光照。</p>
-            <div class="detail-hero-tags reveal"><span class="detail-hero-tag">环境美术</span><span class="detail-hero-tag">Unreal Engine 5</span><span class="detail-hero-tag">Lighting</span><span class="detail-hero-tag">World Building</span></div>
+            <div class="detail-hero-category reveal-text">Film / AIGC</div>
+            <h1 class="detail-hero-title glitch reveal-scale" data-text="天局">天局</h1>
+            <p class="detail-hero-desc reveal">以云端天宫为棋盘的东方史诗短片。铁甲骑兵、泥泞战场、沙盘人间——一局天棋俯瞰苍生战火，全程 AI 管线完成的影视级叙事。</p>
+            <div class="detail-hero-tags reveal"><span class="detail-hero-tag">AI 史诗短片</span><span class="detail-hero-tag">东方奇幻</span><span class="detail-hero-tag">分镜叙事</span><span class="detail-hero-tag">影视级画质</span></div>
         </div>
     </section>
 
@@ -381,7 +387,7 @@
             <div class="section-label">Project Info</div>
             <h2 class="section-title">项目信息</h2>
         </div>
-        <div class="info-grid"><div class="info-card reveal"><div class="info-label">项目类型</div><div class="info-value">游戏环境美术 / 关卡设计 / 光照设计</div></div><div class="info-card reveal"><div class="info-label">项目周期</div><div class="info-value">2024年1月 - 2024年7月</div></div><div class="info-card reveal"><div class="info-label">使用软件</div><div class="info-value">Unreal Engine 5, ZBrush, Substance Painter</div></div><div class="info-card reveal"><div class="info-label">交付内容</div><div class="info-value">场景白盒、高精度模型、材质贴图、光照设置</div></div></div>
+        <div class="info-grid"><div class="info-card reveal"><div class="info-label">项目类型</div><div class="info-value">AI 影视短片 / 东方史诗叙事</div></div><div class="info-card reveal"><div class="info-label">项目周期</div><div class="info-value">2026</div></div><div class="info-card reveal"><div class="info-label">制作管线</div><div class="info-value">ComfyUI, 即梦, MiniMax H3, 剪辑合成</div></div><div class="info-card reveal"><div class="info-label">交付内容</div><div class="info-value">分镜设计、6 个故事片段、成片（02:52）</div></div></div>
     </section>
 
     <!-- Gallery -->
@@ -390,20 +396,26 @@
             <div class="section-label">Gallery</div>
             <h2 class="section-title">作品展示</h2>
         </div>
-        <div class="gallery-grid"><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div><div class="gallery-card reveal"><img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800&h=500&fit=crop" alt="作品展示"><div class="gallery-card-overlay"></div></div></div>
+                <div class="dv-grid">
+<div class="dv-card reveal"><video src="./videos/tianju/t-r01.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r01-poster.jpg"></video><span class="dv-cap">01 战场尸山与战火</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-02.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-02-poster.jpg"></video><span class="dv-cap">02 脸谱金眼特写</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-03.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-03-poster.jpg"></video><span class="dv-cap">03 执杖战场俯瞰</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-04.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-04-poster.jpg"></video><span class="dv-cap">04 铁甲骑兵驰骋</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-r05.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r05-poster.jpg"></video><span class="dv-cap">05 初窥神明</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-r06.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r06-poster.jpg"></video><span class="dv-cap">06 骑兵冲向执杖者</span></div>
+        </div>
     </section>
 
 
         <section class="video-section">
             <div class="section-header reveal">
                 <div class="section-label">Video / Preview</div>
-                <h2 class="section-title">动态展示</h2>
+                <h2 class="section-title">最终作品展示</h2>
             </div>
             <div class="video-container reveal">
-                <div class="video-placeholder">
-                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&h=900&fit=crop" alt="视频封面">
-                    <div class="video-play-btn"></div>
-                </div>
+                <video id="dMainVideo" controls preload="metadata" poster="./images/tianju/tianju-main-poster.jpg" style="width:100%; aspect-ratio:16/9; object-fit:contain; background:#000; display:block;">
+                    <source src="./videos/tianju/tianju-main.mp4" type="video/mp4">
+                </video>
             </div>
         </section>
         
@@ -423,7 +435,7 @@
         <div class="footer-text">© 2026 VOID//FRAME. All rights reserved.</div>
         <div class="footer-links">
             <a href="parallax-portfolio.html">首页</a>
-            <a href="parallax-portfolio.html#project01">作品</a>
+            <a href="parallax-portfolio.html#project02">作品</a>
         </div>
     </footer>
 
@@ -483,6 +495,15 @@
         });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
     
+        // ===== 天局故事片段：自动循环播放，点击暂停/继续 =====
+        document.querySelectorAll('.dv-card').forEach(function (card) {
+            var v = card.querySelector('video');
+            if (!v) return;
+            var p = v.play(); if (p && p.catch) p.catch(function () {});
+            card.addEventListener('click', function () {
+                if (v.paused) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } else { v.pause(); }
+            });
+        });
     </script>
 </body>
 </html>
