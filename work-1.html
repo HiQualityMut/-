@@ -6,7 +6,7 @@
     <title>清华五道口学院通州校区 — Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -614,7 +614,7 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-bg">
-            <img src="./images/清华/清华1.jpg" alt="清华五道口学院">
+            <img loading="lazy" src="./images/清华/清华1.jpg" alt="清华五道口学院">
         </div>
         <div class="hero-content">
             <div class="hero-label">01 / 建筑精装</div>
@@ -655,31 +655,31 @@
         </div>
         <div class="gallery-grid">
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/清华1.jpg" alt="项目照片1">
+                <img loading="lazy" src="./images/清华/清华1.jpg" alt="项目照片1">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/清华2.jpg" alt="项目照片2">
+                <img loading="lazy" src="./images/清华/清华2.jpg" alt="项目照片2">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/清华3.jpg" alt="项目照片3">
+                <img loading="lazy" src="./images/清华/清华3.jpg" alt="项目照片3">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/B1餐厅.jpg" alt="项目照片4">
+                <img loading="lazy" src="./images/清华/B1餐厅.jpg" alt="项目照片4">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/B1健身房.jpg" alt="项目照片5">
+                <img loading="lazy" src="./images/清华/B1健身房.jpg" alt="项目照片5">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/首层 筒灯顶.jpg" alt="项目照片6">
+                <img loading="lazy" src="./images/清华/首层 筒灯顶.jpg" alt="项目照片6">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/C3-1.jpg" alt="项目照片7">
+                <img loading="lazy" src="./images/清华/C3-1.jpg" alt="项目照片7">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/宿舍学习交流空间（阅读区）.jpg" alt="项目照片8">
+                <img loading="lazy" src="./images/清华/宿舍学习交流空间（阅读区）.jpg" alt="项目照片8">
             </div>
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="./images/清华/B1餐厅包间.jpg" alt="项目照片9">
+                <img loading="lazy" src="./images/清华/B1餐厅包间.jpg" alt="项目照片9">
             </div>
         </div>
     </section>
@@ -741,7 +741,7 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</div>
-        <img id="lightbox-img" src="" alt="大图">
+        <img loading="lazy" id="lightbox-img" src="" alt="大图">
     </div>
 
     <!-- Next Project -->

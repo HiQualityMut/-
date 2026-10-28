@@ -6,7 +6,7 @@
     <title>中国大唐集团雄安新区总部 — Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -603,7 +603,7 @@
 
     <section class="hero">
         <div class="hero-bg">
-            <img src="./images/大唐/大唐1.jpg" alt="大唐集团">
+            <img loading="lazy" src="./images/大唐/大唐1.jpg" alt="大唐集团">
         </div>
         <div class="hero-content">
             <div class="hero-label">03 / 建筑精装</div>
@@ -640,17 +640,17 @@
             <p>点击照片可查看大图</p>
         </div>
         <div class="gallery-grid">
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐1.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐2jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐3jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐4jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐5jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐6jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐7jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐8jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐9jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐10jpg.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/大唐/大唐11jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐1.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐2jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐3jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐4jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐5jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐6jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐7jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐8jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐9jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐10jpg.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/大唐/大唐11jpg.jpg" alt=""></div>
         </div>
     </section>
 
@@ -709,7 +709,7 @@
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</div>
-        <img id="lightbox-img" src="" alt="大图">
+        <img loading="lazy" id="lightbox-img" src="" alt="大图">
     </div>
 
     <section class="next-project">

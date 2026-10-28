@@ -6,7 +6,7 @@
     <title>其他项目 — Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -418,7 +418,7 @@
 
     <section class="hero">
         <div class="hero-bg">
-            <img src="./images/其他/1.jpg" alt="其他项目">
+            <img loading="lazy" src="./images/其他/1.jpg" alt="其他项目">
         </div>
         <div class="hero-content">
             <div class="hero-label">06 / 其他项目</div>
@@ -455,21 +455,21 @@
             <p>点击照片可查看大图</p>
         </div>
         <div class="gallery-grid">
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/1.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片2.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片3.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片4.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片5.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片6.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片7.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片8.jpg" alt=""></div>
-            <div class="gallery-item" onclick="openLightbox(this)"><img src="./images/其他/图片9.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/1.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片2.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片3.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片4.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片5.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片6.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片7.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片8.jpg" alt=""></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img loading="lazy" src="./images/其他/图片9.jpg" alt=""></div>
         </div>
     </section>
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</div>
-        <img id="lightbox-img" src="" alt="大图">
+        <img loading="lazy" id="lightbox-img" src="" alt="大图">
     </div>
 
     <section class="next-project">

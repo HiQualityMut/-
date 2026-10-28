@@ -6,7 +6,7 @@
     <title>天局 — VOID//FRAME</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
 
         :root {
@@ -397,12 +397,12 @@
             <h2 class="section-title">作品展示</h2>
         </div>
                 <div class="dv-grid">
-<div class="dv-card reveal"><video src="./videos/tianju/t-r01.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r01-poster.jpg"></video><span class="dv-cap">01 战场尸山与战火</span></div>
-<div class="dv-card reveal"><video src="./videos/tianju/t-02.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-02-poster.jpg"></video><span class="dv-cap">02 脸谱金眼特写</span></div>
-<div class="dv-card reveal"><video src="./videos/tianju/t-03.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-03-poster.jpg"></video><span class="dv-cap">03 执杖战场俯瞰</span></div>
-<div class="dv-card reveal"><video src="./videos/tianju/t-04.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-04-poster.jpg"></video><span class="dv-cap">04 铁甲骑兵驰骋</span></div>
-<div class="dv-card reveal"><video src="./videos/tianju/t-r05.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r05-poster.jpg"></video><span class="dv-cap">05 初窥神明</span></div>
-<div class="dv-card reveal"><video src="./videos/tianju/t-r06.mp4" autoplay muted loop playsinline preload="auto" poster="./images/tianju/t-r06-poster.jpg"></video><span class="dv-cap">06 骑兵冲向执杖者</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-r01.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-r01-poster.jpg"></video><span class="dv-cap">01 战场尸山与战火</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-02.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-02-poster.jpg"></video><span class="dv-cap">02 脸谱金眼特写</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-03.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-03-poster.jpg"></video><span class="dv-cap">03 执杖战场俯瞰</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-04.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-04-poster.jpg"></video><span class="dv-cap">04 铁甲骑兵驰骋</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-r05.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-r05-poster.jpg"></video><span class="dv-cap">05 初窥神明</span></div>
+<div class="dv-card reveal"><video src="./videos/tianju/t-r06.mp4" muted loop playsinline preload="none" poster="./images/tianju/t-r06-poster.jpg"></video><span class="dv-cap">06 骑兵冲向执杖者</span></div>
         </div>
     </section>
 
@@ -442,7 +442,7 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">×</div>
-        <img id="lightbox-img" src="" alt="大图">
+        <img loading="lazy" id="lightbox-img" src="" alt="大图">
     </div>
 
     <script>
@@ -495,15 +495,36 @@
         });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
     
-        // ===== 天局故事片段：自动循环播放，点击暂停/继续 =====
-        document.querySelectorAll('.dv-card').forEach(function (card) {
-            var v = card.querySelector('video');
-            if (!v) return;
-            var p = v.play(); if (p && p.catch) p.catch(function () {});
-            card.addEventListener('click', function () {
-                if (v.paused) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } else { v.pause(); }
+        // ===== 天局故事片段：进入视口才加载播放（自动循环），点击暂停/继续 =====
+        (function () {
+            var cards = document.querySelectorAll('.dv-card');
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (en) {
+                        var v = en.target.querySelector('video');
+                        if (!v) return;
+                        if (en.isIntersecting) {
+                            var p = v.play(); if (p && p.catch) p.catch(function () {});
+                        } else {
+                            v.pause();
+                        }
+                    });
+                }, { threshold: 0.25 });
+                cards.forEach(function (card) { io.observe(card); });
+            } else {
+                cards.forEach(function (card) {
+                    var v = card.querySelector('video');
+                    if (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+                });
+            }
+            cards.forEach(function (card) {
+                var v = card.querySelector('video');
+                if (!v) return;
+                card.addEventListener('click', function () {
+                    if (v.paused) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } else { v.pause(); }
+                });
             });
-        });
+        })();
     </script>
 </body>
 </html>
