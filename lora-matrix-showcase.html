@@ -344,16 +344,21 @@ window.LORA_DATA = {
 
   /* 6 个 LoRA 模型 —— 每项独占一行，右侧带底模 vs LoRA 滑动对比
      接入真实素材：image=左侧大图，thumbs=[3 张小图]，cmpBefore=对比左(底模)，cmpAfter=对比右(LoRA)
-     三者留空则显示风格化占位视觉；支持网络图 URL 或 assets/ 下的本地相对路径 */
+     三者留空则显示风格化占位视觉；支持网络图 URL 或 assets/ 下的本地相对路径
+     【逐图调位置】imagePos=大图锚点，thumbPos=[3 张小图锚点]，cmpBeforePos/cmpAfterPos=对比左右锚点。
+     值为 CSS object-position：横向 纵向，如 "center top"、"center 30%"、"left 20% top"。
+     纵向 0%=显示图片顶部，50%=居中，100%=显示底部。留空或不写该行 = 居中裁切。 */
   models: [
-    { name:"赛博都市", trig:"cyber_city, neon_street", base:"SDXL 1.0", rank:64, steps:2400, conv:97,
-      tags:["城市","霓虹","雨夜"], c1:"#00f0ff", c2:"#ff2bd6", glyph:"CYBER",
-      desc:"针对霓虹街景与雨夜反光的定向蒸馏，强化湿滑路面高光、体积雾层次与广告牌自发光。底模在此类场景常出现光源混乱与色彩断层，加载后可稳定复现统一的青紫冷暖对撞。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
-    { name:"机甲战士", trig:"mecha_warrior, armored", base:"SDXL 1.0", rank:128, steps:3000, conv:95,
-      tags:["机甲","硬核","金属"], c1:"#a855f7", c2:"#00f0ff", glyph:"MECHA",
-      desc:"以装甲分件、机械结构与金属磨损为核心的硬表面训练，数据集覆盖多角度设定稿。改善底模对机械关节的糊化倾向，锐化边缘倒角并保留合理的做旧噪点。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
+    { name:"道士", trig:"HQM", base:"Krea 2 Turbo", rank:32, steps:9500, conv:96,
+      tags:["角色一致","真人肖像","多场景"], c1:"#00ff9d", c2:"#00f0ff", glyph:"道士",
+      desc:"以真人肖像数据集训练的角色一致性 LoRA，触发词 HQM。同一主体在棚拍、雨夜、花园、山岩等多场景下保持五官与气质统一；对比区为 step-0 底模与 step-9500 加载后的同提示词出图，可见身份特征的稳定收敛。",
+      image:"./images/lora-daoshi/daoshi-big.jpg", thumbs:["./images/lora-daoshi/daoshi-s1.jpg","./images/lora-daoshi/daoshi-s2.jpg","./images/lora-daoshi/daoshi-s3.jpg"], cmpBefore:"./images/lora-daoshi/daoshi-cmp-before.jpg", cmpAfter:"./images/lora-daoshi/daoshi-cmp-after.jpg",
+      imagePos:"center center", thumbPos:["center 2%","center 0%","center center"], cmpBeforePos:"center center", cmpAfterPos:"center center" },
+    { name:"黑", trig:"HQM", base:"Krea 2 Turbo", rank:32, steps:9500, conv:95,
+      tags:["角色一致","真人肖像","街拍光影"], c1:"#f5f5f5", c2:"#00f0ff", glyph:"黑",
+      desc:"以真人街拍数据集训练的角色一致性 LoRA，触发词 HQM。同一主体在阳光斜影、白墙近景、低角度仰拍等多场景下保持短发、眼镜与服装特征统一；对比区为同提示词下加载前后的出图差异，可见身份与穿搭细节的稳定收敛。",
+      image:"./images/lora-hei/hei-big.png", thumbs:["./images/lora-hei/hei-s1.png","./images/lora-hei/hei-s2.png","./images/lora-hei/hei-s3.png"], cmpBefore:"./images/lora-hei/hei-cmp-after.jpg", cmpAfter:"./images/lora-hei/hei-cmp-before.jpg",
+      imagePos:"center 25%", thumbPos:["center 26.5%","center 21%","center 26.5%"], cmpBeforePos:"center center", cmpAfterPos:"center center" },
     { name:"国风仙侠", trig:"xianxia, ink_wash", base:"SD 1.5", rank:32, steps:1800, conv:98,
       tags:["水墨","仙侠","飘逸"], c1:"#00ff9d", c2:"#a855f7", glyph:"仙侠",
       desc:"低秩轻量方案，专注水墨晕染与衣袂飘逸的笔意表达。修正底模在水墨题材上易出现的塑料质感，使浓淡过渡与留白呼吸更接近传统纸本。",
@@ -400,6 +405,7 @@ function fillVisual(box,item,label){
   if(item && item.image){
     var img=document.createElement('img');
     img.dataset.image=item.image; img.alt=esc(item.name||item.t||label||''); img.loading='lazy';
+    if(item.pos) img.style.objectPosition=item.pos;   /* 单图裁切锚点，未填则用 CSS 默认居中 */
     img.onerror=function(){img.remove();box.insertAdjacentHTML('beforeend',phHTML(item,label));};
     box.appendChild(img); img.src=img.dataset.image;   /* 运行时赋值，不在源码写死远程 URL */
   } else {
@@ -412,10 +418,11 @@ $('#heroStats').innerHTML = (D.heroStats||[]).map(function(s){
   return '<div class="hero-stat"><div class="n" data-to="'+s.n+'" data-suffix="'+esc(s.suffix||'')+'">0'+esc(s.suffix||'')+'</div><div class="t">'+esc(s.label)+'</div></div>';
 }).join('');
 
-/* ---------- 成果图取色：k=0 大图，k=1..3 小图（小图主副色对调以便区分） ---------- */
+/* ---------- 成果图取色：k=0 大图，k=1..3 小图（小图主副色对调以便区分）
+   pos = 该图裁切锚点，未填则居中。大图用 imagePos，小图用 thumbPos 数组按序对应 ---------- */
 function cellCfg(m,k){
-  if(k===0) return {c1:m.c1, c2:m.c2, glyph:m.glyph||'LoRA', image:(m.image||'')};
-  return {c1:m.c2, c2:m.c1, glyph:('0'+k).slice(-2), image:((m.thumbs&&m.thumbs[k-1])||'')};
+  if(k===0) return {c1:m.c1, c2:m.c2, glyph:m.glyph||'LoRA', image:(m.image||''), pos:(m.imagePos||'')};
+  return {c1:m.c2, c2:m.c1, glyph:('0'+k).slice(-2), image:((m.thumbs&&m.thumbs[k-1])||''), pos:((m.thumbPos&&m.thumbPos[k-1])||'')};
 }
 
 /* ---------- 渲染：训练成果（每项一行 · 左介绍与 1大3小成果图 · 右底模 vs LoRA 滑动对比）---------- */
@@ -454,11 +461,12 @@ $$('#modelGrid .m-vis').forEach(function(box){
   var k = +box.dataset.vk;
   fillVisual(box, cellCfg(m,k), k===0 ? 'LoRA 成果' : '成果 '+('0'+k).slice(-2));
 });
-/* 每行对比框：左=底模直出(灰调)，右=LoRA 加持(模型主色)；填了真实图则自动用图 */
+/* 每行对比框：左=底模直出(灰调)，右=LoRA 加持(模型主色)；填了真实图则自动用图
+   cmpBeforePos / cmpAfterPos = 左右两图的裁切锚点，未填则居中 */
 $$('#modelGrid .m-cmp').forEach(function(c,i){
   var m = D.models[i] || {};
-  fillVisual($('.before',c), {c1:'#2f2f42', c2:'#191926', glyph:'BASE',       image:m.cmpBefore||''}, '底模直出');
-  fillVisual($('.after', c), {c1:m.c1,      c2:m.c2,      glyph:m.glyph||'LoRA', image:m.cmpAfter ||''}, 'LoRA 加持');
+  fillVisual($('.before',c), {c1:'#2f2f42', c2:'#191926', glyph:'BASE',       image:m.cmpBefore||'', pos:(m.cmpBeforePos||'')}, '底模直出');
+  fillVisual($('.after', c), {c1:m.c1,      c2:m.c2,      glyph:m.glyph||'LoRA', image:m.cmpAfter ||'', pos:(m.cmpAfterPos ||'')}, 'LoRA 加持');
 });
 
 /* ---------- 成果图 3D 倾斜（随鼠标晃动，作用于每行 1大3小共 4 张图） ----------
