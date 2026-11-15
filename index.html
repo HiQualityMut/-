@@ -793,6 +793,254 @@
             margin-top: 0;
         }
 
+        /* 项目历程横向时间线（位于统计栏上方，配色与 about-stats 一致） */
+        .resume-projectline {
+            grid-column: 1 / -1;
+            margin-top: clamp(20px, 2.4vw, 36px);
+            padding: clamp(24px, 2.8vw, 36px) clamp(18px, 2.2vw, 30px) clamp(20px, 2.4vw, 30px);
+            background: #161616;
+            border-radius: 16px;
+        }
+
+        .resume-projectline h5 {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0 0 clamp(20px, 2.4vw, 30px);
+        }
+
+        .pl-track {
+            display: flex;
+            align-items: flex-start;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 0 10px;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pl-track::-webkit-scrollbar { height: 5px; }
+        .pl-track::-webkit-scrollbar-track { background: rgba(255, 255, 255, .06); border-radius: 3px; }
+        .pl-track::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .24); border-radius: 3px; }
+        .pl-track::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .pl-node {
+            position: relative;
+            flex: 1 0 auto;
+            min-width: 172px;
+            scroll-snap-align: center;
+            padding: 0 12px;
+            text-align: center;
+        }
+
+        /* 每个节点自绘一段横线，拼成贯通主线；首尾节点只画半段，线不越过端点圆点 */
+        .pl-node::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 43px;
+            height: 1px;
+            background: rgba(255, 255, 255, .22);
+        }
+
+        .pl-node:first-child::before { left: 50%; }
+        .pl-node:last-child::before { right: 50%; }
+
+        .pl-date {
+            height: 20px;
+            line-height: 20px;
+            font-size: 16.5px;
+            letter-spacing: .5px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 18px;
+            white-space: nowrap;
+        }
+
+        .pl-dot {
+            position: relative;
+            z-index: 2;
+            display: block;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--text);
+            margin: 0 auto 18px;
+            box-shadow: 0 0 0 4px #161616;
+            transition: var(--transition-fast);
+        }
+
+        .pl-node:hover .pl-dot {
+            background: var(--accent);
+            transform: scale(1.25);
+        }
+
+        .pl-name {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.55;
+            color: var(--text);
+        }
+
+        .pl-role {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* 节点可交互态：悬浮或点选时高亮，并驱动下方详情面板 */
+        .pl-node { cursor: pointer; }
+
+        .pl-node.active .pl-dot {
+            background: var(--accent);
+            transform: scale(1.3);
+            box-shadow: 0 0 0 4px #161616, 0 0 0 6px rgba(255, 122, 0, .32);
+        }
+
+        .pl-node.active .pl-date,
+        .pl-node.active .pl-name { color: var(--accent); }
+
+        .pl-node:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 6px;
+            border-radius: 8px;
+        }
+
+        /* 项目详情面板：8 个详情叠放在同一网格格内，
+           面板高度恒等于内容最高的那一个，切换项目时上下布局不跳动；
+           网格项默认 stretch，故较短的详情也会拉伸到同一高度绘制 */
+        .pl-panel {
+            display: grid;
+            margin-top: clamp(18px, 2vw, 26px);
+        }
+
+        .pl-panel-item {
+            grid-area: 1 / 1;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            padding: clamp(16px, 1.8vw, 22px) clamp(16px, 1.8vw, 24px);
+            background: rgba(255, 255, 255, .045);
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-left: 3px solid var(--accent);
+            border-radius: 12px;
+            transition: opacity .28s ease, visibility .28s ease;
+        }
+
+        .pl-panel-item.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            animation: plFade .32s ease both;
+        }
+
+        @keyframes plFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .pl-panel-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px 14px;
+            margin-bottom: 14px;
+        }
+
+        .pl-panel-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: .3px;
+        }
+
+        .pl-panel-date {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: .5px;
+        }
+
+        .pl-panel-role {
+            font-size: 15px;
+            color: var(--text-muted);
+            padding: 3px 12px;
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .pl-panel-row {
+            display: flex;
+            gap: 14px;
+            padding: 9px 0;
+            font-size: 16.5px;
+            line-height: 1.78;
+        }
+
+        .pl-panel-row + .pl-panel-row {
+            border-top: 1px dashed rgba(255, 255, 255, .1);
+        }
+
+        .pl-panel-key {
+            flex: 0 0 auto;
+            width: 76px;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 15.5px;
+            letter-spacing: .5px;
+        }
+
+        .pl-panel-val {
+            flex: 1 1 auto;
+            min-width: 0;
+            color: rgba(255, 255, 255, .8);
+        }
+
+        .pl-panel-val ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .pl-panel-val li { margin: 3px 0; }
+
+        .pl-panel-note {
+            margin: 10px 0 0;
+            font-size: 15px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .pl-hint {
+            display: block;
+            margin: 14px 0 0;
+            font-size: 14.5px;
+            color: var(--text-muted);
+            letter-spacing: .5px;
+            text-align: center;
+        }
+
+        @media (max-width: 1280px) {
+            .pl-node { min-width: 152px; padding: 0 9px; }
+            .pl-name { font-size: 16px; }
+            .pl-role { font-size: 14.5px; }
+        }
+
+        @media (max-width: 900px) {
+            .resume-projectline { padding: 22px 14px 18px; }
+            .pl-node { min-width: 138px; padding: 0 8px; }
+            .pl-date { font-size: 15px; }
+            .pl-name { font-size: 15px; }
+            .pl-role { font-size: 13.5px; }
+            .pl-panel-title { font-size: 17px; }
+            .pl-panel-date { font-size: 15px; }
+            .pl-panel-role { font-size: 14px; }
+            .pl-panel-row { flex-direction: column; gap: 2px; font-size: 15.5px; }
+            .pl-panel-key { width: auto; }
+        }
+
         .about-skills {
             display: flex;
             flex-wrap: wrap;
@@ -1231,6 +1479,50 @@
 
         .resume-narrative p:last-child { margin-bottom: 0; }
 
+        .resume-exp h5 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 0 18px;
+        }
+
+        .tl-kind {
+            display: inline-block;
+            vertical-align: 2px;
+            margin-right: 10px;
+            padding: 2px 10px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--accent);
+            border: 1px solid rgba(255, 107, 25, .5);
+            border-radius: 999px;
+        }
+
+        /* 学业和工作经历：拉伸到与左右卡片同高，两条经历上下平铺 */
+        .resume-exp {
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resume-exp .resume-timeline {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 0;
+        }
+
+        /* 条目间的竖向连接线可伸缩，吸收多余高度，把两条经历推到上下两端；
+           日期列改为按内容自适应宽度，配合 nowrap 保证单行不截断 */
+        .resume-exp .tl-item { flex: 1 1 auto; grid-template-columns: 1fr auto; }
+        .resume-exp .tl-item:last-child { flex: 0 0 auto; }
+
+        /* 日期单行显示，不被右栏宽度挤断 */
+        .resume-exp .tl-date {
+            white-space: nowrap;
+            align-self: start;
+        }
+
         .resume-timeline {
             list-style: none;
             margin: 0;
@@ -1346,6 +1638,7 @@
             .resume-title .en { white-space: normal; }
             .resume-lang { grid-template-columns: 108px 1fr; }
             .tl-item { grid-template-columns: 1fr; }
+            .resume-exp .tl-item { grid-template-columns: 1fr; }
             .tl-date {
                 border-left: 0;
                 padding-left: 0;
@@ -2118,14 +2411,14 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
             </div>
-            <div class="guide-work-item" onclick="window.location.href='lora-matrix-showcase.html'">
+            <div class="guide-work-item" onclick="document.getElementById('works').scrollIntoView({behavior:'smooth'})">
                 <img loading="lazy" src="./images/影视/1024.jpg" alt="风格化LORA定制效果展示">
                 <div class="guide-work-title">风格化LORA定制效果展示</div>
                 <div class="guide-work-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
             </div>
-            <div class="guide-work-item" onclick="document.getElementById('works').scrollIntoView({behavior:'smooth'})">
+            <div class="guide-work-item" onclick="window.location.href='lora-matrix-showcase.html'">
                 <img loading="lazy" src="./images/影视/3.jpg" alt="控制类LORA定制效果展示">
                 <div class="guide-work-title">控制类LORA定制效果展示</div>
                 <div class="guide-work-arrow">
@@ -2164,23 +2457,23 @@
                             <h4 class="resume-card-title">基本信息</h4>
                             <ul class="resume-card-meta">
                                 <li><span>姓名</span><b>张珺涵</b></li>
-                                <li><span>年龄</span><b>待填写</b></li>
-                                <li><span>身份</span><b>AIGC 视觉创作者</b></li>
-                                <li><span>背景</span><b>环艺 / 室内设计</b></li>
-                                <li><span>方向</span><b>影视化创作</b></li>
+                                <li><span>年龄</span><b>26 岁</b></li>
+                                <li><span>学历</span><b>本科 · 环境设计</b></li>
+                                <li><span>从业</span><b>3 年 · 一线精装设计</b></li>
+                                <li><span>方向</span><b>室内设计 / AI 视觉 / 影视置景</b></li>
                             </ul>
                         </div>
                         <div class="resume-card-col resume-card-col-langs">
                             <h4 class="resume-card-sub">语言能力</h4>
                             <div class="resume-card-langs">
-                                <div class="resume-lang"><b>中文（普通话）</b><span class="val">待填写</span></div>
-                                <div class="resume-lang"><b>英语</b><span class="val">待填写</span></div>
+                                <div class="resume-lang"><b>中文（普通话）</b><span class="val">母语</span></div>
+                                <div class="resume-lang"><b>英语</b><span class="val">CET-4 大学英语四级</span></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="resume-intro reveal">
-                        <p>环艺科班出身，3年一线建筑精装设计经验，现深耕 AIGC 视觉与影视化创作。精通工业级 ComfyUI 工作流定制、大模型本地化部署与 LoRA 训练，从 0 到 1 主导高品质 AI 效果与视频创作。擅长针对特定美学进行LoRA训练与画风微调，通过传统设计逻辑与AI工具的深度融合，稳定输出商业级的视觉内容。</p>
+                        <p>首都师范大学环境设计本科，3 年一线建筑精装设计经验，现任职于北京市建筑设计研究院股份有限公司室内设计岗。可独立完成 AI 效果图、AI 效果视频与 AIGC 方案设计，擅长 ComfyUI 定制工作流与 LoRA 训练；同时掌握室内精装从方案汇报到施工落地的全流程，能独立完成施工图绘制并解决现场出现的问题。</p>
                     </div>
                     </div>
 
@@ -2189,38 +2482,38 @@
                         <h4>专业技能</h4>
                         <div class="resume-skillrow">
                             <div class="resume-tiles">
-                                <span class="resume-tile">CF</span>
                                 <span class="resume-tile">AI</span>
+                                <span class="resume-tile">CF</span>
                                 <span class="resume-tile">LoRA</span>
                             </div>
-                            <p>ComfyUI · AIGC 工作流定制与 LoRA 模型训练</p>
-                        </div>
-                        <div class="resume-skillrow">
-                            <div class="resume-tiles">
-                                <span class="resume-tile">SU</span>
-                                <span class="resume-tile">3D</span>
-                            </div>
-                            <p>建模渲染 Sketch Up / 3DMAX</p>
-                        </div>
-                        <div class="resume-skillrow">
-                            <div class="resume-tiles">
-                                <span class="resume-tile">PS</span>
-                                <span class="resume-tile">PR</span>
-                            </div>
-                            <p>Adobe 家族 Photoshop / Premiere</p>
+                            <p>AI 工作流程 · ComfyUI 定制工作流、AIGC 方案设计与 LoRA 训练</p>
                         </div>
                         <div class="resume-skillrow">
                             <div class="resume-tiles">
                                 <span class="resume-tile">CAD</span>
+                                <span class="resume-tile">施工</span>
                             </div>
-                            <p>AutoCAD 方案设计与施工图绘制</p>
+                            <p>AutoCAD 施工图设计与深化绘制，可独立完成</p>
                         </div>
                         <div class="resume-skillrow">
                             <div class="resume-tiles">
-                                <span class="resume-tile">MJ</span>
-                                <span class="resume-tile">SD</span>
+                                <span class="resume-tile">SU</span>
+                                <span class="resume-tile">VR</span>
                             </div>
-                            <p>Midjourney / Stable Diffusion 概念图产出</p>
+                            <p>SketchUp 建模 · V-Ray 渲染表现</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">PS</span>
+                                <span class="resume-tile">PRO</span>
+                            </div>
+                            <p>Photoshop 后期精修 · Procreate 手绘表现</p>
+                        </div>
+                        <div class="resume-skillrow">
+                            <div class="resume-tiles">
+                                <span class="resume-tile">精装</span>
+                            </div>
+                            <p>室内精装方案设计，从方案汇报到施工落地全流程</p>
                         </div>
                     </div>
 
@@ -2228,15 +2521,15 @@
                     <div class="resume-group resume-group-tags reveal">
                         <h4>创作方向</h4>
                         <div class="resume-tags">
-                            <span class="resume-tag">AI 短剧</span>
-                            <span class="resume-tag">概念设计</span>
-                            <span class="resume-tag">风格化视觉</span>
-                            <span class="resume-tag">空间叙事</span>
-                            <span class="resume-tag">游戏美术</span>
-                            <span class="resume-tag">品牌视觉</span>
-                            <span class="resume-tag">室内空间设计</span>
-                            <span class="resume-tag">全流程设计</span>
-                            <span class="resume-tag">施工图设计</span>
+                            <span class="resume-tag">室内精装设计</span>
+                            <span class="resume-tag">施工图深化</span>
+                            <span class="resume-tag">AI 效果图</span>
+                            <span class="resume-tag">AI 效果视频</span>
+                            <span class="resume-tag">ComfyUI 工作流</span>
+                            <span class="resume-tag">舞台多媒体</span>
+                            <span class="resume-tag">影视置景</span>
+                            <span class="resume-tag">方案汇报宣讲</span>
+                            <span class="resume-tag">驻场技术支持</span>
                         </div>
                     </div>
                     </div>
@@ -2256,61 +2549,219 @@
 
                 <div class="resume-bottom">
                     <div class="resume-narrative reveal">
-                        <h5>AIGC 多领域技术实力</h5>
-                        <p>工业级 ComfyUI 工作流定制、大模型本地化部署与 LoRA 训练，从 0 到 1 独立主导高品质 AI 效果与视频创作。擅长针对特定美学进行 LoRA 训练与画风微调，稳定输出商业级视觉内容。</p>
+                        <h5>AIGC 全流程创作</h5>
+                        <p>熟练使用 AI 工作流程，可独自完成 AI 效果图、AI 效果视频与 AIGC 方案设计；擅长根据项目特殊性定制 ComfyUI 工作流以达到目标效果，并进行 LoRA 训练与画风微调，稳定输出商业级视觉内容。</p>
                         <h5>建筑精装全流程设计</h5>
-                        <p>建筑室内精装全流程设计，从方案构思到施工图落地，把控每一个细节。三年一线建筑精装设计经验，环艺科班出身的扎实空间功底。</p>
-                        <h5>用设计讲述空间的故事</h5>
-                        <p>我相信好的设计不仅仅是视觉上的愉悦，更是解决问题、传递价值的有效工具。从品牌需求到方案构思，我致力于在每个项目中寻找美学与功能的完美平衡点。</p>
+                        <p>首都师范大学环境设计本科，3 年一线精装设计经验。熟练完成室内精装从方案汇报到施工落地的全流程，独立绘制施工图并驻场解决现场问题，效果图部分均由 AI 参与出图。</p>
+                        <h5>舞台与影视置景经验</h5>
+                        <p>参与《小岛上的英台》舞台剧多媒体效果演示，曾任电影剧组置景助手。空间叙事与跨媒介呈现的经验，让设计不止于图纸，也能服务于现场与镜头。</p>
                         <h5>协作与交付方式</h5>
                         <p>习惯以模块化工作流组织生产：需求拆解、风格对齐、批量产出、分级审核，保证跨项目风格统一与交付节奏可控。可承接从前期概念到成片交付的全链路委托，也支持按环节嵌入式协作。</p>
                     </div>
 
-                    <ol class="resume-timeline reveal">
-                        <li class="tl-item">
-                            <div class="tl-main">
-                                <h4>工作经历待填写</h4>
-                                <p class="role">职位：待填写</p>
-                                <p>工作内容：待填写</p>
-                            </div>
-                            <div class="tl-date">时间段待填写</div>
-                        </li>
-                        <li class="tl-item">
-                            <div class="tl-main">
-                                <h4>工作经历待填写</h4>
-                                <p class="role">职位：待填写</p>
-                                <p>工作内容：待填写</p>
-                            </div>
-                            <div class="tl-date">时间段待填写</div>
-                        </li>
-                        <li class="tl-item">
-                            <div class="tl-main">
-                                <h4>教育经历待填写</h4>
-                                <p class="role">专业：待填写</p>
-                            </div>
-                            <div class="tl-date">时间段待填写</div>
-                        </li>
-                        <li class="tl-item">
-                            <div class="tl-main">
-                                <h4>项目经历待填写</h4>
-                                <p class="role">角色：待填写</p>
-                                <p>项目说明：待填写</p>
-                            </div>
-                            <div class="tl-date">时间段待填写</div>
-                        </li>
-                    </ol>
+                    <div class="resume-exp reveal">
+                        <h5>学业和工作经历</h5>
+                        <ol class="resume-timeline">
+                            <li class="tl-item">
+                                <div class="tl-main">
+                                    <h4><span class="tl-kind">学业</span>首都师范大学</h4>
+                                    <p class="role">专业：环境设计（本科）</p>
+                                    <p>接受环境设计本科系统训练，在校期间参与科德学院商业街改造等实践项目并担任主设计师，取得大学英语四级证书。</p>
+                                </div>
+                                <div class="tl-date">2019 - 2023</div>
+                            </li>
+                            <li class="tl-item">
+                                <div class="tl-main">
+                                    <h4><span class="tl-kind">工作</span>北京市建筑设计研究院股份有限公司</h4>
+                                    <p class="role">职位：室内设计</p>
+                                    <p>独立完成项目平面方案规划、效果图创作与施工图深化绘制，覆盖设计全流程核心环节；负责项目汇报 PPT 标准化制作与现场方案宣讲；熟练运用 AI 设计工具完成创意出图与动态效果展示视频。</p>
+                                </div>
+                                <div class="tl-date">2023.08 - 至今</div>
+                            </li>
+                        </ol>
+                    </div>
 
                     <div class="resume-services reveal">
                         <h5>服务范围</h5>
                         <ul>
-                            <li>AIGC 效果图与商业视觉定制</li>
-                            <li>AI 短剧与影视化内容创作</li>
-                            <li>LoRA 模型训练与画风微调</li>
-                            <li>室内精装方案与施工图设计</li>
-                            <li>三维建模与渲染表现</li>
-                            <li>品牌视觉与多媒体物料输出</li>
-                            <li>工作流搭建与团队技术赋能</li>
+                            <li>AI 效果图与效果视频定制</li>
+                            <li>AIGC 方案设计</li>
+                            <li>ComfyUI 工作流定制</li>
+                            <li>LoRA 训练与画风微调</li>
+                            <li>室内精装方案设计与汇报</li>
+                            <li>施工图深化绘制</li>
+                            <li>驻场技术支持与现场协调</li>
                         </ul>
+                    </div>
+
+                    <div class="resume-projectline reveal">
+                        <h5>项目历程</h5>
+                        <div class="pl-track" id="plTrack">
+                            <div class="pl-node active" tabindex="0" role="button" data-pl="0" aria-pressed="true">
+                                <div class="pl-date">2019.10</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">汽车俱乐部 MV 剧组拍摄</div>
+                                <div class="pl-role">置景助手</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="1" aria-pressed="false">
+                                <div class="pl-date">2021.06</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">科德学院商业街改造</div>
+                                <div class="pl-role">主设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="2" aria-pressed="false">
+                                <div class="pl-date">2023.05</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">清华五道口金融学院通州校区</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="3" aria-pressed="false">
+                                <div class="pl-date">2024.01</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">中国石油大厦报告厅</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="4" aria-pressed="false">
+                                <div class="pl-date">2025.07</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">清华长庚医院装饰装修</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="5" aria-pressed="false">
+                                <div class="pl-date">2025.08</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">E9 大厦 · 锦什坊三十五号</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="6" aria-pressed="false">
+                                <div class="pl-date">2025.12</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">上海 Smily 百盛品牌店</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                            <div class="pl-node" tabindex="0" role="button" data-pl="7" aria-pressed="false">
+                                <div class="pl-date">2026.01</div>
+                                <span class="pl-dot"></span>
+                                <div class="pl-name">中国大唐集团雄安总部</div>
+                                <div class="pl-role">设计师</div>
+                            </div>
+                        </div>
+
+                        <div class="pl-panel" id="plPanel" aria-live="polite">
+                            <div class="pl-panel-item active">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">汽车俱乐部 MV 剧组拍摄</span>
+                                    <span class="pl-panel-date">2019.10</span>
+                                    <span class="pl-panel-role">置景组 · 置景助手</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">项目概况</span><span class="pl-panel-val">在北京齿轮厂家属院拍摄汽车俱乐部宣传 MV，项目款约 200 万元，拍摄时长共计 40 小时。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">我的职责</span><span class="pl-panel-val">置景组三人小组成员，与另一位同学共同完成置景工作，保障 MV 顺利拍摄完成。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">项目成果</span><span class="pl-panel-val">完成项目拍摄。</span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">首都师范大学科德学院商业街改造</span>
+                                    <span class="pl-panel-date">2021.06 - 至今</span>
+                                    <span class="pl-panel-role">主设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">项目概况</span><span class="pl-panel-val">商业街改造项目，涵盖项目立案、实地调查与方案制作全流程。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">团队协作</span><span class="pl-panel-val">与四位同学在工作室董薇老师带领下学习并制作两套方案，在第二套方案《圆》中担任主设计师。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">我的贡献</span><span class="pl-panel-val">参与并完成方案制作。</span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">清华五道口金融学院 · 继续教育学院通州校区</span>
+                                    <span class="pl-panel-date">2023.05 - 至今</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">完整方案设计与完整施工图绘制，项目后期以现场问题解决为主。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">主要职责</span><span class="pl-panel-val"><ol>
+                                    <li>前期设计初衷与设计需求沟通</li>
+                                    <li>平面方案设计与修改</li>
+                                    <li>效果方案设计与修改，包含 AI 出效果图，根据图纸 1:1 实现效果</li>
+                                    <li>施工图深化设计</li>
+                                    <li>现场工地服务，解决现场问题，协调各专业与施工单位</li>
+                                </ol></span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">中国石油大厦报告厅装饰装修</span>
+                                    <span class="pl-panel-date">2024.01 - 2025.01</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">施工图绘制与效果图精修。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">我的职责</span><span class="pl-panel-val">主要负责施工图绘制和效果图精修。</span></div>
+                                <p class="pl-panel-note">效果图部分均有 AI 参与出图。</p>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">清华长庚医院装饰装修</span>
+                                    <span class="pl-panel-date">2025.07 - 2025.09</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">施工图绘制。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">主要职责</span><span class="pl-panel-val"><ol>
+                                    <li>前期设计初衷与设计需求沟通</li>
+                                    <li>平面方案设计与修改</li>
+                                    <li>效果方案设计与修改，包含 AI 出效果图，根据图纸 1:1 实现效果</li>
+                                    <li>施工图深化设计</li>
+                                    <li>现场工地服务，解决现场问题，协调各专业与施工单位</li>
+                                </ol></span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">E9 大厦 · 锦什坊三十五号中正金融办公区装修工程</span>
+                                    <span class="pl-panel-date">2025.08 - 至今</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">完整方案设计与完整施工图绘制。项目目前正在施工，预计 2026 年 9 月完工。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">主要职责</span><span class="pl-panel-val"><ol>
+                                    <li>前期设计初衷与设计需求沟通</li>
+                                    <li>根据甲方需求进行平面方案设计与修改</li>
+                                    <li>根据甲方需求进行效果方案设计与修改，包含 AI 出效果图，根据图纸 1:1 实现效果</li>
+                                    <li>施工图深化设计</li>
+                                    <li>现场工地服务，解决现场问题，协调各专业与施工单位</li>
+                                </ol></span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">上海 Smily 百盛品牌店</span>
+                                    <span class="pl-panel-date">2025.12 - 2026.03</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">负责全流程设计。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">主要职责</span><span class="pl-panel-val"><ol>
+                                    <li>与甲方沟通需求，搭建初步设计构思</li>
+                                    <li>平面方案设计，理解甲方需求并实际落地到图纸上</li>
+                                    <li>效果方案设计，在可实现的基础上完善设计</li>
+                                    <li>施工图深化，解决本阶段产生的问题，补充前期未设想到的解决方法使项目落地</li>
+                                    <li>施工阶段现场服务</li>
+                                </ol></span></div>
+                            </div>
+
+                            <div class="pl-panel-item">
+                                <div class="pl-panel-head">
+                                    <span class="pl-panel-title">中国大唐集团雄安总部项目</span>
+                                    <span class="pl-panel-date">2026.01 - 至今</span>
+                                    <span class="pl-panel-role">设计师</span>
+                                </div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">工作内容</span><span class="pl-panel-val">平面方案设计与效果图设计。</span></div>
+                                <div class="pl-panel-row"><span class="pl-panel-key">主要职责</span><span class="pl-panel-val"><ol>
+                                    <li>前期设计初衷与设计需求沟通</li>
+                                    <li>平面方案设计与修改</li>
+                                    <li>效果方案设计与修改，包含 AI 出效果图，根据图纸 1:1 实现效果</li>
+                                </ol></span></div>
+                                <p class="pl-panel-note">效果图部分均有 AI 参与出图。</p>
+                            </div>
+                        </div>
+
+                        <p class="pl-hint">悬浮或点击项目节点查看详情 · 窄屏可左右滑动时间轴</p>
                     </div>
 
                     <div class="about-stats reveal">
@@ -2901,6 +3352,60 @@
             }
 
             apply();
+        })();
+
+        /* ========== 项目历程时间线：悬浮/点选切换详情面板 ========== */
+        (function () {
+            var track = document.getElementById('plTrack');
+            var panel = document.getElementById('plPanel');
+            if (!track || !panel) return;
+
+            var nodes = Array.prototype.slice.call(track.querySelectorAll('.pl-node'));
+            var items = Array.prototype.slice.call(panel.querySelectorAll('.pl-panel-item'));
+            if (!nodes.length || nodes.length !== items.length) return;
+
+            var current = 0;
+            var sticky = false;      // 触摸设备点选后锁定，避免滑动时间轴时误触发
+
+            function show(i) {
+                if (i < 0 || i >= nodes.length || i === current) return;
+                nodes[current].classList.remove('active');
+                nodes[current].setAttribute('aria-pressed', 'false');
+                items[current].classList.remove('active');
+                current = i;
+                nodes[current].classList.add('active');
+                nodes[current].setAttribute('aria-pressed', 'true');
+                items[current].classList.add('active');
+            }
+
+            nodes.forEach(function (node, i) {
+                node.addEventListener('mouseenter', function () { if (!sticky) show(i); });
+                node.addEventListener('focus', function () { if (!sticky) show(i); });
+                node.addEventListener('click', function () {
+                    sticky = true;
+                    show(i);
+                    // 点选后把该节点滚入可视区中间，窄屏体验更好
+                    if (node.scrollIntoView) node.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                });
+                node.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        sticky = true;
+                        show(i);
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault(); sticky = true; show(Math.min(i + 1, nodes.length - 1)); nodes[current].focus();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault(); sticky = true; show(Math.max(i - 1, 0)); nodes[current].focus();
+                    }
+                });
+            });
+
+            // 鼠标移出整个时间线区域时解除锁定，恢复悬浮跟随
+            var wrap = track.closest('.resume-projectline');
+            if (wrap) wrap.addEventListener('mouseleave', function () { sticky = false; });
+
+            // 触屏滑动时间轴时不误判为选择
+            track.addEventListener('touchstart', function () { sticky = true; }, { passive: true });
         })();
 
     </script>

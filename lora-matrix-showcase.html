@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>星核矩阵 — LoRA 成果展示</title>
+<title>控制类lora — LoRA 成果展示</title>
 <style>
 /* ============================================================
    SECTION: tokens — 赛博霓虹设计令牌（完全独立于现有站点）
@@ -265,11 +265,11 @@ footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,9
 
 <!-- SECTION: nav -->
 <nav id="nav">
-  <div class="nav-logo"><span class="hex">◈</span><span>星核矩阵</span></div>
+  <div class="nav-logo"><span class="hex">◈</span><span>控制类lora</span></div>
   <div class="nav-links">
     <a href="#models">模型矩阵</a>
   </div>
-  <a href="#models" class="nav-cta">ENTER ▸</a>
+  <a href="index.html" class="nav-cta">← 返回主页</a>
 </nav>
 
 <!-- SECTION: hero -->
@@ -277,7 +277,7 @@ footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,9
   <div class="hero-grid-bg"></div>
   <p class="hero-eyebrow" id="eyebrow">LoRA TRAINING FACILITY · 低秩微调模型矩阵</p>
   <h1 class="hero-title">
-    <span class="glitch l1" data-text="星核矩阵">星核矩阵</span>
+    <span class="glitch l1" data-text="控制类lora">控制类lora</span>
     <span class="l2 glitch" data-text="LoRA GALLERY">LoRA GALLERY</span>
   </h1>
   <p class="hero-sub"><span id="typewriter"></span><span class="caret"></span></p>
@@ -308,12 +308,12 @@ footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,9
   <div class="foot-links reveal">
     <a href="#models">模型矩阵</a>
   </div>
-  <p class="foot-copy reveal">© 2026 星核矩阵 LoRA GALLERY · 本页为占位示例，成果图待替换</p>
+  <p class="foot-copy reveal">© 2026 控制类lora LoRA GALLERY · 本页为占位示例，成果图待替换</p>
 </footer>
 
 <script>
 /* ============================================================
-   SECTION: works-data — LoRA 星核矩阵 · 展示数据
+   SECTION: works-data — LoRA 控制类lora · 展示数据
    ------------------------------------------------------------
    替换真实成果图的方法：
    把每个条目里的 image: "" 填上图片地址即可，页面会自动
@@ -326,7 +326,7 @@ footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,9
    ============================================================ */
 window.LORA_DATA = {
   brand: {
-    name: "星核矩阵",
+    name: "控制类lora",
     en: "LoRA GALLERY",
     tagline: [
       "低秩微调 · 定向蒸馏每一个画风与角色",
@@ -644,7 +644,7 @@ function onResize(){ sizeRain(); sizeP(); }
 window.addEventListener('resize',onResize);
 
 /* ---------- 开机自检序列 ---------- */
-var bootLines=['> 初始化星核矩阵渲染引擎 .........','> 挂载 LoRA 权重矩阵 [6 models] ..','> 校准潜空间维度 rank=64 ........','> 载入成果画廊纹理资源 .........','> 建立神经网络推理链路 ... [OK]','> 系统就绪 — 欢迎进入 LoRA GALLERY'];
+var bootLines=['> 初始化控制类lora渲染引擎 .........','> 挂载 LoRA 权重矩阵 [6 models] ..','> 校准潜空间维度 rank=64 ........','> 载入成果画廊纹理资源 .........','> 建立神经网络推理链路 ... [OK]','> 系统就绪 — 欢迎进入 LoRA GALLERY'];
 var bl=$('#bootLines'), bar=$('#bootBar');
 function afterBoot(){ $$('#heroStats .n').forEach(countUp); type(); }
 function start(){
