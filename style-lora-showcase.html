@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>风格化 LoRA — 风格转换成果展示</title>
+<style>
+/* ============================================================
+   tokens — 影视游戏质感：深蓝黑底 + teal/orange 电影调色
+   ============================================================ */
+:root{
+  --bg:#04070c;
+  --bg2:#080e17;
+  --stage:#0a1119;
+  --ink:#e8f1f8;
+  --dim:#7d93a8;
+  --dimmer:#4d6072;
+  --line:rgba(125,160,195,.18);
+  --teal:#2ee6d6;
+  --teal-d:rgba(46,230,214,.14);
+  --orange:#ff8a3c;
+  --amber:#ffc46b;
+  --red:#ff4d5e;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --serif:Georgia,"Songti SC","SimSun",serif;
+  --ease:cubic-bezier(.16,.84,.28,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--teal);color:#03080c}
+
+/* 滚动条 */
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:#05090f}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--teal),var(--orange));border-radius:9px}
+
+/* ============================================================
+   全局特效层：颗粒 / 扫描线 / 暗角 / 光柱
+   ============================================================ */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+.fx-grain{
+  opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift .5s steps(3) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}100%{transform:translate(0,0)}
+}
+.fx-scan{
+  opacity:.30;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.34) 2px 4px);
+}
+.fx-vig{background:radial-gradient(120% 95% at 50% 45%,transparent 42%,rgba(0,0,0,.62) 100%)}
+.fx-sweep{
+  opacity:.5;
+  background:linear-gradient(to bottom,transparent,rgba(46,230,214,.10),transparent);
+  height:26vh;animation:sweepDown 7.5s linear infinite;
+}
+@keyframes sweepDown{0%{transform:translateY(-30vh)}100%{transform:translateY(130vh)}}
+
+/* 背景光柱 / 氛围光晕 */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-rays{
+  position:absolute;inset:-30%;
+  background:
+    conic-gradient(from 200deg at 22% 18%,transparent 0deg,rgba(46,230,214,.10) 14deg,transparent 30deg),
+    conic-gradient(from 20deg at 82% 72%,transparent 0deg,rgba(255,138,60,.09) 16deg,transparent 34deg);
+  filter:blur(28px);animation:rayDrift 26s ease-in-out infinite alternate;
+}
+@keyframes rayDrift{0%{transform:rotate(0deg) scale(1)}100%{transform:rotate(9deg) scale(1.14)}}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.30}
+.bg-orb.a{width:46vw;height:46vw;left:-12vw;top:-8vw;background:radial-gradient(circle,rgba(46,230,214,.55),transparent 66%);animation:orbFloat 22s ease-in-out infinite alternate}
+.bg-orb.b{width:40vw;height:40vw;right:-10vw;top:38vh;background:radial-gradient(circle,rgba(255,138,60,.48),transparent 66%);animation:orbFloat 28s ease-in-out infinite alternate-reverse}
+@keyframes orbFloat{0%{transform:translate(0,0)}100%{transform:translate(6vw,-7vh)}}
+.bg-grid{
+  position:absolute;inset:0;opacity:.16;
+  background-image:linear-gradient(rgba(125,160,195,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(125,160,195,.14) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(90% 70% at 50% 30%,#000,transparent);
+}
+#dust{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* ============================================================
+   自定义光标 + 拖尾
+   ============================================================ */
+.cur{position:fixed;z-index:90;pointer-events:none;left:0;top:0;mix-blend-mode:screen}
+.cur-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px var(--teal)}
+.cur-ring{width:34px;height:34px;margin:-14px 0 0 -14px;border:1px solid rgba(46,230,214,.6);border-radius:50%;
+  box-shadow:0 0 18px rgba(46,230,214,.28) inset}
+.cur-ring.hot{border-color:var(--orange);box-shadow:0 0 22px rgba(255,138,60,.45) inset;transform:scale(1.32)}
+.cur-trail{position:fixed;z-index:89;width:5px;height:5px;border-radius:50%;pointer-events:none;
+  background:var(--teal);box-shadow:0 0 9px var(--teal)}
+
+/* ============================================================
+   开机自检
+   ============================================================ */
+#boot{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;place-items:center;
+  transition:opacity .7s ease,visibility .7s}
+#boot.gone{opacity:0;visibility:hidden}
+.boot-box{width:min(560px,88vw);font-family:var(--mono);font-size:12.5px;color:var(--dim)}
+.boot-t{font-family:var(--serif);font-size:clamp(22px,4vw,32px);color:var(--ink);letter-spacing:.1em;margin-bottom:6px}
+.boot-t em{font-style:normal;color:var(--teal);text-shadow:0 0 18px rgba(46,230,214,.6)}
+.boot-bar{height:2px;background:rgba(125,160,195,.16);margin:18px 0 12px;overflow:hidden;border-radius:2px}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--orange));
+  box-shadow:0 0 14px var(--teal);transition:width .25s linear}
+#bootLines{height:150px;overflow:hidden;line-height:1.85}
+#bootLines .ok{color:var(--teal)}
+
+/* ============================================================
+   滚动进度条
+   ============================================================ */
+#prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:80;
+  background:linear-gradient(90deg,var(--teal),var(--amber),var(--orange));box-shadow:0 0 12px rgba(46,230,214,.7)}
+
+/* ============================================================
+   HUD 悬浮读数
+   ============================================================ */
+.hud{position:fixed;z-index:70;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+  color:var(--dimmer);pointer-events:none;text-transform:uppercase}
+/* 顶部两组读数移入开头板块：随页面滚动，不再固定贴顶栏 */
+.hero-hud{position:absolute;z-index:5}
+.hero-hud.l{left:clamp(20px,3.4vw,52px);top:clamp(86px,11vh,124px)}
+.hero-hud.r{right:clamp(20px,3.4vw,52px);top:clamp(86px,11vh,124px);text-align:right}
+.hud-bl{left:clamp(10px,2vw,20px);bottom:16px}
+.hud-br{right:clamp(10px,2vw,20px);bottom:16px;text-align:right}
+.hud b{color:var(--teal);font-weight:600}
+.hud .rec{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 9px var(--red);animation:recBlink 1.4s steps(2) infinite;vertical-align:1px;margin-right:5px}
+@keyframes recBlink{0%,100%{opacity:1}50%{opacity:.15}}
+.eq{display:inline-flex;gap:2px;align-items:flex-end;height:11px;vertical-align:-1px;margin-left:6px}
+.eq i{width:2px;background:var(--teal);opacity:.75;animation:eqBounce 1s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.14s}.eq i:nth-child(3){animation-delay:.28s}
+.eq i:nth-child(4){animation-delay:.42s}.eq i:nth-child(5){animation-delay:.56s}
+@keyframes eqBounce{0%,100%{height:3px}50%{height:11px}}
+
+/* ============================================================
+   nav
+   ============================================================ */
+nav{position:fixed;top:0;left:0;right:0;z-index:75;display:flex;align-items:center;justify-content:space-between;
+  padding:13px clamp(18px,4vw,52px);backdrop-filter:blur(12px);
+  background:linear-gradient(to bottom,rgba(4,7,12,.92),rgba(4,7,12,.42));
+  border-bottom:1px solid transparent;transition:border-color .4s,background .4s}
+nav.scrolled{border-bottom-color:var(--line);background:rgba(4,7,12,.93)}
+.nav-logo{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:18px;font-weight:700;letter-spacing:.08em}
+.nav-logo .hex{width:26px;height:26px;display:grid;place-items:center;font-size:13px;color:#03080c;
+  background:conic-gradient(from 0deg,var(--teal),var(--orange),var(--amber),var(--teal));
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);animation:hexSpin 7s linear infinite}
+@keyframes hexSpin{to{filter:hue-rotate(360deg)}}
+.nav-logo .en{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--dimmer);font-weight:400}
+.nav-right{display:flex;align-items:center;gap:clamp(12px,2.4vw,26px);font-family:var(--mono);font-size:12px;letter-spacing:.12em}
+.nav-right a{color:var(--dim);transition:color .25s,text-shadow .25s;position:relative;padding:4px 0}
+.nav-right a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--teal);
+  box-shadow:0 0 8px var(--teal);transition:width .3s var(--ease)}
+.nav-right a:hover{color:var(--teal);text-shadow:0 0 12px rgba(46,230,214,.6)}
+.nav-right a:hover::after{width:100%}
+.nav-home{border:1px solid var(--orange)!important;color:var(--orange)!important;padding:7px 16px!important;
+  border-radius:3px;text-shadow:0 0 10px rgba(255,138,60,.45);transition:.28s!important}
+.nav-home:hover{background:var(--orange);color:#0a0503!important;box-shadow:0 0 26px rgba(255,138,60,.6);transform:translateY(-1px)}
+.nav-home::after{display:none}
+
+/* ============================================================
+   hero
+   ============================================================ */
+header{position:relative;z-index:2;padding:clamp(130px,19vh,210px) clamp(20px,3.4vw,52px) clamp(46px,7vh,86px);
+  width:100%;margin:0;perspective:1200px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.34em;color:var(--teal);margin-bottom:24px;text-shadow:0 0 14px rgba(46,230,214,.55)}
+.hero-eyebrow::before{content:'';width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--teal));
+  box-shadow:0 0 8px var(--teal)}
+h1{font-family:var(--serif);font-size:clamp(40px,7.4vw,94px);line-height:1.06;font-weight:700;letter-spacing:.005em;
+  transform-style:preserve-3d}
+h1 .ln{display:block}
+.glitch{position:relative;display:inline-block;color:var(--ink)}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;pointer-events:none}
+.glitch::before{color:var(--teal);animation:gl1 3.6s infinite steps(2);clip-path:inset(0 0 56% 0);opacity:.85}
+.glitch::after{color:var(--orange);animation:gl2 2.9s infinite steps(2);clip-path:inset(54% 0 0 0);opacity:.8}
+@keyframes gl1{0%,92%,100%{transform:translate(0,0)}93%{transform:translate(-3px,-1px)}96%{transform:translate(2px,1px)}}
+@keyframes gl2{0%,90%,100%{transform:translate(0,0)}91%{transform:translate(3px,1px)}95%{transform:translate(-2px,-1px)}}
+h1 em{font-style:normal;color:var(--orange);text-shadow:0 0 34px rgba(255,138,60,.5)}
+.hero-sub{margin-top:28px;max-width:680px;font-size:clamp(15px,1.45vw,18.5px);color:var(--dim);min-height:3.4em}
+.caret{display:inline-block;width:9px;height:1.05em;background:var(--teal);vertical-align:-2px;
+  animation:blink .9s steps(1) infinite;box-shadow:0 0 12px var(--teal)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.hero-tags span{font-family:var(--mono);font-size:12px;letter-spacing:.1em;padding:8px 17px;
+  border:1px solid var(--line);border-radius:2px;color:var(--dim);background:rgba(10,17,25,.6);
+  position:relative;overflow:hidden;transition:.3s}
+.hero-tags span::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(46,230,214,.22),transparent);
+  transform:translateX(-100%);transition:transform .6s var(--ease)}
+.hero-tags span:hover{border-color:var(--teal);color:var(--teal);box-shadow:0 0 20px rgba(46,230,214,.22)}
+.hero-tags span:hover::before{transform:translateX(100%)}
+
+/* hero 统计条 */
+.hero-stats{display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,54px);margin-top:44px;
+  padding-top:30px;border-top:1px solid var(--line)}
+.hstat .n{font-family:var(--mono);font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--teal);
+  line-height:1;letter-spacing:-.02em;text-shadow:0 0 26px rgba(46,230,214,.45)}
+.hstat .n i{font-style:normal;font-size:.5em;color:var(--orange);margin-left:2px}
+.hstat .t{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dimmer);margin-top:9px;text-transform:uppercase}
+
+/* 跑马灯 */
+.marquee{position:relative;z-index:2;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(8,14,23,.7);padding:11px 0;margin-top:clamp(30px,5vh,58px)}
+/* 无缝滚动：条目间距用 margin 而非 flex gap，保证循环周期精确对齐 */
+.mq-track{display:flex;width:max-content;animation:mqRun 90s linear infinite;font-family:var(--mono);
+  font-size:12px;letter-spacing:.24em;color:var(--dimmer);white-space:nowrap}
+.mq-track > span{margin-right:46px}
+.mq-track b{color:var(--teal);font-weight:600}
+.mq-track s{color:var(--orange);text-decoration:none}
+@keyframes mqRun{to{transform:translateX(-50%)}}
+
+/* ============================================================
+   项目区块
+   ============================================================ */
+main{position:relative;z-index:2;width:100%;margin:0;padding:0 clamp(20px,3.4vw,52px) clamp(60px,9vh,120px)}
+.proj{padding:clamp(46px,7vh,84px) 0;border-top:1px solid var(--line);position:relative}
+.proj:first-child{border-top:0}
+
+/* HUD 角标框 */
+.frame{position:relative}
+.frame::before,.frame::after{content:'';position:absolute;width:26px;height:26px;pointer-events:none;
+  border-color:var(--teal);opacity:.55;transition:opacity .4s,width .4s var(--ease),height .4s var(--ease)}
+.frame::before{left:-1px;top:-1px;border-left:1px solid;border-top:1px solid}
+.frame::after{right:-1px;bottom:-1px;border-right:1px solid;border-bottom:1px solid}
+.frame:hover::before,.frame:hover::after{opacity:1;width:40px;height:40px}
+
+.proj-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 22px;margin-bottom:16px}
+.proj-no{font-family:var(--mono);font-size:clamp(38px,6vw,66px);font-weight:700;line-height:.82;
+  color:transparent;-webkit-text-stroke:1px rgba(46,230,214,.55);letter-spacing:-.02em;
+  transition:.45s var(--ease)}
+.proj:hover .proj-no{-webkit-text-stroke-color:var(--teal);text-shadow:0 0 30px rgba(46,230,214,.35)}
+.proj-head h2{font-family:var(--serif);font-size:clamp(25px,3.4vw,40px);font-weight:700;letter-spacing:.02em}
+.proj-head h2 .arrow{color:var(--orange);margin:0 .28em;font-family:var(--sans)}
+.proj-en{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--dimmer);padding-bottom:8px;text-transform:uppercase}
+.proj-desc{max-width:760px;color:var(--dim);font-size:15.5px;margin-bottom:24px}
+.proj-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
+.proj-meta span{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;padding:6px 14px;
+  border:1px solid var(--line);border-radius:2px;color:var(--dimmer);background:rgba(10,17,25,.55)}
+.proj-meta span b{color:var(--teal);font-weight:600}
+.proj-meta span.warn b{color:var(--amber)}
+
+/* ---- 对比一：分屏扩展（电影遮幅舞台）---- */
+.split{display:flex;gap:8px;height:clamp(400px,66vh,680px);margin-bottom:16px}
+.split-side{position:relative;flex:1 1 50%;min-width:0;overflow:hidden;border-radius:4px;cursor:zoom-in;
+  background:var(--stage);border:1px solid var(--line);
+  transition:flex-basis .62s var(--ease),border-color .4s,box-shadow .5s}
+.split-side:hover{border-color:rgba(46,230,214,.5);box-shadow:0 0 44px rgba(46,230,214,.14)}
+.split-side .imgwrap{position:absolute;inset:0;overflow:hidden}
+.split-side img{width:100%;height:100%;object-fit:contain;background:var(--stage);
+  transform:scale(1.03);transition:transform 6s var(--ease),filter .5s;filter:saturate(.96) contrast(1.03)}
+.split-side:hover img{transform:scale(1.1);filter:saturate(1.08) contrast(1.06)}
+@media (hover:hover){
+  .split:hover .split-side{flex-basis:23%}
+  .split .split-side:hover{flex-basis:77%}
+}
+.split .split-side.active{flex-basis:77%}
+.split.has-active .split-side:not(.active){flex-basis:23%}
+
+/* 电影遮幅上下黑边 */
+.split-side .bar{position:absolute;left:0;right:0;height:9%;background:#000;z-index:3;pointer-events:none;
+  transition:height .5s var(--ease)}
+.split-side .bar.t{top:0}.split-side .bar.b{bottom:0}
+.split-side:hover .bar{height:5%}
+
+/* 图像上的扫描线 + 光扫 */
+.split-side .isln{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.4;
+  background:repeating-linear-gradient(to bottom,transparent 0 2px,rgba(0,0,0,.3) 2px 4px)}
+.split-side .sweep{position:absolute;top:0;bottom:0;width:34%;z-index:4;pointer-events:none;opacity:0;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);
+  transform:translateX(-140%) skewX(-14deg);transition:opacity .3s}
+.split-side:hover .sweep{opacity:1;animation:sweepX 1.5s var(--ease) infinite}
+@keyframes sweepX{0%{transform:translateX(-140%) skewX(-14deg)}100%{transform:translateX(320%) skewX(-14deg)}}
+
+/* 色差分离（hover 时轻微 RGB split）*/
+.split-side .rgb{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .35s;
+  background-image:inherit}
+.split-side:hover .rgb{opacity:1;animation:rgbJit .28s steps(2) 2}
+@keyframes rgbJit{0%{transform:translate(0,0)}50%{transform:translate(1.5px,-1px)}100%{transform:translate(0,0)}}
+
+/* ---- 竖图专用：竖向对比框（满幅零裁切；两行共享宽度变量，左右比例逐行一致）---- */
+/* 共享宽度 = 竖框自然宽度（框高 × 2 × 736/1308 + 中缝 8px），横版框同宽 */
+.split-row{--cmp-h:clamp(480px,72vh,860px);--cmp-w:calc(var(--cmp-h)*1.12538 + 8px)}
+.split.portrait{height:var(--cmp-h);width:var(--cmp-w);justify-content:center;align-items:stretch}
+.split.portrait .split-side img{object-fit:contain;object-position:center center;background:transparent}
+/* 竖框内不做 Ken Burns 推近，保证整幅人物完整可见（空档由模糊垫底填充）*/
+.split.portrait .split-side img,
+.split.portrait .split-side:hover img{transform:none}
+/* 竖图满幅，去掉电影遮幅黑边 */
+.split.portrait .bar{height:0}
+/* 悬停扩展：固定总宽内横向伸缩（宽→窄 / 窄→宽），高度不变 */
+@media (hover:hover){
+  .split.portrait:hover .split-side{flex-basis:24%}
+  .split.portrait .split-side:hover{flex-basis:76%}
+}
+.split.portrait .split-side.active{flex-basis:76%}
+.split.portrait.has-active .split-side:not(.active){flex-basis:24%}
+@media (max-width:760px){
+  .split.portrait{height:auto;flex-direction:column;align-items:center;gap:16px}
+  .split.portrait .split-side,
+  .split.portrait:hover .split-side,
+  .split.portrait .split-side:hover,
+  .split.portrait .split-side.active,
+  .split.portrait.has-active .split-side:not(.active){width:100%;height:auto;aspect-ratio:736/1308}
+}
+
+/* HUD 标签 */
+.split-lbl{position:absolute;left:0;bottom:0;z-index:6;display:flex;align-items:center;gap:9px;
+  padding:8px 15px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;font-weight:600;
+  background:rgba(4,7,12,.88);backdrop-filter:blur(6px);border-top:1px solid var(--line);border-right:1px solid var(--line);
+  text-transform:uppercase}
+.split-lbl .sq{width:7px;height:7px;background:currentColor;box-shadow:0 0 9px currentColor}
+.split-lbl.src{color:var(--dim)}
+.split-lbl.out{color:var(--teal)}
+.split-side .tc{position:absolute;right:0;top:0;z-index:6;padding:7px 13px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.14em;color:var(--dimmer);background:rgba(4,7,12,.8);border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
+.split-hint{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--dimmer);display:flex;align-items:center;gap:10px}
+.split-hint::before{content:'';width:20px;height:1px;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+
+/* ---- 竖向图适配：对比框随图片方向走 ----
+   .split.portrait 的宽高比 = 两张竖图并排的实际比例（0.563×2+缝隙≈1.16），
+   框与图同比例 → 图完全贴满框、零裁切零黑边；
+   扩展交互时多出的宽度由模糊放大副本垫底，呈电影式虚化溢出而非空黑 */
+/* 逐行配对：每行左=对比图、右=该场景三栏图，行内 stretch 等高 → 水平对齐 */
+.split-row{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  gap:clamp(22px,3vw,48px);align-items:stretch;margin-bottom:clamp(28px,4vh,48px)}
+/* 左格：对比图（竖版左右 / 横版上下），其固有高度决定整行高度 */
+.cmp-cell{display:flex;flex-direction:column;gap:14px;min-width:0}
+.cmp-cell .tri-head{margin:0}
+.cmp-cell .split{margin-bottom:0}
+/* 右格：绝对定位填充整行高度 → 不反向撑高，与左格严格等高对齐 */
+.tri-col{position:relative;min-width:0;
+  border-left:1px solid var(--line);padding-left:clamp(18px,2.4vw,36px)}
+.tri-col > .tri-head{position:absolute;left:clamp(18px,2.4vw,36px);right:0;top:0}
+.triptychs.triptychs-col{position:absolute;left:clamp(18px,2.4vw,36px);right:0;
+  top:calc(clamp(20px,2.4vh,30px) + 14px);bottom:0;
+  display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);gap:18px;min-height:0}
+/* 超宽三栏行：图按自身比例置顶，剩余高度由说明卡填充，消除上下留空 */
+.tri-col.fill{display:flex;flex-direction:column;gap:16px}
+.tri-col.fill > .tri-head{position:static;left:auto;right:auto;top:auto}
+.tri-col.fill .triptychs.triptychs-col{position:static;left:auto;right:auto;top:auto;bottom:auto;
+  flex:0 0 auto;display:block}
+.tri-col.fill figure{height:auto;grid-template-rows:auto auto}
+.tri-col.fill .imgbox{aspect-ratio:4128/880}
+.tri-note{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:12px;
+  border:1px solid var(--line);border-radius:6px;padding:clamp(14px,1.6vw,22px);
+  background:linear-gradient(160deg,rgba(46,230,214,.06),transparent 55%),var(--stage)}
+.tri-note .tn-k{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--teal);text-transform:uppercase}
+.tri-note ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.tri-note li{display:flex;gap:12px;align-items:baseline;font-size:13px;color:var(--dim)}
+.tri-note li b{font-family:var(--mono);font-size:12px;color:var(--ink);letter-spacing:.06em;flex:0 0 auto;min-width:104px}
+.tri-note .tn-d{font-size:12.5px;color:var(--dimmer);line-height:1.75;margin:0}
+/* 模型档案卡：参数行 + 简介 + 强调条目（参照模型说明版式） */
+.tri-note .tn-params{display:flex;flex-wrap:wrap;gap:4px 18px;font-family:var(--mono);
+  font-size:11px;letter-spacing:.06em;color:var(--dimmer)}
+.tri-note .tn-params b{color:var(--teal);font-weight:600}
+.tri-note .tn-p{margin:0;font-size:12.5px;line-height:1.8;color:var(--dim)}
+.tri-note .tn-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin:0;padding:0}
+.tri-note .tn-list li{display:block;position:relative;padding-left:14px;font-size:12.5px;line-height:1.7;color:var(--dim)}
+.tri-note .tn-list li::before{content:'·';position:absolute;left:3px;top:0;color:var(--teal);font-weight:800}
+.tri-note .tn-foot{color:var(--dimmer);font-size:11.5px;border-top:1px dashed var(--line);padding-top:10px}
+/* 超宽三栏对比：通栏单列，图盒按自身 4.69:1 比例铺满 */
+.triptychs-wide{grid-template-columns:1fr}
+.triptychs-wide figure{height:auto;display:block}
+.triptychs-wide .imgbox{position:relative;aspect-ratio:4128/880;border-radius:4px;overflow:hidden;background:var(--stage)}
+.triptychs-wide img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover}
+.triptychs-wide .bd{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:var(--img,none) center/cover no-repeat;filter:blur(26px) brightness(.5) saturate(1.25);transform:scale(1.18)}
+.triptychs-wide .holo{z-index:2;inset:0}
+.triptychs-wide .scanbar{z-index:3}
+.triptychs-wide figcaption{margin-top:12px}
+/* 横版分屏对比框（洞穴等横向画面）：上下布置，悬停时该画面纵向扩展 */
+.split.landscape{flex-direction:column;height:clamp(420px,60vh,680px);width:var(--cmp-w)}
+.split.landscape .split-side{flex:1 1 50%}
+.split.landscape .split-side img{object-fit:cover;object-position:center center}
+.split.landscape .bar{height:0}
+@media (hover:hover){
+  .split.landscape:hover .split-side{flex-basis:24%}
+  .split.landscape .split-side:hover{flex-basis:76%}
+}
+.split.landscape .split-side.active{flex-basis:76%}
+.split.landscape.has-active .split-side:not(.active){flex-basis:24%}
+.triptychs-col .triptych{min-height:0}
+.triptychs-col figure{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px;margin:0}
+/* 图盒：只装图与特效层，图注独立在外，模糊垫底不污染文字 */
+.triptychs-col .imgbox{position:relative;min-height:0;border-radius:4px;overflow:hidden;background:var(--stage)}
+.triptychs-col img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;background:transparent}
+.triptychs-col figcaption{margin-top:0}
+/* 右栏图 letterbox 空档用同图模糊垫底填充（与左栏竖框同款电影式处理）*/
+.triptychs-col .bd{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:var(--img,none) center/cover no-repeat;
+  filter:blur(26px) brightness(.5) saturate(1.25);transform:scale(1.18)}
+.triptychs-col .holo{z-index:2;inset:0}
+.triptychs-col .scanbar{z-index:3}
+.split-side::before{content:'';position:absolute;inset:-2px;z-index:0;
+  background:var(--img,none) center/cover no-repeat;
+  filter:blur(30px) brightness(.7) saturate(1.25);transform:scale(1.2);pointer-events:none}
+.split-side .imgwrap{z-index:1}
+
+/* 信息底栏：移到对比区下方横排（右栏位置已让给三栏对比） */
+.split-info{display:flex;flex-wrap:wrap;align-items:center;gap:12px clamp(24px,3vw,44px);min-width:0;
+  border-top:1px solid var(--line);padding-top:20px;margin-top:24px}
+.split-info .si-k{width:100%}
+.split-info .si-t{font-size:clamp(18px,1.9vw,25px)}
+.split-info .si-d{flex:1 1 340px;max-width:560px}
+.split-info .si-legend{flex-direction:row;gap:clamp(16px,2vw,30px);margin-top:0}
+.split-info .si-meta{margin-left:auto;margin-top:0}
+.si-k{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--orange);text-transform:uppercase}
+.si-t{font-family:var(--serif);font-size:clamp(20px,2.2vw,28px);font-weight:700;line-height:1.3}
+.si-d{color:var(--dim);font-size:14.5px;max-width:420px}
+.si-legend{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.si-legend li{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;color:var(--dim)}
+.si-legend li em{font-style:normal;color:var(--dimmer);margin-left:auto;font-size:10.5px;letter-spacing:.16em}
+.si-legend .sw{width:11px;height:11px;flex:0 0 auto;box-shadow:0 0 10px currentColor;background:currentColor}
+.si-legend .src{color:var(--dim)}
+.si-legend .out{color:var(--teal)}
+.si-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.si-meta span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--dimmer);
+  border:1px solid var(--line);border-radius:2px;padding:4px 10px}
+
+/* ---- 对比二：三栏横向（全息框 + 3D 倾斜）---- */
+.tri-head{display:flex;align-items:center;gap:14px;margin:44px 0 18px;font-family:var(--mono);
+  font-size:11.5px;letter-spacing:.24em;color:var(--dim);text-transform:uppercase}
+.tri-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.tri-head b{color:var(--orange);font-weight:600}
+.triptychs{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:20px}
+.triptych{perspective:1100px}
+.triptych figure{margin:0;position:relative;transform-style:preserve-3d;transition:transform .18s ease-out}
+.triptych .holo{position:absolute;inset:-1px;border-radius:5px;padding:1px;pointer-events:none;
+  background:linear-gradient(120deg,rgba(46,230,214,.7),transparent 32%,transparent 68%,rgba(255,138,60,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.4;transition:opacity .4s}
+.triptych:hover .holo{opacity:1;animation:holoSpin 3.4s linear infinite}
+@keyframes holoSpin{to{filter:hue-rotate(360deg)}}
+.triptych img{width:100%;border-radius:4px;background:var(--stage);border:1px solid var(--line);
+  transition:box-shadow .45s,filter .45s;filter:saturate(.97)}
+.triptych:hover img{box-shadow:0 18px 54px rgba(0,0,0,.6),0 0 34px rgba(46,230,214,.16);filter:saturate(1.06)}
+.triptych figcaption{margin-top:13px;font-family:var(--mono);font-size:11.5px;color:var(--dimmer);
+  letter-spacing:.1em;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.triptych figcaption b{color:var(--ink);font-weight:600;letter-spacing:.14em}
+.triptych figcaption .models{color:var(--dim)}
+.triptych .scanbar{position:absolute;left:0;right:0;height:2px;top:0;z-index:3;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--teal),transparent);box-shadow:0 0 14px var(--teal)}
+.triptych:hover .scanbar{opacity:.9;animation:scanY 2.1s linear infinite}
+@keyframes scanY{0%{top:0}100%{top:100%}}
+
+/* ---- 占位项目 ---- */
+.ph-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;height:clamp(250px,40vh,420px)}
+.ph-frame{position:relative;border-radius:4px;background:
+    radial-gradient(80% 60% at 50% 40%,rgba(46,230,214,.05),transparent 70%),var(--stage);
+  display:grid;place-items:center;text-align:center;padding:18px;overflow:hidden}
+.ph-frame .dash{position:absolute;inset:0;border-radius:4px;pointer-events:none}
+.ph-frame .dash::before{content:'';position:absolute;inset:0;border-radius:4px;padding:1.5px;
+  background:linear-gradient(120deg,var(--teal),transparent 40%,transparent 60%,var(--orange));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.5;animation:dashFlow 5s linear infinite}
+@keyframes dashFlow{to{filter:hue-rotate(360deg)}}
+.ph-frame .ph-t{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.ph-frame .ph-s{font-size:12px;color:var(--dimmer);margin-top:9px;letter-spacing:.06em}
+.ph-frame .noise{position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+  animation:grainShift .4s steps(2) infinite}
+.ph-frame .radar{position:absolute;width:150px;height:150px;border-radius:50%;pointer-events:none;opacity:.34;
+  border:1px solid rgba(46,230,214,.3)}
+.ph-frame .radar::before,.ph-frame .radar::after{content:'';position:absolute;inset:0;border-radius:50%;
+  border:1px solid rgba(46,230,214,.45);animation:ping 3.2s ease-out infinite}
+.ph-frame .radar::after{animation-delay:1.6s}
+@keyframes ping{0%{transform:scale(.25);opacity:.9}100%{transform:scale(1);opacity:0}}
+.ph-note{margin-top:16px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--amber);
+  display:flex;align-items:center;gap:9px}
+.ph-note::before{content:'※';color:var(--orange)}
+
+/* ============================================================
+   footer
+   ============================================================ */
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:clamp(50px,8vh,90px) clamp(20px,5vw,64px) clamp(34px,5vh,54px);
+  text-align:center;background:linear-gradient(to bottom,transparent,rgba(8,14,23,.75));overflow:hidden}
+footer .f-big{font-family:var(--serif);font-size:clamp(30px,6vw,66px);font-weight:700;line-height:1.16;letter-spacing:.02em}
+footer .f-big em{font-style:normal;color:var(--teal);text-shadow:0 0 40px rgba(46,230,214,.45)}
+footer .f-sub{margin-top:16px;font-size:14px;color:var(--dim);letter-spacing:.1em}
+footer .f-copy{margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--dimmer);letter-spacing:.2em}
+footer .f-beam{position:absolute;left:50%;top:0;width:1px;height:100%;
+  background:linear-gradient(to bottom,var(--teal),transparent);opacity:.28;transform:translateX(-50%)}
+
+/* ============================================================
+   reveal
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal-clip{clip-path:inset(0 100% 0 0);transition:clip-path 1s var(--ease),opacity .8s var(--ease);opacity:0}
+.reveal-clip.in{clip-path:inset(0 0 0 0);opacity:1}
+
+/* ============================================================
+   responsive
+   ============================================================ */
+@media (max-width:860px){
+  .hud-bl,.hud-br,.hero-hud{display:none}
+  .nav-logo .en{display:none}
+}
+@media (max-width:980px){
+  .split-row{grid-template-columns:1fr;--cmp-w:auto}
+  .split.portrait{margin:0 auto;width:auto;height:clamp(440px,66vh,760px)}
+  .split.landscape{width:auto;max-width:640px;margin:0 auto}
+  /* 窄屏单列：右格回退为正常流，高度由自身内容决定 */
+  .tri-col{position:static;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:22px;margin-top:8px}
+  .tri-col > .tri-head{position:static;margin-bottom:14px}
+  .triptychs.triptychs-col{position:static;display:block}
+  .triptychs-col figure{grid-template-rows:auto;height:auto}
+  .triptychs-col .imgbox{height:auto}
+  .triptychs-col .triptych:nth-child(1) .imgbox{aspect-ratio:2367/1468}
+  .triptychs-col .triptych:nth-child(2) .imgbox{aspect-ratio:4128/880}
+  .triptychs-col img{height:auto}
+  .split.landscape{height:clamp(360px,52vh,560px)}
+}
+@media (max-width:760px){
+  .split{height:clamp(340px,56vh,520px)}
+  .ph-pair{grid-template-columns:1fr;height:auto}
+  .ph-frame{height:210px}
+  .proj-no{font-size:34px}
+  .hero-stats{gap:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal,.reveal-clip{opacity:1!important;transform:none!important;clip-path:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- 全局特效层 -->
+<div class="fx fx-grain"></div>
+<div class="fx fx-scan"></div>
+<div class="fx fx-sweep"></div>
+<div class="fx fx-vig"></div>
+<div class="bg-layer">
+  <div class="bg-grid"></div>
+  <div class="bg-rays"></div>
+  <div class="bg-orb a"></div>
+  <div class="bg-orb b"></div>
+</div>
+<canvas id="dust"></canvas>
+
+<!-- 自定义光标 -->
+<div class="cur cur-ring" id="curRing"></div>
+<div class="cur cur-dot" id="curDot"></div>
+
+<!-- 滚动进度 -->
+<div id="prog"></div>
+
+<!-- HUD 读数（底部两组固定）-->
+<div class="hud hud-bl">LUT <b>TEAL-ORANGE</b> · 2.39:1<br>ISO 400 · f/1.8 · 1/48s</div>
+<div class="hud hud-br">LoRA <b>STYLE-CLASS</b><br>ANIME⇄REAL · PIX ⇄ PHOTO</div>
+
+<!-- 开机自检 -->
+<div id="boot">
+  <div class="boot-box">
+    <div class="boot-t">风格化 <em>LoRA</em></div>
+    <div style="font-size:11px;letter-spacing:.24em;color:var(--dimmer)">STYLE TRANSFER GALLERY · 初始化中</div>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+    <div id="bootLines"></div>
+  </div>
+</div>
+
+<nav id="nav">
+  <div class="nav-logo"><span class="hex">◈</span><span>风格化 LoRA</span><span class="en">STYLE TRANSFER</span></div>
+  <div class="nav-right">
+    <a href="#projects">项目索引</a>
+    <a href="lora-matrix-showcase.html">控制类 LoRA</a>
+    <a href="index.html" class="nav-home magnetic">← 返回主页</a>
+  </div>
+</nav>
+
+<header>
+  <div class="hud hero-hud l"><span class="rec"></span>REC · STYLE TRANSFER<br>REEL <b id="hReel">01</b> / 03<span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div>
+  <div class="hud hero-hud r">TC <b id="hTC">00:00:00:00</b><br>FPS <b id="hFPS">60</b> · GPU OK</div>
+  <p class="hero-eyebrow reveal">STYLE-CLASS LoRA · 风格转换成果集</p>
+  <h1>
+    <span class="ln reveal"><span class="glitch" data-text="把一种画风">把一种画风</span></span>
+    <span class="ln reveal" style="transition-delay:.1s">转成<em>另一种世界</em></span>
+  </h1>
+  <p class="hero-sub reveal" style="transition-delay:.2s"><span id="typewriter"></span><span class="caret"></span></p>
+  <div class="hero-tags reveal" style="transition-delay:.3s">
+    <span>动漫 → 真人</span><span>写实 → 像素</span><span>跨画风定向蒸馏</span><span>构图与姿态保持</span><span>电影级调色</span>
+  </div>
+  <div class="hero-stats reveal" style="transition-delay:.4s">
+    <div class="hstat"><div class="n"><span class="cnt" data-to="3">0</span></div><div class="t">风格项目</div></div>
+    <div class="hstat"><div class="n"><span class="cnt" data-to="2">0</span><i>种</i></div><div class="t">对比形式</div></div>
+    <div class="hstat"><div class="n"><span class="cnt" data-to="6">0</span><i>组</i></div><div class="t">前后对照</div></div>
+    <div class="hstat"><div class="n"><span class="cnt" data-to="100">0</span><i>%</i></div><div class="t">构图保持</div></div>
+  </div>
+</header>
+
+<div class="marquee">
+  <div class="mq-track" id="mqTrack"></div>
+</div>
+
+<main id="projects">
+
+  <!-- ========== 01 动漫 → 真人 ========== -->
+  <section class="proj reveal">
+    <div class="proj-head">
+      <span class="proj-no">01</span>
+      <h2>动漫<span class="arrow">→</span>真人</h2>
+      <span class="proj-en">Anime to Photoreal</span>
+    </div>
+    <p class="proj-desc">将二维动漫角色转换为写实摄影质感：保留原构图、姿态与服装结构，重建皮肤纹理、织物褶皱与自然光影。收录竹林、洞穴持烛两个场景：各含同构图分屏对比（悬停任一侧扩展为主视图）与三栏横向对比（Input / f2k 9B / anything2real）。</p>
+    <div class="proj-meta">
+      <span>对比形式：<b>分屏扩展</b></span>
+      <span>对比形式：<b>三栏横向</b></span>
+      <span>素材状态：<b>真实成果</b></span>
+      <span>画幅：<b>2.39:1 遮幅</b></span>
+    </div>
+
+    <div class="split-row">
+      <div class="cmp-cell">
+        <div class="tri-head"><b>分屏扩展 · 竹林</b><span>竖版 · 左右对照</span></div>
+        <div class="split portrait frame" id="splitA2R">
+          <div class="split-side" data-side="src" style="--img:url('./images/lora-style/style-a2r-bamboo-src.jpg')">
+            <div class="imgwrap"><img loading="lazy" src="./images/lora-style/style-a2r-bamboo-src.jpg" alt="动漫原图：竹林中的长发男子"></div>
+            <span class="rgb"></span><span class="isln"></span><span class="sweep"></span>
+            <span class="bar t"></span><span class="bar b"></span>
+            <span class="tc">SRC · A-001</span>
+            <span class="split-lbl src"><span class="sq"></span>原图 · 动漫</span>
+          </div>
+          <div class="split-side" data-side="out" style="--img:url('./images/lora-style/style-a2r-bamboo-out.jpg')">
+            <div class="imgwrap"><img loading="lazy" src="./images/lora-style/style-a2r-bamboo-out.jpg" alt="转换结果：同构图的真人化效果"></div>
+            <span class="rgb"></span><span class="isln"></span><span class="sweep"></span>
+            <span class="bar t"></span><span class="bar b"></span>
+            <span class="tc">OUT · B-001</span>
+            <span class="split-lbl out"><span class="sq"></span>结果 · 真人</span>
+          </div>
+        </div>
+        <p class="split-hint">悬停（或点按）任一画面 → 该侧扩展为主视图，另一侧收缩 · 移出恢复等分</p>
+      </div>
+      <div class="tri-col">
+        <div class="tri-head"><b>三栏横向对比 · 竹林</b><span>Input ｜ f2k 9B ｜ anything2real</span></div>
+        <div class="triptychs triptychs-col">
+          <div class="triptych tilt">
+            <figure style="--img:url('./images/lora-style/style-a2r-bamboo-triptych.jpg')">
+              <div class="imgbox">
+                <span class="bd"></span><span class="holo"></span><span class="scanbar"></span>
+                <img loading="lazy" src="./images/lora-style/style-a2r-bamboo-triptych.jpg" alt="竹林场景三栏对比：Input、f2k 9B、anything2real">
+              </div>
+              <figcaption><b>竹林场景</b><span class="models">Input ｜ f2k 9B ｜ anything2real</span></figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-row">
+      <div class="cmp-cell">
+        <div class="tri-head"><b>分屏扩展 · 洞穴持烛</b><span>横版 · 上下对照</span></div>
+        <div class="split landscape frame" id="splitCave">
+          <div class="split-side" data-side="src" style="--img:url('./images/lora-style/style-a2r-cave-src.jpg')">
+            <div class="imgwrap"><img loading="lazy" src="./images/lora-style/style-a2r-cave-src.jpg" alt="动漫原图：洞穴中持烛的长发人物"></div>
+            <span class="rgb"></span><span class="isln"></span><span class="sweep"></span>
+            <span class="bar t"></span><span class="bar b"></span>
+            <span class="tc">SRC · A-002</span>
+            <span class="split-lbl src"><span class="sq"></span>原图 · 动漫</span>
+          </div>
+          <div class="split-side" data-side="out" style="--img:url('./images/lora-style/style-a2r-cave-out.png')">
+            <div class="imgwrap"><img loading="lazy" src="./images/lora-style/style-a2r-cave-out.png" alt="转换结果：同构图的真人化持烛效果"></div>
+            <span class="rgb"></span><span class="isln"></span><span class="sweep"></span>
+            <span class="bar t"></span><span class="bar b"></span>
+            <span class="tc">OUT · B-002</span>
+            <span class="split-lbl out"><span class="sq"></span>结果 · 真人</span>
+          </div>
+        </div>
+        <p class="split-hint">悬停（或点按）任一画面 → 该侧扩展为主视图 · 横版上下对照</p>
+      </div>
+      <div class="tri-col fill">
+        <div class="tri-head"><b>三栏横向对比 · 洞穴持烛</b><span>Input ｜ f2k 9B ｜ anything2real</span></div>
+        <div class="triptychs triptychs-col">
+          <div class="triptych tilt">
+            <figure style="--img:url('./images/lora-style/style-a2r-cave-triptych.png')">
+              <div class="imgbox">
+                <span class="bd"></span><span class="holo"></span><span class="scanbar"></span>
+                <img loading="lazy" src="./images/lora-style/style-a2r-cave-triptych.png" alt="洞穴持烛场景三栏对比：Input、f2k 9B、anything2real">
+              </div>
+              <figcaption><b>洞穴持烛场景</b><span class="models">Input ｜ f2k 9B ｜ anything2real</span></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="tri-note">
+          <span class="tn-k">模型档案 · 动漫 → 真人 LoRA</span>
+          <p class="tn-params">训练底模: <b>Krea 2</b><span>训练步数: <b>3000</b></span><span>触发词: <b>HQM</b></span><span>建议使用权重: <b>0.8</b></span></p>
+          <p class="tn-p">这是一款专为将二次元风格转换为写实画风而打造的 LoRA 模型，融合真实皮肤与织物材质、电影级光影逻辑，在保持原图构图、姿态与角色身份的同时，实现写实质感与动漫张力的统一。</p>
+          <p class="tn-p">不同于通用动漫转真人模型，该模型强调：</p>
+          <ul class="tn-list">
+            <li>写实质感重建（Photorealistic Reconstruction）</li>
+            <li>身份与构图保持（Identity &amp; Composition Preservation）</li>
+            <li>光影逻辑统一（Cinematic Lighting）</li>
+          </ul>
+          <p class="tn-p tn-foot">让二次元画面具备摄影质感，又保留原构图的叙事张力。</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="split-info">
+      <span class="si-k">Split Expansion · 同构图对照</span>
+      <div class="si-t">同一姿态，两种世界</div>
+      <p class="si-d">左栏为同构图分屏对照：竹林竖版左右并置、洞穴横版上下叠放，原图与真人化结果构图、姿态、服装结构逐像素对齐，仅替换画风与材质语言；右栏为三栏横向对比，同屏并列 Input 与两个模型的转换结果。</p>
+      <ul class="si-legend">
+        <li><span class="sw src"></span>原图 · 动漫二维<em>SRC A-001 / A-002</em></li>
+        <li><span class="sw out"></span>结果 · 真人质感<em>OUT B-001 / B-002</em></li>
+      </ul>
+      <div class="si-meta">
+        <span>竹林 736×1308 · 竖向左右</span>
+        <span>洞穴 1024×576 · 横向上下</span>
+        <span>三栏横向 · 右栏</span>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ========== 02 写实 → 像素 ========== -->
+  <section class="proj reveal">
+    <div class="proj-head">
+      <span class="proj-no">02</span>
+      <h2>写实<span class="arrow">→</span>像素</h2>
+      <span class="proj-en">Photoreal to Pixel Art</span>
+    </div>
+    <p class="proj-desc">将写实照片转换为像素风格：量化色阶、规整像素网格，同时保留主体轮廓与明暗关系。成果图待补充。</p>
+    <div class="proj-meta">
+      <span>对比形式：<b>分屏扩展</b></span>
+      <span class="warn">素材状态：<b>待补充</b></span>
+    </div>
+    <div class="ph-pair frame">
+      <div class="ph-frame"><span class="dash"></span><span class="noise"></span><span class="radar"></span>
+        <div><div class="ph-t">原图 · 写实</div><div class="ph-s">成果图待补充</div></div></div>
+      <div class="ph-frame"><span class="dash"></span><span class="noise"></span><span class="radar"></span>
+        <div><div class="ph-t">结果 · 像素</div><div class="ph-s">成果图待补充</div></div></div>
+    </div>
+    <p class="ph-note">预留展位：把前后图放入 images/lora-style/ 并按项目 01 结构登记即可接入</p>
+  </section>
+
+  <!-- ========== 03 风格化场景 ========== -->
+  <section class="proj reveal">
+    <div class="proj-head">
+      <span class="proj-no">03</span>
+      <h2>风格化场景</h2>
+      <span class="proj-en">Stylized Scene</span>
+    </div>
+    <p class="proj-desc">面向整幅场景的风格化蒸馏（沙砾、烟气等氛围题材），统一色调与笔触语言。成果图待补充。</p>
+    <div class="proj-meta">
+      <span>对比形式：<b>分屏扩展</b></span>
+      <span class="warn">素材状态：<b>待补充</b></span>
+    </div>
+    <div class="ph-pair frame">
+      <div class="ph-frame"><span class="dash"></span><span class="noise"></span><span class="radar"></span>
+        <div><div class="ph-t">原图 · 场景</div><div class="ph-s">成果图待补充</div></div></div>
+      <div class="ph-frame"><span class="dash"></span><span class="noise"></span><span class="radar"></span>
+        <div><div class="ph-t">结果 · 风格化</div><div class="ph-s">成果图待补充</div></div></div>
+    </div>
+    <p class="ph-note">预留展位：把前后图放入 images/lora-style/ 并按项目 01 结构登记即可接入</p>
+  </section>
+
+</main>
+
+<footer>
+  <span class="f-beam"></span>
+  <div class="f-big reveal">风格即<em>语言</em></div>
+  <p class="f-sub reveal">每一种画风转换，都是对同一世界的重新讲述。</p>
+  <p class="f-copy reveal">© 2026 风格化 LoRA · STYLE TRANSFER GALLERY</p>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,c){return (c||document).querySelector(s);};
+var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var isTouch=!window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+/* ---------- 开机自检 ---------- */
+var bootLines=['> 加载风格化 LoRA 权重矩阵 ......... [OK]','> 挂载 LUT 电影调色 teal-orange ... [OK]',
+  '> 校准分屏对比舞台 2.39:1 ......... [OK]','> 载入前后对照素材 6 组 ........... [OK]',
+  '> 初始化粒子场与胶片颗粒 .......... [OK]','> 系统就绪 — 欢迎进入 STYLE GALLERY'];
+var bl=$('#bootLines'), bar=$('#bootBar'), boot=$('#boot');
+function runBoot(){
+  if(reduce){ finishBoot(); return; }
+  var i=0;
+  var t=setInterval(function(){
+    if(i>=bootLines.length){ clearInterval(t); setTimeout(finishBoot,320); return; }
+    var d=document.createElement('div');
+    d.innerHTML=bootLines[i].replace('[OK]','<span class="ok">[OK]</span>');
+    bl.appendChild(d);
+    bar.style.width=Math.round((i+1)/bootLines.length*100)+'%';
+    i++;
+  },210);
+}
+function finishBoot(){
+  bar.style.width='100%';
+  boot.classList.add('gone');
+  setTimeout(function(){ if(boot&&boot.parentNode) boot.parentNode.removeChild(boot); },900);
+  revealAll();
+}
+
+/* ---------- reveal ---------- */
+var io=null;
+function revealAll(){
+  var els=$$('.reveal,.reveal-clip');
+  if('IntersectionObserver' in window && !reduce){
+    io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.08,rootMargin:'0px 0px -6% 0px'});
+    els.forEach(function(el){ io.observe(el); });
+  } else { els.forEach(function(el){ el.classList.add('in'); }); }
+}
+
+/* ---------- 打字机 ---------- */
+var twText='本页收录风格类 LoRA 的转换成果：动漫转真人、写实转像素等跨画风定向蒸馏。每个项目以前后对比为核心呈现——同一构图、同一姿态，只换风格。';
+function typeWriter(){
+  var el=$('#typewriter'); if(!el) return;
+  if(reduce){ el.textContent=twText; return; }
+  var i=0;
+  (function step(){
+    if(i>twText.length) return;
+    el.textContent=twText.slice(0,i);
+    i++;
+    setTimeout(step, i<12?34:26);
+  })();
+}
+
+/* ---------- 数字滚动 ---------- */
+function countUp(el){
+  var to=+el.dataset.to||0;
+  if(reduce){ el.textContent=to; return; }
+  var t0=null, dur=1200;
+  function f(ts){
+    if(!t0) t0=ts;
+    var p=Math.min((ts-t0)/dur,1);
+    var e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(to*e);
+    if(p<1) requestAnimationFrame(f);
+  }
+  requestAnimationFrame(f);
+}
+function initCounters(){
+  if(!('IntersectionObserver' in window)){ $$('.cnt').forEach(countUp); return; }
+  var co=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ countUp(e.target); co.unobserve(e.target); } });
+  },{threshold:.4});
+  $$('.cnt').forEach(function(el){ co.observe(el); });
+}
+
+/* ---------- 跑马灯 ---------- */
+(function(){
+  var track=$('#mqTrack'); if(!track) return;
+  var seg='<span>ANIME <b>→</b> PHOTOREAL</span><span>PIXEL <s>⇄</s> PHOTO</span><span>COMPOSITION <b>LOCKED</b></span>'+
+    '<span>STYLE TRANSFER <s>LoRA</s></span><span>TEAL-ORANGE <b>LUT</b></span><span>2.39:1 <s>CINEMASCOPE</s></span>'+
+    '<span>DIRECTED DIFFUSION <b>ON</b></span>';
+  /* 6 份副本：任意屏幕宽度下，滚动到 -50% 时后半段仍足以铺满视口，不露空缺 */
+  track.innerHTML=seg+seg+seg+seg+seg+seg;
+})();
+
+/* ---------- 滚动进度 + nav 态 ---------- */
+var prog=$('#prog'), nav=$('#nav'), reel=$('#hReel'), projs=$$('.proj');
+function onScroll(){
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  var p=h>0?window.scrollY/h:0;
+  if(prog) prog.style.width=(p*100).toFixed(2)+'%';
+  if(nav) nav.classList.toggle('scrolled', window.scrollY>40);
+  // 当前 REEL 编号
+  if(reel&&projs.length){
+    var idx=0, mid=window.scrollY+window.innerHeight*0.42;
+    projs.forEach(function(s,i){ if(s.offsetTop<=mid) idx=i; });
+    reel.textContent=('0'+(idx+1)).slice(-2);
+  }
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+/* ---------- 时间码 + FPS ---------- */
+(function(){
+  var tc=$('#hTC'), fps=$('#hFPS');
+  var t0=performance.now(), frames=0, lastFps=t0;
+  function pad(n,l){ return String(n).padStart(l||2,'0'); }
+  function loop(now){
+    frames++;
+    if(now-lastFps>=500){
+      if(fps) fps.textContent=Math.round(frames*1000/(now-lastFps));
+      frames=0; lastFps=now;
+      var ms=now-t0;
+      var hh=Math.floor(ms/3600000)%24, mm=Math.floor(ms/60000)%60,
+          ss=Math.floor(ms/1000)%60, ff=Math.floor(ms/41.7)%24;
+      if(tc) tc.textContent=pad(hh)+':'+pad(mm)+':'+pad(ss)+':'+pad(ff);
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+/* ---------- 分屏扩展对比：触屏点选 ---------- */
+$$('.split').forEach(function(sp){
+  var sides=$$('.split-side',sp);
+  sides.forEach(function(sd){
+    sd.addEventListener('click',function(){
+      var was=sd.classList.contains('active');
+      sides.forEach(function(s){ s.classList.remove('active'); });
+      if(was){ sp.classList.remove('has-active'); }
+      else{ sd.classList.add('active'); sp.classList.add('has-active'); }
+    });
+  });
+});
+
+/* ---------- 3D 倾斜（三联图）---------- */
+if(!isTouch && !reduce){
+  $$('.tilt').forEach(function(card){
+    var fig=$('figure',card)||card;
+    card.addEventListener('mousemove',function(e){
+      var r=card.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      fig.style.transform='rotateY('+(x*9).toFixed(2)+'deg) rotateX('+(-y*7).toFixed(2)+'deg) translateZ(6px)';
+    });
+    card.addEventListener('mouseleave',function(){ fig.style.transform=''; });
+  });
+}
+
+/* ---------- 磁吸按钮 ---------- */
+if(!isTouch && !reduce){
+  $$('.magnetic').forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      var x=e.clientX-r.left-r.width/2, y=e.clientY-r.top-r.height/2;
+      el.style.transform='translate('+(x*.22).toFixed(1)+'px,'+(y*.3).toFixed(1)+'px)';
+    });
+    el.addEventListener('mouseleave',function(){ el.style.transform=''; });
+  });
+}
+
+/* ---------- hero 视差 ---------- */
+if(!isTouch && !reduce){
+  var head=$('header'), h1=$('h1');
+  if(head&&h1){
+    head.addEventListener('mousemove',function(e){
+      var r=head.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      h1.style.transform='rotateY('+(x*4).toFixed(2)+'deg) rotateX('+(-y*3).toFixed(2)+'deg)';
+    });
+    head.addEventListener('mouseleave',function(){ h1.style.transform=''; });
+  }
+}
+
+/* ---------- 粒子尘埃 ---------- */
+(function(){
+ try{
+  var cv=$('#dust'); if(!cv) return;
+  var ctx=cv.getContext('2d'); if(!ctx) return;
+  var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2),parts=[],mx=0,my=0,tx=0,ty=0,run=true;
+  function size(){
+    W=window.innerWidth; H=window.innerHeight;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.min(110,Math.round(W*H/16000));
+    parts=[];
+    for(var i=0;i<n;i++) parts.push({
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*1.5+.35,
+      vx:(Math.random()-.5)*.16, vy:-(Math.random()*.2+.04),
+      a:Math.random()*.5+.12, d:Math.random()*.9+.25,
+      c:Math.random()<.22?'255,138,60':'46,230,214'
+    });
+  }
+  function draw(){
+    if(!run) return;
+    ctx.clearRect(0,0,W,H);
+    tx+=(mx-tx)*.05; ty+=(my-ty)*.05;
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.y<-8){ p.y=H+8; p.x=Math.random()*W; }
+      if(p.x<-8) p.x=W+8; if(p.x>W+8) p.x=-8;
+      var ox=tx*p.d*22, oy=ty*p.d*22;
+      ctx.beginPath();
+      ctx.arc(p.x+ox,p.y+oy,p.r,0,6.2832);
+      ctx.fillStyle='rgba('+p.c+','+p.a.toFixed(3)+')';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  size();
+  window.addEventListener('resize',size);
+  if(!isTouch){
+    window.addEventListener('mousemove',function(e){
+      mx=(e.clientX/window.innerWidth-.5)*2; my=(e.clientY/window.innerHeight-.5)*2;
+    },{passive:true});
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ run=es[0].isIntersecting; if(run) draw(); },{threshold:0}).observe(cv);
+  }
+  if(!reduce) draw(); else { cv.style.display='none'; }
+ }catch(e){ var dc=$('#dust'); if(dc) dc.style.display='none'; }
+})();
+
+/* ---------- 自定义光标 + 拖尾 ---------- */
+(function(){
+ try{
+  if(isTouch||reduce) return;
+  var dot=$('#curDot'), ring=$('#curRing');
+  if(!dot||!ring) return;
+  var x=0,y=0,rx=0,ry=0,trail=[],TN=9;
+  for(var i=0;i<TN;i++){
+    var d=document.createElement('div');
+    d.className='cur-trail'; d.style.opacity=(0.42*(1-i/TN)).toFixed(2);
+    d.style.transform='scale('+(1-i/TN*0.72).toFixed(2)+')';
+    document.body.appendChild(d); trail.push({el:d,x:0,y:0});
+  }
+  document.body.style.cursor='none';
+  window.addEventListener('mousemove',function(e){ x=e.clientX; y=e.clientY; },{passive:true});
+  var hot='a,button,.split-side,.triptych,.hero-tags span,.nav-home';
+  (function loop(){
+    rx+=(x-rx)*.18; ry+=(y-ry)*.18;
+    dot.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%)';
+    ring.style.transform='translate('+rx+'px,'+ry+'px)';
+    ring.classList.toggle('hot', !!document.elementFromPoint(x,y)&&!!document.elementFromPoint(x,y).closest(hot));
+    var px=x,py=y;
+    for(var i=0;i<trail.length;i++){
+      var t=trail[i];
+      t.x+=(px-t.x)*.34; t.y+=(py-t.y)*.34;
+      t.el.style.transform='translate('+t.x+'px,'+t.y+'px) translate(-50%,-50%) scale('+(1-i/TN*.72).toFixed(2)+')';
+      px=t.x; py=t.y;
+    }
+    requestAnimationFrame(loop);
+  })();
+ }catch(e){ document.body.style.cursor=''; }
+})();
+
+/* ---------- 看门狗：任何异常下最多 4.5s 强制揭幕，页面永不卡死 ---------- */
+setTimeout(function(){
+  if(boot && !boot.classList.contains('gone')){
+    if(boot.parentNode) boot.parentNode.removeChild(boot);
+    revealAll();
+  }
+}, 4500);
+
+/* ---------- 启动 ---------- */
+runBoot();
+typeWriter();
+initCounters();
+})();
+</script>
+</body>
+</html>

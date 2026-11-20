@@ -294,7 +294,7 @@ footer{position:relative;z-index:2;padding:clamp(52px,7vw,88px) clamp(18px,6vw,9
     <div class="sec-head reveal">
       <p class="sec-tag">MODEL MATRIX / 模型矩阵</p>
       <h2 class="sec-title">训练成果 <span class="hl">模型矩阵</span></h2>
-      <p class="sec-desc">6 个定向蒸馏的 LoRA 模型，每项独占一行：左侧为模型介绍与成果图，右侧为「底模 vs LoRA 加持」滑动对比，拖动滑块即可逐区域查看差异。文案与图像均为占位示例，填入 LORA_DATA 中各模型的 image / cmpBefore / cmpAfter 字段即接入真实素材。</p>
+      <p class="sec-desc">3 个定向蒸馏的 LoRA 模型，每项独占一行：左侧为模型介绍与成果图，右侧为「底模 vs LoRA 加持」滑动对比，拖动滑块即可逐区域查看差异。新增模型时填入 LORA_DATA 中各模型的 image / cmpBefore / cmpAfter 字段即可。</p>
     </div>
     <div class="model-rows" id="modelGrid"></div>
   </section>
@@ -330,14 +330,14 @@ window.LORA_DATA = {
     en: "LoRA GALLERY",
     tagline: [
       "低秩微调 · 定向蒸馏每一个画风与角色",
-      "6 个训练模型 · 从数据集到收敛的全流程",
-      "赛博 / 机甲 / 国风 / 哥特 / 像素 / 废土 …"
+      "3 个训练模型 · 从数据集到收敛的全流程",
+      "角色一致性 · 真人肖像 / 街拍光影 / 机械义体"
     ]
   },
 
   heroStats: [
-    { n: 6, suffix: "", label: "训练模型" },
-    { n: 6, suffix: "", label: "成果展示" },
+    { n: 3, suffix: "", label: "训练模型" },
+    { n: 3, suffix: "", label: "成果展示" },
     { n: 96, suffix: "%", label: "平均收敛度" },
     { n: 2400, suffix: "+", label: "训练步数/模型" }
   ],
@@ -359,22 +359,11 @@ window.LORA_DATA = {
       desc:"以真人街拍数据集训练的角色一致性 LoRA，触发词 HQM。同一主体在阳光斜影、白墙近景、低角度仰拍等多场景下保持短发、眼镜与服装特征统一；对比区为同提示词下加载前后的出图差异，可见身份与穿搭细节的稳定收敛。",
       image:"./images/lora-hei/hei-big.png", thumbs:["./images/lora-hei/hei-s1.png","./images/lora-hei/hei-s2.png","./images/lora-hei/hei-s3.png"], cmpBefore:"./images/lora-hei/hei-cmp-after.jpg", cmpAfter:"./images/lora-hei/hei-cmp-before.jpg",
       imagePos:"center 25%", thumbPos:["center 26.5%","center 21%","center 26.5%"], cmpBeforePos:"center center", cmpAfterPos:"center center" },
-    { name:"国风仙侠", trig:"xianxia, ink_wash", base:"SD 1.5", rank:32, steps:1800, conv:98,
-      tags:["水墨","仙侠","飘逸"], c1:"#00ff9d", c2:"#a855f7", glyph:"仙侠",
-      desc:"低秩轻量方案，专注水墨晕染与衣袂飘逸的笔意表达。修正底模在水墨题材上易出现的塑料质感，使浓淡过渡与留白呼吸更接近传统纸本。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
-    { name:"暗黑哥特", trig:"dark_gothic, cathedral", base:"SDXL 1.0", rank:64, steps:2600, conv:93,
-      tags:["哥特","暗黑","宗教"], c1:"#ff2bd6", c2:"#3a0ca3", glyph:"GOTHIC",
-      desc:"围绕教堂建筑、宗教符号与低照度氛围训练，压暗整体调性并强化彩色玻璃的透光表现。解决底模在暗部细节丢失、画面发闷灰的问题。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
-    { name:"像素艺术", trig:"pixel_art, 16bit", base:"SD 1.5", rank:16, steps:1200, conv:99,
-      tags:["像素","复古","游戏"], c1:"#ffb700", c2:"#00ff9d", glyph:"PIXEL",
-      desc:"极低秩配置，学习 16bit 时代的调色板约束与网格对齐规则。消除底模生成像素图时的半像素抖动与杂色，输出干净的色阶分层。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" },
-    { name:"生物机械", trig:"biomech, organic_machine", base:"SDXL 1.0", rank:96, steps:2800, conv:91,
-      tags:["生物","机械","异化"], c1:"#00ff9d", c2:"#ff2bd6", glyph:"BIOMECH",
-      desc:"有机体与机械结构融合的异化美学训练，强调组织过渡的自然性与材质对比。改善底模在此类混合题材下结构逻辑混乱、材质边界不清的缺陷。",
-      image:"", thumbs:["","",""], cmpBefore:"", cmpAfter:"" }
+    { name:"机械义体", trig:"HQM", base:"Krea 2", rank:32, steps:2850, conv:0,
+      tags:["义肢臂","机械结构","金属质感"], c1:"#8fa8b8", c2:"#00f0ff", glyph:"义体",
+      desc:"基于 ai-toolkit 训练 142 轮 / 2850 步的角色一致性义体 LoRA，触发词 HQM。成果集覆盖写实全身、义肢特写与二维动漫多种风格，集中呈现金属甲片、关节传动与皮肤—机械结构衔接的表现力；对比区为两种不同结构复杂度的义肢设计在同提示词下的出图差异。",
+      image:"./images/lora-mecha/mecha-big.jpg", thumbs:["./images/lora-mecha/mecha-s1.jpg","./images/lora-mecha/mecha-s2.jpg","./images/lora-mecha/mecha-s3.jpg"], cmpBefore:"./images/lora-mecha/mecha-cmp-before.jpg", cmpAfter:"./images/lora-mecha/mecha-cmp-after.jpg",
+      imagePos:"center 5%", thumbPos:["center center","center center","center center"], cmpBeforePos:"center 8%", cmpAfterPos:"center 8%" }
   ],
 
 };
@@ -439,9 +428,9 @@ $('#modelGrid').innerHTML = (D.models||[]).map(function(m,i){
         '<h3 class="m-name"><span class="dot"></span>'+esc(m.name)+'</h3>'+
         '<p class="m-trig">'+esc(m.trig)+'</p>'+
         '<p class="m-desc">'+esc(m.desc||'')+'</p>'+
-        '<div class="m-meta"><span class="m-chip">RANK '+esc(m.rank)+'</span><span class="m-chip">'+esc(m.steps)+' STEPS</span><span class="m-chip">'+esc(m.conv)+'% 收敛</span></div>'+
+        ((m.rank||m.steps||m.conv)?'<div class="m-meta">'+(m.rank?'<span class="m-chip">RANK '+esc(m.rank)+'</span>':'')+(m.steps?'<span class="m-chip">'+esc(m.steps)+' STEPS</span>':'')+(m.conv?'<span class="m-chip">'+esc(m.conv)+'% 收敛</span>':'')+'</div>':'')+
         '<div class="m-tags">'+(m.tags||[]).map(function(t){return '<span class="m-tag">'+esc(t)+'</span>';}).join('')+'</div>'+
-        '<div class="m-bar"><i data-pct="'+esc(m.conv)+'"></i></div>'+
+        (m.conv?'<div class="m-bar"><i data-pct="'+esc(m.conv)+'"></i></div>':'')+
       '</div>'+
     '</div>'+
     '<div class="mr-right">'+
@@ -644,7 +633,7 @@ function onResize(){ sizeRain(); sizeP(); }
 window.addEventListener('resize',onResize);
 
 /* ---------- 开机自检序列 ---------- */
-var bootLines=['> 初始化控制类lora渲染引擎 .........','> 挂载 LoRA 权重矩阵 [6 models] ..','> 校准潜空间维度 rank=64 ........','> 载入成果画廊纹理资源 .........','> 建立神经网络推理链路 ... [OK]','> 系统就绪 — 欢迎进入 LoRA GALLERY'];
+var bootLines=['> 初始化控制类lora渲染引擎 .........','> 挂载 LoRA 权重矩阵 [3 models] ..','> 校准潜空间维度 rank=64 ........','> 载入成果画廊纹理资源 .........','> 建立神经网络推理链路 ... [OK]','> 系统就绪 — 欢迎进入 LoRA GALLERY'];
 var bl=$('#bootLines'), bar=$('#bootBar');
 function afterBoot(){ $$('#heroStats .n').forEach(countUp); type(); }
 function start(){
